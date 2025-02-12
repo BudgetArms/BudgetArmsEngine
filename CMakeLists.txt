@@ -1,48 +1,55 @@
 cmake_minimum_required(VERSION 3.26)
-project(Minigin)
+project(GameEngine)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# to be replacing the magic value Resources in the cmake file
+set(ResourcesFolder "Resources")
 
 if(EMSCRIPTEN)
-  message("Using Emscripten!")
+    message("Using Emscripten!")
 endif()
 
 if(EMSCRIPTEN)
-  set(TARGET_NAME minigin_web)
-  set(TARGET_PARAM )
+    set(TARGET_NAME GameEngine_web)
+    set(TARGET_PARAM )
 else()
-  set(TARGET_NAME minigin)
-  set(TARGET_PARAM WIN32)
+    set(TARGET_NAME GameEngine)
+    set(TARGET_PARAM WIN32)
 endif()
 
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
-  Minigin/Font.cpp
-  Minigin/Font.h
-  Minigin/GameObject.cpp
-  Minigin/GameObject.h
-  Minigin/InputManager.cpp
-  Minigin/InputManager.h
-  Minigin/Main.cpp
-  Minigin/Minigin.cpp
-  Minigin/Minigin.h
-  Minigin/Renderer.cpp
-  Minigin/Renderer.h
-  Minigin/ResourceManager.cpp
-  Minigin/ResourceManager.h
-  Minigin/Scene.cpp
-  Minigin/Scene.h
-  Minigin/SceneManager.cpp
-  Minigin/SceneManager.h
-  Minigin/TextObject.cpp
-  Minigin/TextObject.h
-  Minigin/Texture2D.cpp
-  Minigin/Texture2D.h
-  Minigin/Transform.cpp
-  Minigin/Transform.h
+    GameEngine/Font.cpp
+    GameEngine/Font.h
+    GameEngine/GameObject.cpp
+    GameEngine/GameObject.h
+    GameEngine/InputManager.cpp
+    GameEngine/InputManager.h
+    GameEngine/Main.cpp
+    GameEngine/GameEngine.cpp
+    GameEngine/GameEngine.h
+    GameEngine/Renderer.cpp
+    GameEngine/Renderer.h
+    GameEngine/ResourceManager.cpp
+    GameEngine/ResourceManager.h
+    GameEngine/Scene.cpp
+    GameEngine/Scene.h
+    GameEngine/SceneManager.cpp
+    GameEngine/SceneManager.h
+    GameEngine/TextObject.cpp
+    GameEngine/TextObject.h
+    GameEngine/Texture2D.cpp
+    GameEngine/Texture2D.h
+    GameEngine/Transform.cpp
+    GameEngine/Transform.h
 )
+
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
-# set minigin as the default startup project
+# set GameEngine as the default startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TARGET_NAME})
 
 include(FetchContent)
@@ -179,7 +186,7 @@ elseif(NOT EMSCRIPTEN)
 endif()
 
 target_include_directories(${TARGET_NAME} PRIVATE
-  ${CMAKE_SOURCE_DIR}/Minigin/
+  ${CMAKE_SOURCE_DIR}/GameEngine/
   ${glm_SOURCE_DIR}
 )
 
@@ -191,7 +198,7 @@ target_compile_options(${TARGET_NAME} PRIVATE
 
 if(EMSCRIPTEN)
   set(EMSCRIPTEN_COMPILE_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_SDL_TTF=2 -g")
-  set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_SDL_TTF=2 -g -sALLOW_MEMORY_GROWTH --preload-file \"${CMAKE_SOURCE_DIR}/Data@/\" -sSDL2_IMAGE_FORMATS=['tga','png']")
+  set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_SDL_TTF=2 -g -sALLOW_MEMORY_GROWTH --preload-file \"${CMAKE_SOURCE_DIR}/Resources@/\" -sSDL2_IMAGE_FORMATS=['tga','png']")
 
   # work around https://github.com/emscripten-core/emscripten/issues/11513
   set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -fno-stack-protector")
@@ -209,6 +216,7 @@ if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX ".html")
   
 elseif(WIN32)
+
   set_target_properties(${TARGET_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>")
 
   # add post build commands
@@ -222,6 +230,6 @@ elseif(WIN32)
       COMMAND "${CMAKE_COMMAND}" -E copy "${SDL2_TTF_LIBRARY_DLL}" "$<TARGET_FILE_DIR:${TARGET_NAME}>"
   )
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Data" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Data"
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Resources" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources"
   )
 endif()
