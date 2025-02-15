@@ -16,16 +16,76 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+
+void LogSDLVersion(const std::string& message, const SDL_version& v);
+void PrintSDLVersion();
+
+
 SDL_Window* g_window{};
+
+
+
+dae::GameEngine::GameEngine(const std::filesystem::path& dataPath)
+{
+    PrintSDLVersion();
+
+    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+        throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
+
+    g_window = SDL_CreateWindow(
+        "Programming 4 assignment Q-Bert",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        640,
+        480,
+        SDL_WINDOW_OPENGL
+    );
+
+    if (g_window == nullptr)
+        throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
+
+    Renderer::GetInstance().Init(g_window);
+    ResourceManager::GetInstance().Init(dataPath);
+}
+
+dae::GameEngine::~GameEngine()
+{
+    Renderer::GetInstance().Destroy();
+    SDL_DestroyWindow(g_window);
+    g_window = nullptr;
+    SDL_Quit();
+}
+
+// This exists 
+void dae::GameEngine::Run(const std::function<void()>& load)
+{
+    load();
+#ifndef __EMSCRIPTEN__
+    while (!m_quit)
+        RunOneFrame();
+#else
+    emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
+#endif
+}
+
+// Game loop
+void dae::GameEngine::RunOneFrame()
+{
+    m_quit = !InputManager::GetInstance().ProcessInput();
+    SceneManager::GetInstance().Update();
+    Renderer::GetInstance().Render();
+}
+
+
 
 void LogSDLVersion(const std::string& message, const SDL_version& v)
 {
 #if WIN32
-	std::stringstream ss;
-	ss << message << (int)v.major << "." << (int)v.minor << "." << (int)v.patch << "\n";
-	OutputDebugString(ss.str().c_str());
+    std::stringstream ss;
+    ss << message << (int)v.major << "." << (int)v.minor << "." << (int)v.patch << "\n";
+    OutputDebugString(ss.str().c_str());
 #else
-	std::cout << message << (int)v.major << "." << (int)v.minor << "." << (int)v.patch << "\n";
+    std::cout << message << (int)v.major << "." << (int)v.minor << "." << (int)v.patch << "\n";
 #endif
 }
 
@@ -34,7 +94,7 @@ void LogSDLVersion(const std::string& message, const SDL_version& v)
 
 void LoopCallback(void* arg)
 {
-	static_cast<dae::GameEngine*>(arg)->RunOneFrame();
+    static_cast<dae::GameEngine*>(arg)->RunOneFrame();
 }
 #endif
 
@@ -43,74 +103,23 @@ void LoopCallback(void* arg)
 // These entries in the debug output help to identify that issue.
 void PrintSDLVersion()
 {
-	SDL_version version{};
-	SDL_VERSION(&version);
-	LogSDLVersion("We compiled against SDL version ", version);
+    SDL_version version{};
+    SDL_VERSION(&version);
+    LogSDLVersion("We compiled against SDL version ", version);
 
-	SDL_GetVersion(&version);
-	LogSDLVersion("We linked against SDL version ", version);
+    SDL_GetVersion(&version);
+    LogSDLVersion("We linked against SDL version ", version);
 
-	SDL_IMAGE_VERSION(&version);
-	LogSDLVersion("We compiled against SDL_image version ", version);
+    SDL_IMAGE_VERSION(&version);
+    LogSDLVersion("We compiled against SDL_image version ", version);
 
-	version = *IMG_Linked_Version();
-	LogSDLVersion("We linked against SDL_image version ", version);
+    version = *IMG_Linked_Version();
+    LogSDLVersion("We linked against SDL_image version ", version);
 
-	SDL_TTF_VERSION(&version)
-	LogSDLVersion("We compiled against SDL_ttf version ", version);
+    SDL_TTF_VERSION(&version)
+        LogSDLVersion("We compiled against SDL_ttf version ", version);
 
-	version = *TTF_Linked_Version();
-	LogSDLVersion("We linked against SDL_ttf version ", version);
+    version = *TTF_Linked_Version();
+    LogSDLVersion("We linked against SDL_ttf version ", version);
 }
 
-dae::GameEngine::GameEngine(const std::filesystem::path &dataPath)
-{
-	PrintSDLVersion();
-	
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) 
-	{
-		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
-	}
-
-	g_window = SDL_CreateWindow(
-		"Programming 4 assignment",
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
-		640,
-		480,
-		SDL_WINDOW_OPENGL
-	);
-	if (g_window == nullptr) 
-	{
-		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
-	}
-
-	Renderer::GetInstance().Init(g_window);
-	ResourceManager::GetInstance().Init(dataPath);
-}
-
-dae::GameEngine::~GameEngine()
-{
-	Renderer::GetInstance().Destroy();
-	SDL_DestroyWindow(g_window);
-	g_window = nullptr;
-	SDL_Quit();
-}
-
-void dae::GameEngine::Run(const std::function<void()>& load)
-{
-	load();
-#ifndef __EMSCRIPTEN__
-	while (!m_quit)
-		RunOneFrame();
-#else
-	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
-#endif
-}
-
-void dae::GameEngine::RunOneFrame()
-{
-	m_quit = !InputManager::GetInstance().ProcessInput();
-	SceneManager::GetInstance().Update();
-	Renderer::GetInstance().Render();
-}

@@ -18,54 +18,39 @@
 
 namespace fs = std::filesystem;
 
+void Start();
 
-void load();
-
-int main(int, char*[])
+int main(int, char* [])
 {
 
 #if __EMSCRIPTEN__
     fs::path data_location = "";
 #else
-    fs::path data_location = "./Resources/";
-    if (!fs::exists(data_location))
-        data_location = "../Resources/";
+    fs::path resourcesFolder = "./Resources/";
+
+
+    if (!fs::exists(resourcesFolder))
+        resourcesFolder = "../Resources/";
+
+    if (!fs::exists(resourcesFolder))
+    {
+        std::cout << "Resouces Folder Not Found" << '\n';
+        assert("Resouces Folder Not Found");
+        throw std::runtime_error(std::string("Error: Resource Folder Not Found"));
+        exit(-1);
+    }
+
 #endif
-    dae::GameEngine engine(data_location);
-    engine.Run(load);
+
+    dae::GameEngine engine(resourcesFolder);
+    engine.Run(Start);
+
     return 0;
 }
 
-enum class test {
-    nice,
-    cool,
-    fire
-};
-
-test g_Testing;
-
-void load()
+void Start()
 {
     auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
-
-    if (true)
-        std::cout << "test" << std::endl;
-    // fjksf
-
-    switch (g_Testing) {
-    case test::nice: {
-        std::cout << "nice" << std::endl;
-    } break;
-    case test::cool: {
-        std::cout << "cool" << std::endl;
-    } break;
-    case test::fire: {
-        std::cout << "fire" << std::endl;
-    } break;
-    default: {
-        std::cout << "default" << std::endl;
-    } break;
-    }
 
     auto go = std::make_shared<dae::GameObject>();
     go->SetTexture("background.tga");
@@ -80,4 +65,11 @@ void load()
     auto to = std::make_shared<dae::TextObject>("Programming 4 Assignment", font);
     to->SetPosition(80, 20);
     scene.Add(to);
+    std::cout << "test";
+
 }
+
+
+
+
+
