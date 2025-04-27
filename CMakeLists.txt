@@ -1,25 +1,23 @@
-cmake_minimum_required(VERSION 3.26)
-project(GameEngine)
+﻿cmake_minimum_required(VERSION 3.26)
+project(BudgetEngine)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# to be replacing the magic value Resources in the cmake file
-set(ResourcesFolder "Resources")
 set(EMSCRIPTEN OFF)
 set(ENABLE_CONSOLE ON)
 
-message("\n\n\n Starting CMAKE \n\n\n")
+message("\n\n\n Starting CMAKE\n\n")
 
 if(EMSCRIPTEN)
     message("Using Emscripten!")
 endif()
 
 if(EMSCRIPTEN)
-    set(TARGET_NAME GameEngine_web)
+    set(TARGET_NAME BudgetEngine_web)
     set(TARGET_PARAM )
 else()
-    set(TARGET_NAME GameEngine)
+    set(TARGET_NAME BudgetEngine)
 
     if(ENABLE_CONSOLE)
         set(TARGET_PARAM )
@@ -31,37 +29,35 @@ endif()
 
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
-    GameEngine/Main.cpp
-    GameEngine/Font.cpp
-    GameEngine/Font.h
-    GameEngine/GameObject.cpp
-    GameEngine/GameObject.h
-    GameEngine/InputManager.cpp
-    GameEngine/InputManager.h
-    GameEngine/GameEngine.cpp
-    GameEngine/GameEngine.h
-    GameEngine/Renderer.cpp
-    GameEngine/Renderer.h
-    GameEngine/ResourceManager.cpp
-    GameEngine/ResourceManager.h
-    GameEngine/Scene.cpp
-    GameEngine/Scene.h
-    GameEngine/SceneManager.cpp
-    GameEngine/SceneManager.h
-    GameEngine/TextObject.cpp
-    GameEngine/TextObject.h
-    GameEngine/Texture2D.cpp
-    GameEngine/Texture2D.h
-    GameEngine/Transform.cpp
-    GameEngine/Transform.h
-)
+    "Game/Main.cpp"
+    "BudgetEngine/Core/BudgetEngine.cpp"        "BudgetEngine/Core/BudgetEngine.h"
+    "BudgetEngine/Core/GameObject.cpp"          "BudgetEngine/Core/GameObject.h"
+    "BudgetEngine/Core/Renderer.cpp"            "BudgetEngine/Core/Renderer.h"
+    "BudgetEngine/Core/Scene.cpp"               "BudgetEngine/Core/Scene.h"
+    "BudgetEngine/Core/TextObject.cpp"          "BudgetEngine/Core/TextObject.h"
+    "BudgetEngine/Components/Component.h"
+    "BudgetEngine/Components/InputComponent.h"
+    "BudgetEngine/Components/RenderComponent.h"
+    "BudgetEngine/Core/Transform.cpp"           "BudgetEngine/Core/Transform.h"
+    "BudgetEngine/Managers/InputManager.cpp"    "BudgetEngine/Managers/InputManager.h"
+    "BudgetEngine/Managers/ResourceManager.cpp" "BudgetEngine/Managers/ResourceManager.h"
+    "BudgetEngine/Managers/SceneManager.cpp"    "BudgetEngine/Managers/SceneManager.h"
+    "BudgetEngine/Singletons/GameTime.h"
+    "BudgetEngine/Singletons/Singleton.h"
+    "BudgetEngine/Wrappers/Font.cpp"            "BudgetEngine/Wrappers/Font.h"
+    "BudgetEngine/Wrappers/Texture2D.cpp"       "BudgetEngine/Wrappers/Texture2D.h"
+ )
 
 
 # enable c++20 features
-#target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
+target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
 
-# set GameEngine as the default startup project
+# set BudgetEngine as the default startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TARGET_NAME})
+
+
+
+
 
 include(FetchContent)
 # add glm
@@ -216,7 +212,7 @@ elseif(NOT EMSCRIPTEN)
 endif()
 
 target_include_directories(${TARGET_NAME} PRIVATE
-  ${CMAKE_SOURCE_DIR}/GameEngine/
+  ${CMAKE_SOURCE_DIR}/BudgetEngine/
   ${glm_SOURCE_DIR}
 )
 

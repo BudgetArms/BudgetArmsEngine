@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 #include <vector>
 #include <string>
 #include <memory>
-#include "Singleton.h"
+#include "Singletons/Singleton.h"
 
-namespace dae
+namespace bae
 {
     class Scene;
     class SceneManager final : public Singleton<SceneManager>
@@ -13,10 +13,13 @@ namespace dae
         Scene& CreateScene(const std::string& name);
 
         void Update();
+        void FixedUpdate();
+        void LateUpdate();
         void Render();
     private:
         friend class Singleton<SceneManager>;
         SceneManager() = default;
-        std::vector<std::shared_ptr<Scene>> m_scenes;
+
+        std::vector<std::shared_ptr<Scene>> m_Scenes;
     };
 }

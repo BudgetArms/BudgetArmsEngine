@@ -1,6 +1,8 @@
-#include <stdexcept>
+﻿#include <stdexcept>
 #include <sstream>
 #include <iostream>
+#include <chrono> 
+#include <thread> 
 
 #if WIN32
 #define WIN32_LEAN_AND_MEAN 
@@ -10,22 +12,26 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include "GameEngine.h"
-#include "InputManager.h"
-#include "SceneManager.h"
+#include "BudgetEngine.h"
+#include "Managers/InputManager.h"
+#include "Managers/SceneManager.h"
+#include "Managers/ResourceManager.h"
+#include "Singletons/GameTime.h"
 #include "Renderer.h"
-#include "ResourceManager.h"
 
+#ifdef __EMSCRIPTEN__
+#include "emscripten.h"
+#endif
+
+#include "Core/GameObject.h"
 
 void LogSDLVersion(const std::string& message, const SDL_version& v);
 void PrintSDLVersion();
 
-
 SDL_Window* g_window{};
+bae::GameObject* wow{};
 
-
-
-dae::GameEngine::GameEngine(const std::filesystem::path& dataPath)
+bae::BudgetEngine::BudgetEngine(const std::filesystem::path& dataPath)
 {
     PrintSDLVersion();
 
@@ -33,7 +39,7 @@ dae::GameEngine::GameEngine(const std::filesystem::path& dataPath)
         throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 
     g_window = SDL_CreateWindow(
-        "Programming 4 assignment Q-Bert",
+        "Programming 4 assignment Q-Bert YES",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         640,
@@ -48,8 +54,9 @@ dae::GameEngine::GameEngine(const std::filesystem::path& dataPath)
     ResourceManager::GetInstance().Init(dataPath);
 }
 
-dae::GameEngine::~GameEngine()
+bae::BudgetEngine::~BudgetEngine()
 {
+    std::cout << "BYEEEEE :(" << '\n';
     Renderer::GetInstance().Destroy();
     SDL_DestroyWindow(g_window);
     g_window = nullptr;
@@ -57,11 +64,22 @@ dae::GameEngine::~GameEngine()
 }
 
 // This exists 
-void dae::GameEngine::Run(const std::function<void()>& load)
+void bae::BudgetEngine::Run(const std::function<void()>& load)
 {
     load();
+    wow = new GameObject();
+
+    //wow ;
+    wow->Destroy();
+    wow->Update();
+    wow->LateUpdate();
+    //std::cout << "nicee: " << (*wow).GetName() << '\n';
+
+    //wow->AddComponent <
+    GameTime::GetInstance().Update();
+
 #ifndef __EMSCRIPTEN__
-    while (!m_quit)
+    while (!m_Quit)
         RunOneFrame();
 #else
     emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
@@ -69,11 +87,32 @@ void dae::GameEngine::Run(const std::function<void()>& load)
 }
 
 // Game loop
-void dae::GameEngine::RunOneFrame()
+void bae::BudgetEngine::RunOneFrame()
 {
-    m_quit = !InputManager::GetInstance().ProcessInput();
+    // Get current time & calculate delta time
+    GameTime::GetInstance().Update();
+    m_AccumlatedTime += GameTime::GetInstance().GetDeltaTime();
+
+    m_Quit = !InputManager::GetInstance().ProcessInput();
+
+    // This FixedUpdate system exist for physics and networking
+    // eg. if a player runs into a wall, and the game lags for a second,
+    // only one updat would be done, resulting into him teleporting through the wall 
+    // while here you just do many small updates, that will result in him not teleporting (as much).
+    // and for networking, with the syncing of player movement/position & desync, etc. 
+    while (m_AccumlatedTime >= GameTime::GetInstance().GetFixedTimeStep())
+    {
+        SceneManager::GetInstance().FixedUpdate();
+        m_AccumlatedTime -= GameTime::GetInstance().GetFixedTimeStep();
+    }
+
     SceneManager::GetInstance().Update();
+    SceneManager::GetInstance().LateUpdate();
     Renderer::GetInstance().Render();
+
+    std::cout << "FPS: " << GameTime::GetInstance().GetFPS() << '\n';
+    std::this_thread::sleep_for(std::chrono::duration<float>(GameTime::GetInstance().GetSleepTime()));
+
 }
 
 
@@ -90,17 +129,15 @@ void LogSDLVersion(const std::string& message, const SDL_version& v)
 }
 
 #ifdef __EMSCRIPTEN__
-#include "emscripten.h"
 
 void LoopCallback(void* arg)
 {
-    static_cast<dae::GameEngine*>(arg)->RunOneFrame();
+    static_cast<bae::BudgetEngine*>(arg)->RunOneFrame();
 }
+
 #endif
 
-// Why bother with this? Because sometimes students have a different SDL version installed on their pc.
-// That is not a problem unless for some reason the dll's from this project are not copied next to the exe.
-// These entries in the debug output help to identify that issue.
+
 void PrintSDLVersion()
 {
     SDL_version version{};
@@ -122,4 +159,6 @@ void PrintSDLVersion()
     version = *TTF_Linked_Version();
     LogSDLVersion("We linked against SDL_ttf version ", version);
 }
+
+
 

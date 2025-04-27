@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 
-namespace dae
+
+namespace bae
 {
     template <typename T>
     class Singleton
