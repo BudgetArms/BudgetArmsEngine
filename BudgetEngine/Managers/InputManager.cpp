@@ -3,6 +3,9 @@
 
 #include <iostream>
 
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+
 
 
 bool bae::InputManager::ProcessInput()
@@ -37,6 +40,10 @@ bool bae::InputManager::ProcessInput()
 
 
         }
+
+        //process event for IMGUI
+        ImGui_ImplSDL2_ProcessEvent(&e);
+
         // etc...
 
     }

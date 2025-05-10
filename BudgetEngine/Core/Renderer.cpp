@@ -2,6 +2,10 @@
 //#include <cstring>
 #include <string>
 #include <iostream>
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
+
 #include "Renderer.h"
 #include "Managers/SceneManager.h"
 #include "Wrappers/Texture2D.h"
@@ -30,6 +34,12 @@ void bae::Renderer::Init(SDL_Window* window)
     if (m_Renderer == nullptr)
         throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
 
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui_ImplSDL2_InitForOpenGL(window, SDL_GL_GetCurrentContext());
+    ImGui_ImplOpenGL3_Init();
+
 }
 
 void bae::Renderer::Render() const
@@ -40,11 +50,27 @@ void bae::Renderer::Render() const
 
     SceneManager::GetInstance().Render();
 
+    ImGui_ImplOpenGL3_NewFrame();
+
+    // why did they say the m_Window should be added??
+    //ImGui_ImplSDL2_NewFrame(m_window); 
+    ImGui_ImplSDL2_NewFrame();
+
+    ImGui::NewFrame();
+    ImGui::ShowDemoWindow();
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
     SDL_RenderPresent(m_Renderer);
 }
 
 void bae::Renderer::Destroy()
 {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
+
     if (m_Renderer != nullptr)
     {
         SDL_DestroyRenderer(m_Renderer);
