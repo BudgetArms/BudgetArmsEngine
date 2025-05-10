@@ -4,30 +4,25 @@
 #include <memory>
 #include <vector>
 #include <algorithm>
+#include <glm.hpp>
 
-#include "Transform.h"
-#include "Components/Component.h"
+//#include "Components/TransformComponent.h"
+//#include "Components/Component.h"
 
 
-//bool bae::GameObject::m_bProjectClosing = false;
 
 namespace bae
 {
     class Texture2D;
+    class Component;
+    class TransformComponent;
 
     class GameObject
     {
     public:
 
-        //GameObject() = default;
-        GameObject()
-        {
-            //atexit(SetProjectClosing);
-            //atexit((void)Test);
-        };
-
+        explicit GameObject(const std::string& name);
         virtual ~GameObject();
-
 
         GameObject(const GameObject& other) = delete;
         GameObject(GameObject&& other) = delete;
@@ -40,116 +35,141 @@ namespace bae
         virtual void LateUpdate();
         virtual void Render() const;
 
+
         // Mark for destruction
         void Destroy();
 
+        // this is a way more accurate name, Remove Child sounds too much like destroying
+        void AttachChild(GameObject* child, bool freezeLocation = true, bool freezeRotation = true, bool freezeScale = true);
+        void DetachChild(GameObject* child, bool updateChildrenOfChildLocations = true);
+
+        bool IsChild(const GameObject* child) const;
 
         std::string GetName() const { return m_Name; };
-        // made for serialization
-        void SetName(std::string newName);
-
 
         GameObject* GetParent() const;
         void SetParent(GameObject* newParent, bool keepLocation);
 
+        constexpr bool IsMarkedForDeletion() const { return m_MarkedForDeletion; };
 
-#pragma region Components
 
-        template<typename T, typename = std::enable_if_t<std::is_base_of<Component, T>::value>>
-        void AddComponent(T)
+        const glm::vec3& GetWorldLocation();
+        float GetWorldRotation();
+        const glm::vec2& GetWorldScale();
+
+        const glm::vec3& GetLocalLocation() const;
+        float GetLocalRotation() const;
+        const glm::vec2& GetLocalScale() const;
+
+        void SetWorldLocation(const glm::vec3& location);
+        void SetWorldRotation(float rotation);
+        void SetWorldScale(const glm::vec2& scale);
+
+        void SetLocalLocation(const glm::vec3& location);
+        void SetLocalRotation(float rotation);
+        void SetLocalScale(const glm::vec2& scale);
+
+        void AddLocation(const glm::vec3& location);
+        void AddRotation(float rotation);
+        void AddScale(const glm::vec2& scale);
+
+        constexpr void SetLocationDirty();
+        constexpr void SetRotationDirty();
+        constexpr void SetScaleDirty();
+
+
+        template<typename ComponentType, typename... Args, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
+            !std::is_same_v<Component, ComponentType>>>
+            void AddComponent(Args&&... args)
         {
             // We don't need two components of the same type
-            if (GameObject::HasComponent<T>())
+            if (GameObject::HasComponent<ComponentType>())
+            {
+                std::cout << "GameObject: " << m_Name << ", AddComponent: Can't add the same component twice\n";
                 return;
+            }
 
-            m_Components.push_back(std::make_unique<T>());
+            m_Components.emplace_back(std::make_unique<ComponentType>(std::forward<Args>(args)...));
         }
 
-        template<typename T, typename = std::enable_if_t<std::is_base_of<Component, T>::value>>
-        void RemoveComponent(T)
+
+        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
+            !std::is_same_v<Component, ComponentType>>>
+            void RemoveComponent()
         {
             // if it does not have the component, you can't remove it
-            if (!GameObject::HasComponent<T>())
+            if (!GameObject::HasComponent<ComponentType>())
+            {
+                std::cout << "GameObject: " << m_Name << ", RemoveComponent: No Component specified found\n";
                 return;
+            }
 
-            m_Components.erase(GameObject::GetComponent<T>());
-        }
 
-        template<typename T, typename = std::enable_if_t<std::is_base_of_v<Component, T>>>
-        bool HasComponent(T) const
-        {
-            // checks if any of them have the same type a component is the 
-            // components vector
-            return std::any_of(m_Components,
-                [](const auto& component) {
-                    return (dynamic_cast<T*>(component.get()) != nullptr);
-                });
-
-        }
-
-        template<typename T, typename = std::enable_if_t<std::is_base_of_v<Component, T>>>
-        T* GetComponent() const
-        {
-            return std::find(m_Components,
+            auto it = std::ranges::find_if(m_Components,
                 [](const auto& component)
                 {
-                    return dynamic_cast<T*>(component.get());
+                    return dynamic_cast<ComponentType*>(component.get()) != nullptr;
                 });
+
+            m_Components.erase(it);
         }
 
-        std::vector<std::unique_ptr<Component>>& GetComponents()
+
+        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
+            !std::is_same_v<Component, ComponentType>>>
+            bool HasComponent() const
         {
-            return m_Components;
+            // checks if any of them have the same type a component is the
+            // components vector
+            return std::ranges::any_of(m_Components,
+                [](const auto& component)
+                {
+                    return (dynamic_cast<ComponentType*>(component.get()) != nullptr);
+                });
+
         }
 
-#pragma endregion 
+        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
+            !std::is_same_v<Component, ComponentType>>>
+            ComponentType* GetComponent() const
+        {
+            auto it = std::ranges::find_if(m_Components,
+                [](const auto& component)
+                {
+                    return dynamic_cast<ComponentType*>(component.get()) != nullptr;
+                });
 
+            if (it == m_Components.end())
+                return nullptr;
 
-        void SetTexture(const std::string& filename);
-        void SetPosition(float x, float y);
+            return dynamic_cast<ComponentType*>(it->get());
+        }
 
-        void SetLocalPosition(const glm::vec3& pos);
-
-        static void SetProjectClosing() { m_bProjectClosing = true; }
-
-
-        static bool m_bProjectClosing;
+        std::vector<std::unique_ptr<Component>>& GetComponents();
 
 
     private:
 
-        void AddChild(GameObject* child, bool updateLocation = true);
-        // AKA DESTROY CHILD, DOESN'T GIVE A FCK ABOUT RAII
-        void RemoveChild(GameObject* child, bool keepChildrenOfChild = false, bool updateChildrenOfChildLocations = true);
-
-        bool IsChild(const GameObject* child) const;
-
-
-        const glm::vec3& GetWorldPosition();
-        void UpdateWorldPosition();
-
-        void SetPositionDirty() { m_PositionDirty = true; }
-
+        // DON'T USE THIS,
+        // IT BREAK REALITY (AND YOUR MIND)
         void ForceDestroy();
 
-
         std::string m_Name{ "DefaultObject" };
-
-        Transform m_Transform{};
-        std::shared_ptr<Texture2D> m_Texture{};
-
-        glm::vec3 m_LocalPosition{};
-        glm::vec3 m_WorldPosition{};
-        bool m_PositionDirty{ true };
-
+        bool m_MarkedForDeletion{ false };
 
         GameObject* m_Parent{ nullptr };
         std::vector<GameObject*> m_Children;
         std::vector<std::unique_ptr<Component>> m_Components;
 
-        bool m_MarkedForDeletion{ false };
+
+    protected:
+        void SetName(std::string newName);
+
+        TransformComponent* m_Transform{ };
 
 
     };
+
 }
+
 

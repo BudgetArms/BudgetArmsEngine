@@ -15,7 +15,7 @@ namespace bae
         void Render() const;
         void Destroy();
 
-        void RenderTexture(const Texture2D& texture, float x, float y) const;
+        void RenderTexture(const Texture2D& texture, float x, float y, float angle = 0.f, float scaleX = 1.f, float scaleY = 1.f) const;
         void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
 
         SDL_Renderer* GetSDLRenderer() const { return m_Renderer; }

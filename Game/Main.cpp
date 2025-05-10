@@ -19,22 +19,29 @@
 #include <iostream>
 
 #include "Core/BudgetEngine.h"
-#include "Managers/ResourceManager.h"
+#include "Core/GameObject.h"
 #include "Core/Scene.h"
-#include "Managers/SceneManager.h"
-#include "Core/TextObject.h"
-
+#include "Components/TextComponent.h"
+#include "Components/TextureComponent.h"
 #include "Core/Renderer.h"
+
+#include "Components/Component.h"
+#include "Components/FpsCounterComponent.h"
+#include "Components/TransformComponent.h"
+
+#include "Managers/ResourceManager.h"
+#include "Managers/SceneManager.h"
+
+
 #include <Windows.h>
 
 namespace fs = std::filesystem;
+using namespace bae;
 
 void Start();
 
 int main(int, char* [])
 {
-    //bool bae::GameObject::m_bProjectClosing = true;
-    atexit(bae::GameObject::SetProjectClosing);
 
     //thx myself for dying to find this
 #ifdef WIN32
@@ -66,7 +73,7 @@ int main(int, char* [])
 
 #endif
 
-    bae::BudgetEngine engine(resourcesFolder);
+    BudgetEngine engine(resourcesFolder);
     engine.Run(Start);
 
     return 0;
@@ -75,31 +82,62 @@ int main(int, char* [])
 
 void Start()
 {
-    auto& scene = bae::SceneManager::GetInstance().CreateScene("Demo");
+    auto& scene = SceneManager::GetInstance().CreateScene("Demo");
 
-    auto go = std::make_shared<bae::GameObject>();
-    go->SetTexture("background.tga");
+    // use of go for two variables
+    auto go = std::make_shared<GameObject>("Background");
+    go->AddComponent<TextureComponent>(*go, "background.tga");
     scene.Add(go);
 
-    go = std::make_shared<bae::GameObject>();
-    go->SetTexture("logo.tga");
-    go->SetPosition(216, 180);
+    go = std::make_shared<GameObject>("Logo");
+    go->AddComponent<TextureComponent>(*go, "logo.tga");
+    go->SetLocalLocation({ 216, 180, 0 });
+    go->AddLocation({ 100, 0, 0 });
+    go->AddRotation(180.f);
+
+    auto goMirror = std::make_shared<GameObject>("Logo Mirrored");
+    goMirror->AddComponent<TextureComponent>(*goMirror, "logo.tga");
+
+    goMirror->SetWorldRotation(0.f);
+    goMirror->SetWorldScale({ -1, 1 });
+
+    go->AttachChild(goMirror.get(), false, true, true);
+
+
+    auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+
+    auto title = std::make_shared<GameObject>("Title");
+    title->AddComponent<TextComponent>(*title, "Programming 4 Assignment", font);
+    title->SetLocalLocation({ 20, 10, 0 });
+
+    auto specialText = std::make_shared<GameObject>("special Text");
+    specialText->AddComponent<TextComponent>(*specialText, "FPS Component =", font);
+    specialText->SetLocalLocation({ 0, 50, 0 });
+
+    auto fpsCounter = std::make_shared<GameObject>("Fps Counter");
+    fpsCounter->AddComponent<FpsTextComponent>(*fpsCounter, font);
+    fpsCounter->SetLocalLocation({ 300, 0, 0 });
+
+    title->AttachChild(dynamic_cast<GameObject*>(specialText.get()), false);
+    specialText->AttachChild(dynamic_cast<GameObject*>(fpsCounter.get()), false);
+
+
+    specialText->AddLocation({ 0.f, 30.f, 0.f });
+
+    specialText->SetLocalRotation(-45.f);
+    fpsCounter->AddRotation(45.f);
+
+    specialText->SetLocalScale({ 1.f, 1.4f });
+    fpsCounter->SetLocalScale({ 0.5f, 1.f });
+
+
     scene.Add(go);
+    scene.Add(goMirror);
+    scene.Add(title);
+    scene.Add(specialText);
+    scene.Add(fpsCounter);
 
-    auto font = bae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-    auto to = std::make_shared<bae::TextObject>("Programming 4 Assignment", font);
-    to->SetPosition(80, 20);
-    scene.Add(to);
-
-    //auto textObject = std::make_shared<bae::TextObject>("Fixing ECS/Scenegraph", font);
-    //to->SetPosition(80, 50);
-    //scene.Add(to);
 
 }
-
-
-
-
-
 
 

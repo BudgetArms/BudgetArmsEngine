@@ -38,10 +38,7 @@ namespace bae
 
     private:
         friend class Singleton<GameTime>;
-        GameTime()
-        {
-            std::cout << "TESTING\n";
-        };
+        GameTime() = default;
         ~GameTime() = default;
 
         static constexpr int m_MaxFPS{ 120 }; //360

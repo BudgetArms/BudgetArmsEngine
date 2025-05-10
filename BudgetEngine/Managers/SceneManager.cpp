@@ -6,7 +6,6 @@ void bae::SceneManager::Update()
 {
     for (auto& scene : m_Scenes)
         scene->Update();
-
 }
 
 void bae::SceneManager::FixedUpdate()
@@ -36,3 +35,5 @@ bae::Scene& bae::SceneManager::CreateScene(const std::string& name)
     m_Scenes.push_back(scene);
     return *scene;
 }
+
+

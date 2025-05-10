@@ -8,24 +8,27 @@ namespace bae
     class Component
     {
     public:
+        explicit Component(GameObject& owner) : m_Owner{ &owner } {}
         virtual ~Component() = default;
-        explicit Component(GameObject* owner) : m_pOwner{ owner } {}
 
         Component(const Component& other) = delete;
         Component(Component&& other) = delete;
         Component& operator=(const Component& other) = delete;
         Component& operator=(Component&& other) = delete;
 
+
         virtual void Update() {};
         virtual void FixedUpdate() {};
         virtual void LateUpdate() {};
-        virtual void Render() {};
+        virtual void Render() const {};
+
 
     private:
-        GameObject* m_pOwner;
+
 
     protected:
-        GameObject* GetOwner() const { return m_pOwner; };
+        GameObject* m_Owner;
+
 
     };
 }

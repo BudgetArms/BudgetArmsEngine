@@ -1,16 +1,17 @@
 ﻿#pragma once
 #include <iostream>
-#include "Component.h"
+
+#include "Components/Component.h"
 #include "Core/GameObject.h"
 
 
 namespace bae
 {
-    class InputComponent : public bae::Component
+    class InputComponent : public Component
     {
     public:
-        InputComponent() :
-            bae::Component(nullptr)
+        explicit InputComponent(GameObject& owner) :
+            bae::Component(owner)
         {
             std::cout << "Created InputComponent" << '\n';
         }

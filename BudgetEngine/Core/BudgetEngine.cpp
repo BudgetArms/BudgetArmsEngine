@@ -24,6 +24,8 @@
 #endif
 
 #include "Core/GameObject.h"
+#include "Components/Component.h"
+
 
 void LogSDLVersion(const std::string& message, const SDL_version& v);
 void PrintSDLVersion();
@@ -39,7 +41,7 @@ bae::BudgetEngine::BudgetEngine(const std::filesystem::path& dataPath)
         throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 
     g_window = SDL_CreateWindow(
-        "Programming 4 assignment Q-Bert YES",
+        "Programming 4 assignment Q-Bert, PROGRESS :D",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         640,
@@ -67,15 +69,6 @@ bae::BudgetEngine::~BudgetEngine()
 void bae::BudgetEngine::Run(const std::function<void()>& load)
 {
     load();
-    wow = new GameObject();
-
-    //wow ;
-    wow->Destroy();
-    wow->Update();
-    wow->LateUpdate();
-    //std::cout << "nicee: " << (*wow).GetName() << '\n';
-
-    //wow->AddComponent <
     GameTime::GetInstance().Update();
 
 #ifndef __EMSCRIPTEN__
@@ -110,7 +103,7 @@ void bae::BudgetEngine::RunOneFrame()
     SceneManager::GetInstance().LateUpdate();
     Renderer::GetInstance().Render();
 
-    std::cout << "FPS: " << GameTime::GetInstance().GetFPS() << '\n';
+    std::cout << "FPS: " << static_cast<int>(GameTime::GetInstance().GetFPS()) << '\n';
     std::this_thread::sleep_for(std::chrono::duration<float>(GameTime::GetInstance().GetSleepTime()));
 
 }

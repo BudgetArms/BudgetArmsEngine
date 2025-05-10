@@ -6,14 +6,20 @@
 #include "Components/Component.h"
 //#include "InputComponent.h"
 
-// BudgetArmsEngine
 using namespace bae;
 
 unsigned int Scene::m_IdCounter = 0;
 
-Scene::Scene(const std::string& name) : m_Name(name) {}
+Scene::Scene(const std::string& name) :
+    m_Name(name)
+{
+}
 
-Scene::~Scene() = default;
+Scene::~Scene()
+{
+    for (auto& object : m_Objects)
+        object->Destroy();
+};
 
 void Scene::Add(std::shared_ptr<GameObject> object)
 {
@@ -24,9 +30,6 @@ void Scene::Remove(std::shared_ptr<GameObject> object)
 {
     // since C++ 20
     std::erase(m_Objects, object);
-
-    // pre C++ 20
-    //m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
 }
 
 void Scene::RemoveAll()
@@ -45,6 +48,11 @@ void bae::Scene::LateUpdate()
 {
     for (auto& object : m_Objects)
         object->LateUpdate();
+
+    for (auto& object : m_Objects)
+        if (object->IsMarkedForDeletion())
+            Remove(object);
+
 }
 
 void Scene::Update()

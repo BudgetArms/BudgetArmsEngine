@@ -1,6 +1,7 @@
 ﻿#include <stdexcept>
 //#include <cstring>
 #include <string>
+#include <iostream>
 #include "Renderer.h"
 #include "Managers/SceneManager.h"
 #include "Wrappers/Texture2D.h"
@@ -51,13 +52,30 @@ void bae::Renderer::Destroy()
     }
 }
 
-void bae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
+void bae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, float angle, float scaleX, float scaleY) const
 {
     SDL_Rect dst{};
     dst.x = static_cast<int>(x);
     dst.y = static_cast<int>(y);
+
     SDL_QueryTexture(texture.GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
-    SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+
+    dst.w = static_cast<int>(scaleX * dst.w);
+    dst.h = static_cast<int>(scaleY * dst.h);
+
+
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+    if (scaleX < 0.0f && scaleY < 0.0f)
+        flip = (SDL_RendererFlip)(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
+    else if (scaleX < 0.0f)
+        flip = SDL_FLIP_HORIZONTAL;
+    else if (scaleY < 0.0f)
+        flip = SDL_FLIP_VERTICAL;
+
+
+    const SDL_Point center = { dst.w / 2,  dst.h / 2 };
+    SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, &center, flip);
 }
 
 void bae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const

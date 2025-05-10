@@ -30,22 +30,25 @@ endif()
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "Game/Main.cpp"
-    "BudgetEngine/Core/BudgetEngine.cpp"        "BudgetEngine/Core/BudgetEngine.h"
-    "BudgetEngine/Core/GameObject.cpp"          "BudgetEngine/Core/GameObject.h"
-    "BudgetEngine/Core/Renderer.cpp"            "BudgetEngine/Core/Renderer.h"
-    "BudgetEngine/Core/Scene.cpp"               "BudgetEngine/Core/Scene.h"
-    "BudgetEngine/Core/TextObject.cpp"          "BudgetEngine/Core/TextObject.h"
     "BudgetEngine/Components/Component.h"
+    "BudgetEngine/Core/BudgetEngine.cpp"                "BudgetEngine/Core/BudgetEngine.h"
+    "BudgetEngine/Core/GameObject.cpp"                  "BudgetEngine/Core/GameObject.h"
+    "BudgetEngine/Core/Renderer.cpp"                    "BudgetEngine/Core/Renderer.h"
+    "BudgetEngine/Core/Scene.cpp"                       "BudgetEngine/Core/Scene.h"
+    "BudgetEngine/Components/TextComponent.cpp"         "BudgetEngine/Components/TextComponent.h"
+    "BudgetEngine/Components/Component.h"
+    "BudgetEngine/Components/FpsCounterComponent.cpp"   "BudgetEngine/Components/FpsCounterComponent.h"
     "BudgetEngine/Components/InputComponent.h"
-    "BudgetEngine/Components/RenderComponent.h"
-    "BudgetEngine/Core/Transform.cpp"           "BudgetEngine/Core/Transform.h"
-    "BudgetEngine/Managers/InputManager.cpp"    "BudgetEngine/Managers/InputManager.h"
-    "BudgetEngine/Managers/ResourceManager.cpp" "BudgetEngine/Managers/ResourceManager.h"
-    "BudgetEngine/Managers/SceneManager.cpp"    "BudgetEngine/Managers/SceneManager.h"
+    
+    "BudgetEngine/Components/TextureComponent.cpp"      "BudgetEngine/Components/TextureComponent.h"
+    "BudgetEngine/Components/TransformComponent.cpp"             "BudgetEngine/Components/TransformComponent.h"
+    "BudgetEngine/Managers/InputManager.cpp"            "BudgetEngine/Managers/InputManager.h"
+    "BudgetEngine/Managers/ResourceManager.cpp"         "BudgetEngine/Managers/ResourceManager.h"
+    "BudgetEngine/Managers/SceneManager.cpp"            "BudgetEngine/Managers/SceneManager.h"
     "BudgetEngine/Singletons/GameTime.h"
     "BudgetEngine/Singletons/Singleton.h"
-    "BudgetEngine/Wrappers/Font.cpp"            "BudgetEngine/Wrappers/Font.h"
-    "BudgetEngine/Wrappers/Texture2D.cpp"       "BudgetEngine/Wrappers/Texture2D.h"
+    "BudgetEngine/Wrappers/Font.cpp"                    "BudgetEngine/Wrappers/Font.h"
+    "BudgetEngine/Wrappers/Texture2D.cpp"               "BudgetEngine/Wrappers/Texture2D.h"
  )
 
 
