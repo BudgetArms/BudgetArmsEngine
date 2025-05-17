@@ -36,6 +36,8 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "BudgetEngine/Core/Renderer.cpp"                        "BudgetEngine/Core/Renderer.h"
     "BudgetEngine/Core/Scene.cpp"                           "BudgetEngine/Core/Scene.h"
     "BudgetEngine/Commands/Command.h"
+    "BudgetEngine/Commands/GameActorCommand.h"
+    "BudgetEngine/Commands/FireCommand.h"
     "BudgetEngine/Components/TextComponent.cpp"             "BudgetEngine/Components/TextComponent.h"
     "BudgetEngine/Components/Component.h"
     "BudgetEngine/Components/FpsCounterComponent.cpp"       "BudgetEngine/Components/FpsCounterComponent.h"

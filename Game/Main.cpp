@@ -28,6 +28,7 @@
 #include "Core/Renderer.h"
 
 #include "Commands/Command.h"
+#include "Commands/FireCommand.h"
 
 #include "Components/Component.h"
 #include "Components/ImguiComponent.h"
@@ -120,6 +121,7 @@ void Start()
     auto fireCommand = std::make_unique<FireCommand>(*fpsCounter);
     fireCommand->Execute();
 
+
     Controller myController{ 0 };
     bool isPressed = myController.IsButtonPressed(XINPUT_GAMEPAD_A);
     if (isPressed)
@@ -140,6 +142,9 @@ void Start()
     auto coolerCommand = std::make_unique<FireCommand>(*fpsCounter);
     keyboard.AddKeyboardCommands(std::move(coolerCommand), SDLK_0, InputManager::ButtonState::Pressed);
 
+    // also works :D
+    auto printCommand = std::make_unique<PrintCommand>();
+    keyboard.AddKeyboardCommands(std::move(printCommand), SDLK_p, InputManager::ButtonState::Down);
 
 
 
