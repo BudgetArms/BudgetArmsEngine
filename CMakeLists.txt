@@ -35,6 +35,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "BudgetEngine/Core/GameObject.cpp"                      "BudgetEngine/Core/GameObject.h"
     "BudgetEngine/Core/Renderer.cpp"                        "BudgetEngine/Core/Renderer.h"
     "BudgetEngine/Core/Scene.cpp"                           "BudgetEngine/Core/Scene.h"
+    "BudgetEngine/Commands/Command.h"
     "BudgetEngine/Components/TextComponent.cpp"             "BudgetEngine/Components/TextComponent.h"
     "BudgetEngine/Components/Component.h"
     "BudgetEngine/Components/FpsCounterComponent.cpp"       "BudgetEngine/Components/FpsCounterComponent.h"
@@ -48,6 +49,8 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "BudgetEngine/Managers/SceneManager.cpp"                "BudgetEngine/Managers/SceneManager.h"
     "BudgetEngine/Singletons/GameTime.h"
     "BudgetEngine/Singletons/Singleton.h"
+    "BudgetEngine/Wrappers/Controller.cpp"                   "BudgetEngine/Wrappers/Controller.h"
+    "BudgetEngine/Wrappers/Keyboard.cpp"                   "BudgetEngine/Wrappers/Controller.h"
     "BudgetEngine/Wrappers/Font.cpp"                        "BudgetEngine/Wrappers/Font.h"
     "BudgetEngine/Wrappers/Texture2D.cpp"                   "BudgetEngine/Wrappers/Texture2D.h"
  )
@@ -122,6 +125,8 @@ target_include_directories(imgui_plot PUBLIC
 # Link Imgui Plot to ImGui
 target_link_libraries(imgui_plot PUBLIC imgui)
 
+# Link xinput to project (windows only bc can't fetch xinput)
+target_link_libraries(${TARGET_NAME} PUBLIC XInput)
 
 
 # add SDL2

@@ -6,48 +6,66 @@
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 
+#include "Wrappers/Controller.h"
+#include "Wrappers/Keyboard.h"
 
 
-bool bae::InputManager::ProcessInput()
+using namespace bae;
+
+
+InputManager::InputManager() :
+    m_Controllers{ },
+    //m_Controllers{ std::make_unique<Controller>(1) },
+    m_Keyboard{ std::make_unique<Keyboard>() }
 {
+    m_Controllers.push_back(std::make_unique<Controller>(0));
+}
+
+InputManager::~InputManager()
+{
+}
+
+bool InputManager::ProcessInput()
+{
+
+    // uses SDL_PeekEvents, so not to consume events
+    m_Keyboard->ProcessInput();
+
+    // process Keyboard
     SDL_Event e;
     while (SDL_PollEvent(&e))
     {
         if (e.type == SDL_QUIT)
             return false;
 
-        if (e.type == SDL_KEYDOWN)
-        {
-            std::cout << "Keydown" << '\n';
-
-
-        }
-        else if (e.type == SDL_KEYUP)
-        {
-            if (e.key.keysym.scancode == SDL_GetScancodeFromKey(SDLK_ESCAPE))
-                return false;
-
-
-
-        }
-        else if (e.type == SDL_MOUSEBUTTONDOWN)
-        {
-
-
-        }
-        else if (e.type == SDL_MOUSEBUTTONUP)
-        {
-
-
-        }
-
         //process event for IMGUI
         ImGui_ImplSDL2_ProcessEvent(&e);
-
-        // etc...
-
     }
 
+    for (auto& controller : m_Controllers)
+    {
+        controller->ProcessInput();
+    }
+
+
+
     return true;
+}
+
+
+void InputManager::AddController(int controllerIndex)
+{
+    m_Controllers.emplace_back(std::make_unique<Controller>(controllerIndex));
+}
+
+Controller* InputManager::GetController(int index)
+{
+    if (m_Controllers.empty())
+        return nullptr;
+
+    if (index < 0 || index >= m_Controllers.size())
+        return nullptr;
+
+    return m_Controllers[index].get();
 }
 

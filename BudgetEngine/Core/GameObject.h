@@ -6,10 +6,6 @@
 #include <algorithm>
 #include <glm.hpp>
 
-//#include "Components/TransformComponent.h"
-//#include "Components/Component.h"
-
-
 
 namespace bae
 {

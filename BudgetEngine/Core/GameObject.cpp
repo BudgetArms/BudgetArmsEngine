@@ -1,6 +1,8 @@
 ﻿#include <string>
 #include <iostream>
 #include "GameObject.h"
+
+#include "Wrappers/Texture2D.h"
 #include "Managers/ResourceManager.h"
 #include "Core/Renderer.h"
 

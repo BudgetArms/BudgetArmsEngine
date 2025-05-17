@@ -27,6 +27,8 @@
 #include "Components/TextureComponent.h"
 #include "Core/Renderer.h"
 
+#include "Commands/Command.h"
+
 #include "Components/Component.h"
 #include "Components/ImguiComponent.h"
 #include "Components/FpsCounterComponent.h"
@@ -36,6 +38,8 @@
 #include "Managers/ResourceManager.h"
 #include "Managers/SceneManager.h"
 
+#include "Wrappers/Controller.h"
+#include "Wrappers/Keyboard.h"
 
 
 namespace fs = std::filesystem;
@@ -105,25 +109,44 @@ void Start()
 
     auto fpsCounter = std::make_shared<GameObject>("Fps Counter");
     fpsCounter->AddComponent<FpsTextComponent>(*fpsCounter, fontSmall);
-    SDL_Window* test = Renderer::GetInstance().GetSDLWindow();
 
+    SDL_Window* window = Renderer::GetInstance().GetSDLWindow();
     int width, height;
-    SDL_GetWindowSize(test, &width, &height);
-
+    SDL_GetWindowSize(window, &width, &height);
     fpsCounter->SetWorldLocation({ width, 0, 0 });
     fpsCounter->AddLocation({ -75, 0, 0 });
 
-    auto imguiTrashCache2 = std::make_shared<GameObject>("TrashCache Exercise2");
-    imguiTrashCache2->AddComponent<TrashTheCacheComponent>(*imguiTrashCache2, true);
 
-    auto imguiTrashCache3 = std::make_shared<GameObject>("TrashCache Exercise 3");
-    imguiTrashCache3->AddComponent<TrashTheCacheComponent>(*imguiTrashCache3, false);
+    auto fireCommand = std::make_unique<FireCommand>(*fpsCounter);
+    fireCommand->Execute();
+
+    Controller myController{ 0 };
+    bool isPressed = myController.IsButtonPressed(XINPUT_GAMEPAD_A);
+    if (isPressed)
+        std::cout << "W\n";
+    else
+        std::cout << "L\n";
+
+
+    InputManager::GetInstance().AddController(0);
+    auto* myOwnController = InputManager::GetInstance().GetController(0);
+    auto& keyboard = InputManager::GetInstance().GetKeyboard();
+
+    // maybe it works, can't test atm, don't have controller rn
+    auto coolCommand = std::make_unique<FireCommand>(*fpsCounter);
+    myOwnController->AddControllerCommands(std::move(coolCommand), XINPUT_GAMEPAD_A, InputManager::ButtonState::Down);
+
+    // works, FireCommands rotates the fps counter 180, and logs something
+    auto coolerCommand = std::make_unique<FireCommand>(*fpsCounter);
+    keyboard.AddKeyboardCommands(std::move(coolerCommand), SDLK_0, InputManager::ButtonState::Pressed);
+
+
+
 
     scene.Add(go);
     scene.Add(title);
     scene.Add(fpsCounter);
-    scene.Add(imguiTrashCache2);
-    scene.Add(imguiTrashCache3);
 
 }
+
 
