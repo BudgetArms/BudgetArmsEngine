@@ -76,6 +76,12 @@ void GameObject::Render() const
         component->Render();
 }
 
+void GameObject::RenderGUI()
+{
+    for (auto& component : m_Components)
+        component->RenderGUI();
+}
+
 void GameObject::Destroy()
 {
     m_MarkedForDeletion = true;

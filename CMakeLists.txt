@@ -31,23 +31,25 @@ endif()
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
     "Game/Main.cpp"
     "BudgetEngine/Components/Component.h"
-    "BudgetEngine/Core/BudgetEngine.cpp"                "BudgetEngine/Core/BudgetEngine.h"
-    "BudgetEngine/Core/GameObject.cpp"                  "BudgetEngine/Core/GameObject.h"
-    "BudgetEngine/Core/Renderer.cpp"                    "BudgetEngine/Core/Renderer.h"
-    "BudgetEngine/Core/Scene.cpp"                       "BudgetEngine/Core/Scene.h"
-    "BudgetEngine/Components/TextComponent.cpp"         "BudgetEngine/Components/TextComponent.h"
+    "BudgetEngine/Core/BudgetEngine.cpp"                    "BudgetEngine/Core/BudgetEngine.h"
+    "BudgetEngine/Core/GameObject.cpp"                      "BudgetEngine/Core/GameObject.h"
+    "BudgetEngine/Core/Renderer.cpp"                        "BudgetEngine/Core/Renderer.h"
+    "BudgetEngine/Core/Scene.cpp"                           "BudgetEngine/Core/Scene.h"
+    "BudgetEngine/Components/TextComponent.cpp"             "BudgetEngine/Components/TextComponent.h"
     "BudgetEngine/Components/Component.h"
-    "BudgetEngine/Components/FpsCounterComponent.cpp"   "BudgetEngine/Components/FpsCounterComponent.h"
+    "BudgetEngine/Components/FpsCounterComponent.cpp"       "BudgetEngine/Components/FpsCounterComponent.h"
+    "BudgetEngine/Components/ImguiComponent.cpp"            "BudgetEngine/Components/ImguiComponent.h"
     "BudgetEngine/Components/InputComponent.h"
-    "BudgetEngine/Components/TextureComponent.cpp"      "BudgetEngine/Components/TextureComponent.h"
-    "BudgetEngine/Components/TransformComponent.cpp"             "BudgetEngine/Components/TransformComponent.h"
-    "BudgetEngine/Managers/InputManager.cpp"            "BudgetEngine/Managers/InputManager.h"
-    "BudgetEngine/Managers/ResourceManager.cpp"         "BudgetEngine/Managers/ResourceManager.h"
-    "BudgetEngine/Managers/SceneManager.cpp"            "BudgetEngine/Managers/SceneManager.h"
+    "BudgetEngine/Components/TextureComponent.cpp"          "BudgetEngine/Components/TextureComponent.h"
+    "BudgetEngine/Components/TrashTheCacheComponent.cpp"    "BudgetEngine/Components/TrashTheCacheComponent.h"
+    "BudgetEngine/Components/TransformComponent.cpp"        "BudgetEngine/Components/TransformComponent.h"
+    "BudgetEngine/Managers/InputManager.cpp"                "BudgetEngine/Managers/InputManager.h"
+    "BudgetEngine/Managers/ResourceManager.cpp"             "BudgetEngine/Managers/ResourceManager.h"
+    "BudgetEngine/Managers/SceneManager.cpp"                "BudgetEngine/Managers/SceneManager.h"
     "BudgetEngine/Singletons/GameTime.h"
     "BudgetEngine/Singletons/Singleton.h"
-    "BudgetEngine/Wrappers/Font.cpp"                    "BudgetEngine/Wrappers/Font.h"
-    "BudgetEngine/Wrappers/Texture2D.cpp"               "BudgetEngine/Wrappers/Texture2D.h"
+    "BudgetEngine/Wrappers/Font.cpp"                        "BudgetEngine/Wrappers/Font.h"
+    "BudgetEngine/Wrappers/Texture2D.cpp"                   "BudgetEngine/Wrappers/Texture2D.h"
  )
 
 
@@ -99,6 +101,27 @@ add_library(imgui STATIC
     ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 )
+
+
+FetchContent_Declare(
+    imgui_plot
+    GIT_REPOSITORY https://github.com/soulthreads/imgui-plot
+    GIT_TAG "master"
+)
+
+FetchContent_MakeAvailable(imgui_plot)
+
+#add_library(imgui_plot STATIC
+#    ${imgui_plot_SOURCE_DIR}/src/imgui_plot.cpp    
+#)
+
+target_include_directories(imgui_plot PUBLIC
+  ${imgui_plot_SOURCE_DIR}/include/imgui_plot
+)
+
+# Link Imgui Plot to ImGui
+target_link_libraries(imgui_plot PUBLIC imgui)
+
 
 
 # add SDL2
@@ -202,10 +225,12 @@ target_include_directories(${TARGET_NAME} PRIVATE
     ${SDL2_TTF_INCLUDE_DIR}
     ${imgui_SOURCE_DIR}
     ${imgui_SOURCE_DIR}/backends
+    ${imgui_plot_SOURCE_DIR}
 )
   
 # set libraries to link with
 target_link_libraries(${TARGET_NAME} PUBLIC
+    imgui_plot
     imgui
     ${SDL2_LIBRARIES} 
     ${SDL2_IMAGE_LIBRARIES} 

@@ -22,6 +22,7 @@ namespace bae
         void FixedUpdate();
         void LateUpdate();
         void Render() const;
+        void RenderGUI();
 
 
         void Add(std::shared_ptr<GameObject> object);

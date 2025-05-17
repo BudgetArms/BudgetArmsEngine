@@ -28,6 +28,12 @@ void bae::SceneManager::Render()
         scene->Render();
 
 }
+void bae::SceneManager::RenderGUI()
+{
+    for (const auto& scene : m_Scenes)
+        scene->RenderGUI();
+}
+
 
 bae::Scene& bae::SceneManager::CreateScene(const std::string& name)
 {

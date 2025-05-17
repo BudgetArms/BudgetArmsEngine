@@ -17,7 +17,7 @@ namespace bae
         TextureComponent& operator=(const TextureComponent& other) = delete;
         TextureComponent& operator=(TextureComponent&& other) = delete;
 
-        virtual void Render() const;
+        virtual void Render() const override;
 
         void SetTexture(const std::string& filename);
 

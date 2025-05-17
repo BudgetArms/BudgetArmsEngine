@@ -20,7 +20,9 @@ namespace bae
         virtual void Update() {};
         virtual void FixedUpdate() {};
         virtual void LateUpdate() {};
+
         virtual void Render() const {};
+        virtual void RenderGUI() {};
 
 
     private:

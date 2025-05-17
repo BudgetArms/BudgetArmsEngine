@@ -69,4 +69,11 @@ void Scene::Render() const
 
 }
 
+void Scene::RenderGUI()
+{
+    for (const auto& object : m_Objects)
+        object->RenderGUI();
+
+}
+
 

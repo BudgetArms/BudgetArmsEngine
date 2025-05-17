@@ -16,10 +16,18 @@ namespace bae
         void FixedUpdate();
         void LateUpdate();
         void Render();
+        void RenderGUI();
+
+
     private:
         friend class Singleton<SceneManager>;
         SceneManager() = default;
 
         std::vector<std::shared_ptr<Scene>> m_Scenes;
+
+
+    protected:
+
+
     };
 }

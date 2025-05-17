@@ -8,15 +8,17 @@
 #endif
 
 
-#include <glm.hpp>
-#include <SDL.h>
-
-
 #include <memory>
 #include <cassert>
 
+#include <Windows.h>
 #include <filesystem>
 #include <iostream>
+
+#include <glm.hpp>
+#include <SDL.h>
+#include <imgui.h>
+#include <imgui_plot.h>
 
 #include "Core/BudgetEngine.h"
 #include "Core/GameObject.h"
@@ -26,14 +28,15 @@
 #include "Core/Renderer.h"
 
 #include "Components/Component.h"
+#include "Components/ImguiComponent.h"
 #include "Components/FpsCounterComponent.h"
 #include "Components/TransformComponent.h"
+#include "Components/TrashTheCacheComponent.h"
 
 #include "Managers/ResourceManager.h"
 #include "Managers/SceneManager.h"
 
 
-#include <Windows.h>
 
 namespace fs = std::filesystem;
 using namespace bae;
@@ -92,52 +95,35 @@ void Start()
     go = std::make_shared<GameObject>("Logo");
     go->AddComponent<TextureComponent>(*go, "logo.tga");
     go->SetLocalLocation({ 216, 180, 0 });
-    go->AddLocation({ 100, 0, 0 });
-    go->AddRotation(180.f);
-
-    auto goMirror = std::make_shared<GameObject>("Logo Mirrored");
-    goMirror->AddComponent<TextureComponent>(*goMirror, "logo.tga");
-
-    goMirror->SetWorldRotation(0.f);
-    goMirror->SetWorldScale({ -1, 1 });
-
-    go->AttachChild(goMirror.get(), false, true, true);
-
 
     auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+    auto fontSmall = ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
 
     auto title = std::make_shared<GameObject>("Title");
     title->AddComponent<TextComponent>(*title, "Programming 4 Assignment", font);
     title->SetLocalLocation({ 20, 10, 0 });
 
-    auto specialText = std::make_shared<GameObject>("special Text");
-    specialText->AddComponent<TextComponent>(*specialText, "FPS Component =", font);
-    specialText->SetLocalLocation({ 0, 50, 0 });
-
     auto fpsCounter = std::make_shared<GameObject>("Fps Counter");
-    fpsCounter->AddComponent<FpsTextComponent>(*fpsCounter, font);
-    fpsCounter->SetLocalLocation({ 300, 0, 0 });
+    fpsCounter->AddComponent<FpsTextComponent>(*fpsCounter, fontSmall);
+    SDL_Window* test = Renderer::GetInstance().GetSDLWindow();
 
-    title->AttachChild(dynamic_cast<GameObject*>(specialText.get()), false);
-    specialText->AttachChild(dynamic_cast<GameObject*>(fpsCounter.get()), false);
+    int width, height;
+    SDL_GetWindowSize(test, &width, &height);
 
+    fpsCounter->SetWorldLocation({ width, 0, 0 });
+    fpsCounter->AddLocation({ -75, 0, 0 });
 
-    specialText->AddLocation({ 0.f, 30.f, 0.f });
+    auto imguiTrashCache2 = std::make_shared<GameObject>("TrashCache Exercise2");
+    imguiTrashCache2->AddComponent<TrashTheCacheComponent>(*imguiTrashCache2, true);
 
-    specialText->SetLocalRotation(-45.f);
-    fpsCounter->AddRotation(45.f);
-
-    specialText->SetLocalScale({ 1.f, 1.4f });
-    fpsCounter->SetLocalScale({ 0.5f, 1.f });
-
+    auto imguiTrashCache3 = std::make_shared<GameObject>("TrashCache Exercise 3");
+    imguiTrashCache3->AddComponent<TrashTheCacheComponent>(*imguiTrashCache3, false);
 
     scene.Add(go);
-    scene.Add(goMirror);
     scene.Add(title);
-    scene.Add(specialText);
     scene.Add(fpsCounter);
-
+    scene.Add(imguiTrashCache2);
+    scene.Add(imguiTrashCache3);
 
 }
-
 
