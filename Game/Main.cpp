@@ -94,15 +94,15 @@ void Start()
 
     // use of go for two variables
     auto go = std::make_shared<GameObject>("Background");
-    go->AddComponent<TextureComponent>(*go, "background.tga");
+    go->AddComponent<TextureComponent>(*go, "Textures/background.tga");
     scene.Add(go);
 
     go = std::make_shared<GameObject>("Logo");
-    go->AddComponent<TextureComponent>(*go, "logo.tga");
+    go->AddComponent<TextureComponent>(*go, "Textures/logo.tga");
     go->SetLocalLocation({ 216, 180, 0 });
 
-    auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-    auto fontSmall = ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
+    auto font = ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 36);
+    auto fontSmall = ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 18);
 
     auto title = std::make_shared<GameObject>("Title");
     title->AddComponent<TextComponent>(*title, "Programming 4 Assignment", font);
@@ -145,6 +145,9 @@ void Start()
     // also works :D
     auto printCommand = std::make_unique<PrintCommand>();
     keyboard.AddKeyboardCommands(std::move(printCommand), SDLK_p, InputManager::ButtonState::Down);
+
+
+
 
 
 

@@ -16,12 +16,6 @@ namespace bae
     class Controller
     {
     public:
-        //enum class ButtonState
-        //{
-            //Down,
-            //Up,
-            //Pressed
-        //};
         explicit Controller(int controllerIndex);
         ~Controller();
 
