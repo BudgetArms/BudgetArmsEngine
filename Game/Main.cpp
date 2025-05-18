@@ -29,6 +29,7 @@
 
 #include "Commands/Command.h"
 #include "Commands/FireCommand.h"
+#include "Commands/MoveCommand.h"
 
 #include "Components/Component.h"
 #include "Components/ImguiComponent.h"
@@ -147,6 +148,33 @@ void Start()
     keyboard.AddKeyboardCommands(std::move(printCommand), SDLK_p, InputManager::ButtonState::Down);
 
 
+    // move fps counter with wasd
+    auto moveCommand = std::make_unique<MoveCommand>(*fpsCounter, glm::vec2(0, -1));
+    keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_w, InputManager::ButtonState::Pressed);
+
+    moveCommand = std::make_unique<MoveCommand>(*fpsCounter, glm::vec2(0, 1));
+    keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_s, InputManager::ButtonState::Pressed);
+
+    moveCommand = std::make_unique<MoveCommand>(*fpsCounter, glm::vec2(-1, 0));
+    keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_a, InputManager::ButtonState::Pressed);
+
+    moveCommand = std::make_unique<MoveCommand>(*fpsCounter, glm::vec2(1, 0));
+    keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_d, InputManager::ButtonState::Pressed);
+
+
+
+    // move logo with arrow keys (because don't have a controller on me)
+    moveCommand = std::make_unique<MoveCommand>(*go, glm::vec2(0, -1), 200.f);
+    keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_UP, InputManager::ButtonState::Pressed);
+
+    moveCommand = std::make_unique<MoveCommand>(*go, glm::vec2(0, 1), 200.f);
+    keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_DOWN, InputManager::ButtonState::Pressed);
+
+    moveCommand = std::make_unique<MoveCommand>(*go, glm::vec2(-1, 0), 200.f);
+    keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_LEFT, InputManager::ButtonState::Pressed);
+
+    moveCommand = std::make_unique<MoveCommand>(*go, glm::vec2(1, 0), 200.f);
+    keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_RIGHT, InputManager::ButtonState::Pressed);
 
 
 
