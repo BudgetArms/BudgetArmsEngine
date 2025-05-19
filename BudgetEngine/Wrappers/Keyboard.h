@@ -25,7 +25,9 @@ namespace bae
         void ProcessInput();
         void AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState);
 
-        bool IsButtonPressed(unsigned int button) const { return (1 == button); };
+        bool IsButtonUp(unsigned int button) const;
+        bool IsButtonDown(unsigned int button) const;
+        bool IsButtonPressed(unsigned int button) const;
 
 
     private:
@@ -40,3 +42,4 @@ namespace bae
     };
 
 }
+

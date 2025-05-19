@@ -41,7 +41,7 @@ namespace bae
         GameTime() = default;
         ~GameTime() = default;
 
-        static constexpr int m_MaxFPS{ 120 }; //360
+        static constexpr int m_MaxFPS{ 240 }; //360
         static constexpr float m_FixedTimeStep{ 1 / 60.f };
         float m_DeltaTime{ 1.f };
 

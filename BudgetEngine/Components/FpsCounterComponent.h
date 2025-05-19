@@ -23,6 +23,8 @@ namespace bae
 
     private:
         bool m_bRotating{ true };
+        float m_AccumulatedTime{};
+        const float m_NrUpdatesPerSecond{ 1.f };
 
 
     protected:

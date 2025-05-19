@@ -24,16 +24,16 @@ public:
         {
             switch (state)
             {
+            case InputManager::ButtonState::Up:
+            {
+                if (buttonsReleasedThisFrame & button)
+                    command->Execute();
+            } break;
             case InputManager::ButtonState::Down:
             {
                 if (buttonsPressedThisFrame & button)
                     command->Execute();
 
-            } break;
-            case InputManager::ButtonState::Up:
-            {
-                if (buttonsReleasedThisFrame & button)
-                    command->Execute();
             } break;
             case InputManager::ButtonState::Pressed:
             {
@@ -48,14 +48,29 @@ public:
 
     void AddControllerCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)
     {
-        //
         m_ControllerCommands.emplace_back(std::make_tuple(std::move(command), button, activationState));
     }
 
 
+    bool IsButtonUp(unsigned int button) const
+    {
+        const auto buttonChanges = m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons;
+        const auto buttonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
+
+        return (buttonsReleasedThisFrame & button);
+    };
+
+    bool IsButtonDown(unsigned int button) const
+    {
+        const auto buttonChanges = m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons;
+        const auto buttonsPressedThisFrame = buttonChanges & m_CurrentState.Gamepad.wButtons;
+
+        return (buttonsPressedThisFrame & button);
+    };
+
     bool IsButtonPressed(unsigned int button) const
     {
-        return ((m_CurrentState.Gamepad.wButtons & button) != 0);
+        return (m_CurrentState.Gamepad.wButtons & button);
     };
 
 private:

@@ -13,14 +13,9 @@ using namespace bae;
 class Keyboard::Impl
 {
 public:
-    void TESTING()
-    {
-        std::cout << "nice\n";
-    }
 
     void ProcessInput()
     {
-        //std::ranges::copy(m_CurrentKeysDown, m_PreviousKeysDown.begin());
         m_PreviousKeysDown = m_CurrentKeysDown;
 
         // Gets newest event information
@@ -41,8 +36,8 @@ public:
         }
 
 
-        //for (const auto& [command, button, state] : m_KeyboardCommands)
-        for (auto& [command, button, state] : m_KeyboardCommands)
+        //for (auto& [command, button, state] : m_KeyboardCommands)
+        for (const auto& [command, button, state] : m_KeyboardCommands)
         {
             bool keyPreviouslyPressed = false;
             bool keyCurrentlyPressed = false;
@@ -59,26 +54,21 @@ public:
             case InputManager::ButtonState::Down:
             {
                 if (!keyPreviouslyPressed && keyCurrentlyPressed)
-                    //std::cout << "Down\n\n\n\n\n\n\n";
                     command->Execute();
-
             } break;
             case InputManager::ButtonState::Up:
             {
                 if (keyPreviouslyPressed && !keyCurrentlyPressed)
-                    //std::cout << "Up\n";
                     command->Execute();
             } break;
             case InputManager::ButtonState::Pressed:
             {
                 if (keyPreviouslyPressed && keyCurrentlyPressed)
-                    //std::cout << "Pressed\n";
                     command->Execute();
             } break;
             }
 
         }
-
 
     }
 
@@ -86,6 +76,57 @@ public:
     void AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)
     {
         m_KeyboardCommands.emplace_back(std::move(command), button, activationState);
+    }
+
+    bool IsButtonDown(unsigned int button) const
+    {
+        bool keyPreviouslyPressed = false;
+        bool keyCurrentlyPressed = false;
+
+        if (auto buttonIt = m_CurrentKeysDown.find(button); buttonIt != m_CurrentKeysDown.end())
+            keyCurrentlyPressed = buttonIt->second;
+
+        if (auto buttonIt = m_PreviousKeysDown.find(button); buttonIt != m_PreviousKeysDown.end())
+            keyPreviouslyPressed = buttonIt->second;
+
+        if (!keyPreviouslyPressed && keyCurrentlyPressed)
+            return true;
+
+        return false;
+    }
+
+    bool IsButtonUp(unsigned int button) const
+    {
+        bool keyPreviouslyPressed = false;
+        bool keyCurrentlyPressed = false;
+
+        if (auto buttonIt = m_CurrentKeysDown.find(button); buttonIt != m_CurrentKeysDown.end())
+            keyCurrentlyPressed = buttonIt->second;
+
+        if (auto buttonIt = m_PreviousKeysDown.find(button); buttonIt != m_PreviousKeysDown.end())
+            keyPreviouslyPressed = buttonIt->second;
+
+        if (keyPreviouslyPressed && !keyCurrentlyPressed)
+            return true;
+
+        return false;
+    }
+
+    bool IsButtonPressed(unsigned int button) const
+    {
+        bool keyPreviouslyPressed = false;
+        bool keyCurrentlyPressed = false;
+
+        if (auto buttonIt = m_CurrentKeysDown.find(button); buttonIt != m_CurrentKeysDown.end())
+            keyCurrentlyPressed = buttonIt->second;
+
+        if (auto buttonIt = m_PreviousKeysDown.find(button); buttonIt != m_PreviousKeysDown.end())
+            keyPreviouslyPressed = buttonIt->second;
+
+        if (keyPreviouslyPressed && keyCurrentlyPressed)
+            return true;
+
+        return false;
     }
 
 
@@ -121,3 +162,17 @@ void Keyboard::AddKeyboardCommands(std::unique_ptr<Command> command, unsigned in
 }
 
 
+bool Keyboard::IsButtonUp(unsigned int button) const
+{
+    return m_Pimpl->IsButtonPressed(button);
+}
+
+bool Keyboard::IsButtonDown(unsigned int button) const
+{
+    return m_Pimpl->IsButtonPressed(button);
+}
+
+bool Keyboard::IsButtonPressed(unsigned int button) const
+{
+    return m_Pimpl->IsButtonPressed(button);
+}

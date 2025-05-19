@@ -20,6 +20,8 @@
 #include <imgui.h>
 #include <imgui_plot.h>
 
+
+// BudgetArmsEngine Includes
 #include "Core/BudgetEngine.h"
 #include "Core/GameObject.h"
 #include "Core/Scene.h"
@@ -43,6 +45,10 @@
 #include "Wrappers/Controller.h"
 #include "Wrappers/Keyboard.h"
 
+// Game Includes
+#include "Entities/Qbert.h"
+#include "Components/HealthComponent.h"
+
 
 namespace fs = std::filesystem;
 using namespace bae;
@@ -51,7 +57,6 @@ void Start();
 
 int main(int, char* [])
 {
-
     //thx myself for dying to find this
 #ifdef WIN32
     if (AllocConsole())
@@ -61,8 +66,6 @@ int main(int, char* [])
         freopen_s(&pEmpty, "CONOUT$", "w", stderr);
     }
 #endif
-
-
 
 #if __EMSCRIPTEN__
     fs::path data_location = "";
@@ -176,7 +179,9 @@ void Start()
     moveCommand = std::make_unique<MoveCommand>(*go, glm::vec2(1, 0), 200.f);
     keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_RIGHT, InputManager::ButtonState::Pressed);
 
-
+    Game::Qbert test{ "yes" };
+    test.AddComponent<Game::HealthComponent>(test, 100.f);
+    test.Destroy();
 
 
     scene.Add(go);
@@ -184,5 +189,3 @@ void Start()
     scene.Add(fpsCounter);
 
 }
-
-

@@ -27,5 +27,7 @@ namespace bae
         const float m_MaxFrames{ 2000 };
         float m_AccumlatedTime{ 0.f }; // m_Lag was too vague/confusing 
 
+
     };
 }
+

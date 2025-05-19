@@ -75,8 +75,8 @@ namespace bae
         constexpr void SetScaleDirty();
 
 
-        template<typename ComponentType, typename... Args, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
-            !std::is_same_v<Component, ComponentType>>>
+        template<typename ComponentType, typename... Args, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
+            !std::is_same_v<bae::Component, ComponentType>>>
             void AddComponent(Args&&... args)
         {
             // We don't need two components of the same type
@@ -90,8 +90,8 @@ namespace bae
         }
 
 
-        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
-            !std::is_same_v<Component, ComponentType>>>
+        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
+            !std::is_same_v<bae::Component, ComponentType>>>
             void RemoveComponent()
         {
             // if it does not have the component, you can't remove it
@@ -112,8 +112,8 @@ namespace bae
         }
 
 
-        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
-            !std::is_same_v<Component, ComponentType>>>
+        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
+            !std::is_same_v<bae::Component, ComponentType>>>
             bool HasComponent() const
         {
             // checks if any of them have the same type a component is the
@@ -126,8 +126,8 @@ namespace bae
 
         }
 
-        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
-            !std::is_same_v<Component, ComponentType>>>
+        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
+            !std::is_same_v<bae::Component, ComponentType>>>
             ComponentType* GetComponent() const
         {
             auto it = std::ranges::find_if(m_Components,
@@ -142,7 +142,7 @@ namespace bae
             return dynamic_cast<ComponentType*>(it->get());
         }
 
-        std::vector<std::unique_ptr<Component>>& GetComponents();
+        std::vector<std::unique_ptr<bae::Component>>& GetComponents();
 
 
     private:
@@ -156,7 +156,7 @@ namespace bae
 
         GameObject* m_Parent{ nullptr };
         std::vector<GameObject*> m_Children;
-        std::vector<std::unique_ptr<Component>> m_Components;
+        std::vector<std::unique_ptr<bae::Component>> m_Components;
 
 
     protected:
