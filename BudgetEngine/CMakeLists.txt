@@ -1,6 +1,5 @@
 ﻿cmake_minimum_required(VERSION 3.26)
-project(Minigin)
-#project(GameEngineProject)
+project(BudgetEngine)
 
 message("\n\n\n Starting CMAKE\n\n")
 
@@ -12,9 +11,11 @@ if(EMSCRIPTEN)
 endif()
 
 if(EMSCRIPTEN)
+    set(ENGINE_NAME BudgetEngine_web PARENT_SCOPE)
     set(ENGINE_NAME BudgetEngine_web)
     set(ENGINE_PARAM )
 else()
+    set(ENGINE_NAME BudgetEngine PARENT_SCOPE)
     set(ENGINE_NAME BudgetEngine)
 
     if(ENABLE_CONSOLE)
@@ -24,37 +25,7 @@ else()
     endif()
 
 endif()
-#[[
-add_library(${ENGINE_NAME} STATIC
-    "Core/BudgetEngine.cpp"                    
-    "Core/GameObject.cpp"                      
-    "Core/Observer.h"
-    "Core/Renderer.cpp"                        
-    "Core/Scene.cpp"                           
-    "Commands/Command.h"
-    "Commands/GameActorCommand.h"
-    "Commands/MoveCommand.h"
-    "Commands/FireCommand.h"
-    "Components/TextComponent.cpp"             
-    "Components/Component.h"
-    "Components/FpsCounterComponent.cpp"       
-    "Components/ImguiComponent.cpp"            
-    "Components/InputComponent.h"
-    "Components/TextureComponent.cpp"          
-    "Components/TrashTheCacheComponent.cpp"    
-    "Components/TransformComponent.cpp"        
-    "Managers/InputManager.cpp"                
-    "Managers/ResourceManager.cpp"             
-    "Managers/SceneManager.cpp"                
-    "Singletons/GameTime.h"
-    "Singletons/Singleton.h"
-    "Wrappers/Controller.cpp"                   
-    "Wrappers/Keyboard.cpp"                   
-    "Wrappers/Font.cpp"                        
-    "Wrappers/Texture2D.cpp"                   
- ) 
- ]]
- ##[[
+
 
 add_library(${ENGINE_NAME} STATIC
     "Core/BudgetEngine.cpp"                    "Core/BudgetEngine.h"
