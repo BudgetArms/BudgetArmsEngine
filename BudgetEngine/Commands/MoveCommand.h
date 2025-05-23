@@ -33,10 +33,11 @@ namespace bae
 
         virtual void Execute() override
         {
-            auto transform = GetActor()->GetComponent<TransformComponent>();
-            auto test = GameTime::GetInstance().GetDeltaTime();
-            //transform->AddLocation({ m_Speed * m_Direction * GameTime::GetInstance().GetDeltaTime(), 0 });
-            transform->AddLocation({ m_Speed * m_Direction * test, 0 });
+            auto* transform = GetActor()->GetComponent<TransformComponent>();
+            if (!transform)
+                return;
+
+            transform->AddLocation({ m_Speed * m_Direction * GameTime::GetInstance().GetDeltaTime(), 0 });
         }
 
     private:

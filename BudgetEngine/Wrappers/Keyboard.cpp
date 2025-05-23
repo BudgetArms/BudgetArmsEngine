@@ -21,20 +21,23 @@ public:
         // Gets newest event information
         SDL_PumpEvents();
 
-        const int maxPeakedEvents{ 16 };
+        const int maxPeakedEvents{ 128 };
         SDL_Event events[maxPeakedEvents];
         int nrEvents = SDL_PeepEvents(events, maxPeakedEvents, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
 
         for (int i = 0; i < nrEvents; i++)
         {
             const SDL_Event& event = events[i];
-            if (event.type == SDL_KEYDOWN && !event.key.repeat)
+
+            if (event.type == SDL_KEYDOWN)
                 m_CurrentKeysDown[event.key.keysym.sym] = true;
+            //else
             else if (event.type == SDL_KEYUP)
                 m_CurrentKeysDown[event.key.keysym.sym] = false;
 
         }
 
+        //*/
 
         //for (auto& [command, button, state] : m_KeyboardCommands)
         for (const auto& [command, button, state] : m_KeyboardCommands)

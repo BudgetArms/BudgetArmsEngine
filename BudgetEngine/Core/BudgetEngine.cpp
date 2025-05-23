@@ -103,7 +103,7 @@ void bae::BudgetEngine::RunOneFrame()
     SceneManager::GetInstance().LateUpdate();
     Renderer::GetInstance().Render();
 
-    std::cout << "FPS: " << static_cast<int>(GameTime::GetInstance().GetFPS()) << '\n';
+    //std::cout << "FPS: " << static_cast<int>(GameTime::GetInstance().GetFPS()) << '\n';
     std::this_thread::sleep_for(std::chrono::duration<float>(GameTime::GetInstance().GetSleepTime()));
 
 }

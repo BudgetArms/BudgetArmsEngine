@@ -33,7 +33,11 @@ namespace bae
     class PrintCommand final : public Command
     {
     public:
-        PrintCommand() : Command() {};
+        PrintCommand(const std::string& text = "PRINTING") :
+            Command(),
+            m_Text{ text }
+        {
+        };
         virtual ~PrintCommand() = default;
 
         PrintCommand(const PrintCommand& other) = delete;
@@ -44,8 +48,12 @@ namespace bae
 
         virtual void Execute() override
         {
-            std::cout << "PRINTING\n";
+            std::cout << m_Text << '\n';
         }
+
+    private:
+        std::string m_Text;
+
     };
 
 }
