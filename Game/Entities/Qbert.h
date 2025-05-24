@@ -14,7 +14,7 @@ namespace Game
     {
     public:
         Qbert(const std::string& name);
-        ~Qbert() {};
+        ~Qbert() = default;
 
         Qbert(const Qbert& other) = delete;
         Qbert(Qbert&& other) = delete;
@@ -22,6 +22,21 @@ namespace Game
         Qbert& operator=(Qbert&& other) = delete;
 
 
+    private:
+        enum class QBertState
+        {
+            UpRightCrouched,
+            UpRightStand,
+            UpLeftCrouched,
+            UpLeftStand,
+            DownRightCrouched,
+            DownRightStand,
+            DownLeftCrouched,
+            DownLeftStand
+        };
+
+
+    protected:
 
 
     };

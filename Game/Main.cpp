@@ -126,6 +126,20 @@ void Start()
     fireCommand->Execute();
 
 
+    auto player = std::make_shared<Game::Qbert>("player");
+    player->SetWorldLocation({ 100, 100, 0 });
+    //player->SetWorldRotation(45.f);
+    player->SetWorldScale({ 2.f, 2.f });
+
+
+
+    auto player2 = std::make_shared<Game::Qbert>("player2");
+    player2->SetWorldLocation({ 100, 200, 0 });
+    //player->SetWorldRotation(45.f);
+    player2->SetWorldScale({ 2.f, 2.f });
+
+
+
     InputManager::GetInstance().AddController(0);
     InputManager::GetInstance().AddController(1);
     auto* myController = InputManager::GetInstance().GetController(1);
@@ -146,76 +160,45 @@ void Start()
 
 
     // move fps counter with wasd
-    auto moveCommand = std::make_unique<MoveCommand>(*fpsCounter, glm::vec2(0, -1));
+    auto moveCommand = std::make_unique<MoveCommand>(*player2, glm::vec2(0, -1), 100.f);
     keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_w, InputManager::ButtonState::Pressed);
 
-    moveCommand = std::make_unique<MoveCommand>(*fpsCounter, glm::vec2(0, 1));
+    moveCommand = std::make_unique<MoveCommand>(*player2, glm::vec2(0, 1), 100.f);
     keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_s, InputManager::ButtonState::Pressed);
 
-    moveCommand = std::make_unique<MoveCommand>(*fpsCounter, glm::vec2(-1, 0));
+    moveCommand = std::make_unique<MoveCommand>(*player2, glm::vec2(-1, 0), 100.f);
     keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_a, InputManager::ButtonState::Pressed);
 
-    moveCommand = std::make_unique<MoveCommand>(*fpsCounter, glm::vec2(1, 0));
+    moveCommand = std::make_unique<MoveCommand>(*player2, glm::vec2(1, 0), 100.f);
     keyboard.AddKeyboardCommands(std::move(moveCommand), SDLK_d, InputManager::ButtonState::Pressed);
 
 
 
     // move logo with dpad (does not seem to work??)
-    moveCommand = std::make_unique<MoveCommand>(*go, glm::vec2(0, 1), 200.f);
+    moveCommand = std::make_unique<MoveCommand>(*player, glm::vec2(0, 1), 200.f);
     myController->AddControllerCommands(std::move(moveCommand), XINPUT_GAMEPAD_DPAD_DOWN, InputManager::ButtonState::Pressed);
 
-    moveCommand = std::make_unique<MoveCommand>(*go, glm::vec2(0, -1), 200.f);
+    moveCommand = std::make_unique<MoveCommand>(*player, glm::vec2(0, -1), 200.f);
     myController->AddControllerCommands(std::move(moveCommand), XINPUT_GAMEPAD_DPAD_UP, InputManager::ButtonState::Pressed);
 
-    moveCommand = std::make_unique<MoveCommand>(*go, glm::vec2(-1, 0), 200.f);
+    moveCommand = std::make_unique<MoveCommand>(*player, glm::vec2(-1, 0), 200.f);
     myController->AddControllerCommands(std::move(moveCommand), XINPUT_GAMEPAD_DPAD_LEFT, InputManager::ButtonState::Pressed);
 
-    moveCommand = std::make_unique<MoveCommand>(*go, glm::vec2(1, 0), 200.f);
+    moveCommand = std::make_unique<MoveCommand>(*player, glm::vec2(1, 0), 200.f);
     myController->AddControllerCommands(std::move(moveCommand), XINPUT_GAMEPAD_DPAD_RIGHT, InputManager::ButtonState::Pressed);
 
 
-    printCommand = std::make_unique<PrintCommand>("LSHOULDER");
-    myController->AddControllerCommands(std::move(printCommand), XINPUT_GAMEPAD_LEFT_SHOULDER, InputManager::ButtonState::Up);
+    auto spriteTestCommand = std::make_unique<bae::SpriteTesterCommand>(*player);
+    keyboard.AddKeyboardCommands(std::move(spriteTestCommand), SDLK_KP_DIVIDE, bae::InputManager::ButtonState::Down);
+    spriteTestCommand = std::make_unique<bae::SpriteTesterCommand>(*player);
+    keyboard.AddKeyboardCommands(std::move(spriteTestCommand), SDLK_KP_DIVIDE, bae::InputManager::ButtonState::Up);
 
-    printCommand = std::make_unique<PrintCommand>("RSHOULDER");
-    myController->AddControllerCommands(std::move(printCommand), XINPUT_GAMEPAD_RIGHT_SHOULDER, InputManager::ButtonState::Up);
-
-    printCommand = std::make_unique<PrintCommand>("Button A");
-    myController->AddControllerCommands(std::move(printCommand), XINPUT_GAMEPAD_A, InputManager::ButtonState::Up);
-
-    printCommand = std::make_unique<PrintCommand>("Button B");
-    myController->AddControllerCommands(std::move(printCommand), XINPUT_GAMEPAD_B, InputManager::ButtonState::Up);
-
-    printCommand = std::make_unique<PrintCommand>("Button X");
-    myController->AddControllerCommands(std::move(printCommand), XINPUT_GAMEPAD_X, InputManager::ButtonState::Up);
-
-    printCommand = std::make_unique<PrintCommand>("Button Y");
-    myController->AddControllerCommands(std::move(printCommand), XINPUT_GAMEPAD_Y, InputManager::ButtonState::Up);
-
-    printCommand = std::make_unique<PrintCommand>("Right Thumb");
-    myController->AddControllerCommands(std::move(printCommand), XINPUT_GAMEPAD_RIGHT_THUMB, InputManager::ButtonState::Up);
-
-    printCommand = std::make_unique<PrintCommand>("Left Thumb");
-    myController->AddControllerCommands(std::move(printCommand), XINPUT_GAMEPAD_LEFT_THUMB, InputManager::ButtonState::Up);
-
-    printCommand = std::make_unique<PrintCommand>("Share Button");
-    myController->AddControllerCommands(std::move(printCommand), XINPUT_GAMEPAD_BACK, InputManager::ButtonState::Up);
-
-    printCommand = std::make_unique<PrintCommand>("Options Button");
-    myController->AddControllerCommands(std::move(printCommand), XINPUT_GAMEPAD_TRIGGER_THRESHOLD, InputManager::ButtonState::Up);
-
-    printCommand = std::make_unique<PrintCommand>("Start Button");
-    myController->AddControllerCommands(std::move(printCommand), XINPUT_GAMEPAD_START, InputManager::ButtonState::Up);
-
-
-
-    Game::Qbert test{ "yes" };
-    test.AddComponent<Game::HealthComponent>(test, 100.f);
-    test.Destroy();
 
 
     scene.Add(go);
     scene.Add(title);
     scene.Add(fpsCounter);
+    scene.Add(player);
+    scene.Add(player2);
 
 }

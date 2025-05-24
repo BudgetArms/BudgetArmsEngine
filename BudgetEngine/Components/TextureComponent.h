@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Components/Component.h"
+#include <SDL.h>
 
 
 namespace bae
@@ -21,12 +22,11 @@ namespace bae
 
         void SetTexture(const std::string& filename);
 
-
     private:
-        std::shared_ptr<Texture2D> m_Texture{};
 
 
     protected:
+        std::shared_ptr<Texture2D> m_Texture{};
 
 
     };

@@ -109,3 +109,25 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
     SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
+
+void bae::Renderer::RenderTexture(const Texture2D& texture, const SDL_Rect& src, const SDL_Rect& dst, float angle, float scaleX, float scaleY) const
+{
+    SDL_Rect dstScaled = dst;
+    dstScaled.w *= static_cast<int>(scaleX);
+    dstScaled.h *= static_cast<int>(scaleY);
+
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+    if (scaleX < 0.0f && scaleY < 0.0f)
+        flip = (SDL_RendererFlip)(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
+    else if (scaleX < 0.0f)
+        flip = SDL_FLIP_HORIZONTAL;
+    else if (scaleY < 0.0f)
+        flip = SDL_FLIP_VERTICAL;
+
+    //const SDL_Point center = { dstScaled.w / 2,  dstScaled.h / 2 };
+    const SDL_Point center = { dst.w / 2,  dst.h / 2 };
+    SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dstScaled, angle, &center, flip);
+}
+
+

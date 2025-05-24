@@ -44,50 +44,6 @@ public:
         }
 
 
-
-
-        //*
-
-        // Check trigger changes (they're analog, so we check for significant changes)
-        int leftTriggerDiff = std::abs(m_CurrentState.Gamepad.bLeftTrigger - m_PreviousState.Gamepad.bLeftTrigger);
-        int rightTriggerDiff = abs(m_CurrentState.Gamepad.bRightTrigger - m_PreviousState.Gamepad.bRightTrigger);
-
-        if (leftTriggerDiff > 10)
-        {
-            std::cout << "Controller " << controllerIndex << ": Left Trigger (LT) = "
-                << static_cast<int>(m_CurrentState.Gamepad.bLeftTrigger) << "/255" << '\n';
-        }
-
-        if (rightTriggerDiff > 10)
-        {
-            std::cout << "Controller " << controllerIndex << ": Right Trigger (RT) = "
-                << static_cast<int>(m_CurrentState.Gamepad.bRightTrigger) << "/255" << '\n';
-        }
-
-
-        //*/
-        //*
-
-        // analog
-        int leftStickXDiff = std::abs(m_CurrentState.Gamepad.sThumbLX - m_PreviousState.Gamepad.sThumbLX);
-        int leftStickYDiff = std::abs(m_CurrentState.Gamepad.sThumbLY - m_PreviousState.Gamepad.sThumbLY);
-        int rightStickXDiff = std::abs(m_CurrentState.Gamepad.sThumbRX - m_PreviousState.Gamepad.sThumbRX);
-        int rightStickYDiff = std::abs(m_CurrentState.Gamepad.sThumbRY - m_PreviousState.Gamepad.sThumbRY);
-
-        if (leftStickXDiff > 100 || leftStickYDiff > 100) {
-            std::cout << "Controller " << controllerIndex << ": Left Stick = ("
-                << m_CurrentState.Gamepad.sThumbLX << ", "
-                << m_CurrentState.Gamepad.sThumbLY << ")" << '\n';
-        }
-
-        if (rightStickXDiff > 100 || rightStickYDiff > 100) {
-            std::cout << "Controller " << controllerIndex << ": Right Stick = ("
-                << m_CurrentState.Gamepad.sThumbRX << ", "
-                << m_CurrentState.Gamepad.sThumbRY << ")" << '\n';
-        }
-
-        //*/
-
     }
 
     void AddControllerCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)

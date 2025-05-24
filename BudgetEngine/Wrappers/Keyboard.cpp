@@ -42,6 +42,9 @@ public:
         //for (auto& [command, button, state] : m_KeyboardCommands)
         for (const auto& [command, button, state] : m_KeyboardCommands)
         {
+            if (!command)
+                throw std::runtime_error("Keyboard::ProcessInput: Command is nullptr");
+
             bool keyPreviouslyPressed = false;
             bool keyCurrentlyPressed = false;
 

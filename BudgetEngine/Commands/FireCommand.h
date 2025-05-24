@@ -3,6 +3,7 @@
 #include "Commands/Command.h"
 #include "Core/GameObject.h"
 #include "Components/TransformComponent.h"
+#include "Components/SpriteComponent.h"
 
 
 
@@ -55,6 +56,30 @@ namespace bae
         std::string m_Text;
 
     };
+
+    class SpriteTesterCommand final : public GameActorCommand
+    {
+    public:
+        SpriteTesterCommand(GameObject& actor) : GameActorCommand(actor) {};
+        virtual ~SpriteTesterCommand() = default;
+
+        SpriteTesterCommand(const SpriteTesterCommand& other) = delete;
+        SpriteTesterCommand(SpriteTesterCommand&& other) = delete;
+        SpriteTesterCommand& operator=(const SpriteTesterCommand& other) = delete;
+        SpriteTesterCommand& operator=(SpriteTesterCommand&& other) = delete;
+
+
+        virtual void Execute() override
+        {
+            auto* spriteComponent = GetActor()->GetComponent<SpriteComponent>();
+
+            if (spriteComponent)
+                //spriteComponent->NextSprite();
+                spriteComponent->PreviousSprite();
+
+        }
+    };
+
 
 }
 
