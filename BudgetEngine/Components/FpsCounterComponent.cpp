@@ -17,13 +17,14 @@ FpsTextComponent::FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font
 
 void FpsTextComponent::Update()
 {
+    TextComponent::Update(); // update text if needed
+
     m_AccumulatedTime += GameTime::GetInstance().GetDeltaTime();
     if (m_AccumulatedTime > 1 / m_NrUpdatesPerSecond)
     {
         m_AccumulatedTime = 0;
         const int fps = static_cast<int>(GameTime::GetInstance().GetFPS());
         SetText("FPS: " + std::to_string(fps));
-        TextComponent::Update();
     }
 
 }

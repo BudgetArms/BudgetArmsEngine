@@ -7,35 +7,14 @@
 
 
 
-namespace bae
+namespace Game
 {
 
-    class FireCommand final : public GameActorCommand
-    {
-    public:
-        FireCommand(GameObject& actor) : GameActorCommand(actor) {};
-        virtual ~FireCommand() = default;
-
-        FireCommand(const FireCommand& other) = delete;
-        FireCommand(FireCommand&& other) = delete;
-        FireCommand& operator=(const FireCommand& other) = delete;
-        FireCommand& operator=(FireCommand&& other) = delete;
-
-
-        virtual void Execute() override
-        {
-            std::cout << "Firing\n";
-            auto test = GetActor()->GetComponent<TransformComponent>();
-            test->AddRotation(180);
-        }
-    };
-
-
-    class PrintCommand final : public Command
+    class PrintCommand final : public bae::Command
     {
     public:
         PrintCommand(const std::string& text = "PRINTING") :
-            Command(),
+            bae::Command(),
             m_Text{ text }
         {
         };
@@ -57,10 +36,37 @@ namespace bae
 
     };
 
-    class SpriteTesterCommand final : public GameActorCommand
+
+    class RotateCommand final : public bae::GameActorCommand
     {
     public:
-        SpriteTesterCommand(GameObject& actor) : GameActorCommand(actor) {};
+        RotateCommand(bae::GameObject& actor) :
+            bae::GameActorCommand(actor)
+        {
+        };
+        virtual ~RotateCommand() = default;
+
+        RotateCommand(const RotateCommand& other) = delete;
+        RotateCommand(RotateCommand&& other) = delete;
+        RotateCommand& operator=(const RotateCommand& other) = delete;
+        RotateCommand& operator=(RotateCommand&& other) = delete;
+
+
+        virtual void Execute() override
+        {
+            std::cout << "Firing\n";
+            auto test = GetActor()->GetComponent<bae::TransformComponent>();
+            test->AddRotation(180);
+        }
+    };
+
+    class SpriteTesterCommand final : public bae::GameActorCommand
+    {
+    public:
+        SpriteTesterCommand(bae::GameObject& actor) :
+            bae::GameActorCommand(actor)
+        {
+        };
         virtual ~SpriteTesterCommand() = default;
 
         SpriteTesterCommand(const SpriteTesterCommand& other) = delete;
@@ -71,7 +77,7 @@ namespace bae
 
         virtual void Execute() override
         {
-            auto* spriteComponent = GetActor()->GetComponent<SpriteComponent>();
+            auto* spriteComponent = GetActor()->GetComponent<bae::SpriteComponent>();
 
             if (spriteComponent)
                 //spriteComponent->NextSprite();
@@ -79,6 +85,7 @@ namespace bae
 
         }
     };
+
 
 
 }

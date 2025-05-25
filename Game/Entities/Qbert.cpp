@@ -2,8 +2,11 @@
 
 #include <memory>
 
-#include "Core/GameObject.h"
 #include <SDL.h>
+
+
+#include "Core/GameObject.h"
+#include "Core/Subject.h"
 
 #include "Components/Component.h"
 #include "Components/HealthComponent.h"
@@ -16,6 +19,7 @@
 #include "Wrappers/Keyboard.h"
 
 
+
 using namespace Game;
 
 Qbert::Qbert(const std::string& name) :
@@ -23,10 +27,12 @@ Qbert::Qbert(const std::string& name) :
 {
     AddComponent<Game::HealthComponent>(*this, 100.f);
     AddComponent<bae::SpriteComponent>(*this, "Textures/60496.png", SDL_Rect(0, 0, 128, 16), 8, 8);
-    auto& location = GetWorldLocation();
     auto* spriteComp = GetComponent<bae::SpriteComponent>();
-    spriteComp->SetDstRect(SDL_Rect(static_cast<int>(location.x), static_cast<int>(location.y), 50, 50));
+    if (!spriteComp)
+        return;
 
+    auto& location = GetWorldLocation();
+    spriteComp->SetDstRect(SDL_Rect(static_cast<int>(location.x), static_cast<int>(location.y), 50, 50));
 
 };
 

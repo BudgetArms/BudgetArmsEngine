@@ -8,6 +8,7 @@ using namespace Game;
 
 HealthComponent::HealthComponent(bae::GameObject& owner, float health = 100.f) :
     bae::Component(owner),
+    bae::Subject(owner),
     m_Health{ health },
     m_MaxHealth{ m_Health }
 {
@@ -23,6 +24,7 @@ bool HealthComponent::IsDead() const
     if (m_bIsInvincible)
         return false;
 
+    // could use dirty flag, but too lazy, and no expensivememory changes anyway
     if (m_Health <= 0)
         return true;
 
@@ -38,6 +40,7 @@ float HealthComponent::GetHealth()
 void HealthComponent::SetHealth(float health)
 {
     m_Health = health;
+    NotifyObservers(bae::Event::PLAYER_HEALTH_CHANGE);
 }
 
 
@@ -49,6 +52,21 @@ float HealthComponent::GetMaxHealth()
 void HealthComponent::SetMaxHealth(float maxHealth)
 {
     m_MaxHealth = maxHealth;
+}
+
+void HealthComponent::Damage(float damage)
+{
+    if (m_bIsInvincible)
+        return;
+
+    m_Health -= damage;
+
+    if (m_Health <= 0)
+    {
+        NotifyObservers(bae::Event::PLAYER_DIED);
+        return;
+    }
+    NotifyObservers(bae::Event::PLAYER_HEALTH_CHANGE);
 }
 
 

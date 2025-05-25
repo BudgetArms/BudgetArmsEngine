@@ -5,9 +5,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(${PROJECT_NAME}
 	"Main.cpp"
 
-    "Components/HealthComponent.cpp"              "Components/HealthComponent.h"
-    "Entities/Qbert.cpp"                           "Entities/Qbert.h"
+    "Base/Achievement.h"
 
+    "Commands/DamageCommand.h" 
+    "Commands/FireCommand.h"
+    "Commands/ScoreCommand.h"
+    
+    "Components/ScoreComponent.cpp"             "Components/ScoreComponent.h"
+    "Components/ScoreDisplayComponent.cpp"      "Components/ScoreDisplayComponent.h"
+    "Components/HealthComponent.cpp"            "Components/HealthComponent.h"
+    "Components/HealthDisplayComponent.cpp"     "Components/HealthDisplayComponent.h"
+
+    "Entities/Qbert.cpp"                        "Entities/Qbert.h"
 )
  
 
