@@ -4,6 +4,7 @@
 #include "Core/Observer.h"
 #include "Components/TextComponent.h"
 
+class bae::GameObject;
 
 namespace Game
 {

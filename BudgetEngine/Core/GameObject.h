@@ -13,7 +13,7 @@ namespace bae
     class Component;
     class TransformComponent;
 
-    class GameObject
+    class GameObject final
     {
     public:
 

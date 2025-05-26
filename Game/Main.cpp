@@ -57,7 +57,7 @@
 #include "Components/ScoreComponent.h"
 #include "Components/ScoreDisplayComponent.h"
 
-#include "Entities/Qbert.h"
+#include "Entities/QbertComponent.h"
 
 
 #pragma endregion
@@ -106,6 +106,7 @@ int main(int, char* [])
 }
 
 
+
 void Start()
 {
     auto& scene = SceneManager::GetInstance().CreateScene("Demo");
@@ -140,13 +141,15 @@ void Start()
     fireCommand->Execute();
 
 
-    auto player1 = std::make_shared<Game::Qbert>("player");
+    auto player1 = std::make_shared<GameObject>("Player 1");
+    player1->AddComponent<Game::QbertComponent>(*player1);
     player1->SetWorldLocation({ 100, 100, 0 });
     //player1->SetWorldRotation(45.f);
     player1->SetWorldScale({ 2.f, 2.f });
 
 
-    auto player2 = std::make_shared<Game::Qbert>("player2");
+    auto player2 = std::make_shared<GameObject>("Player 2");
+    player2->AddComponent<Game::QbertComponent>(*player2);
     player2->SetWorldLocation({ 100, 200, 0 });
     //player2->SetWorldRotation(45.f);
     player2->SetWorldScale({ 2.f, 2.f });
@@ -264,6 +267,11 @@ void Start()
 
 
     // add observers
+    if (!player1->GetComponent<Game::HealthComponent>() || !player2->GetComponent<Game::HealthComponent>())
+    {
+        throw std::runtime_error("Main::Start(), player1 or player2 don't have healthComponent");
+    }
+
     player1->GetComponent<Game::HealthComponent>()->AddObserver(healthComponentPlayer1);
     player2->GetComponent<Game::HealthComponent>()->AddObserver(healthComponentPlayer2);
 

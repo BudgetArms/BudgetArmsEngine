@@ -1,6 +1,7 @@
 ﻿#include "HealthComponent.h"
 
 #include "Components/Component.h"
+#include "Core/GameObject.h"
 
 
 using namespace Game;

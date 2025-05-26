@@ -16,7 +16,7 @@ add_executable(${PROJECT_NAME}
     "Components/HealthComponent.cpp"            "Components/HealthComponent.h"
     "Components/HealthDisplayComponent.cpp"     "Components/HealthDisplayComponent.h"
 
-    "Entities/Qbert.cpp"                        "Entities/Qbert.h"
+    "Entities/QbertComponent.cpp"                        "Entities/QbertComponent.h"
 )
  
 

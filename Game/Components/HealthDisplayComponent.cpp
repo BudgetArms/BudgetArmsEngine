@@ -1,6 +1,7 @@
 ﻿#include "HealthDisplayComponent.h"
 
 #include "Core/Subject.h"
+#include "Core/GameObject.h"
 #include "Components/HealthComponent.h"
 
 

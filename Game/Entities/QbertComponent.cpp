@@ -1,4 +1,4 @@
-﻿#include "Qbert.h"
+﻿#include "QbertComponent.h"
 
 #include <memory>
 
@@ -22,16 +22,16 @@
 
 using namespace Game;
 
-Qbert::Qbert(const std::string& name) :
-    bae::GameObject(name)
+QbertComponent::QbertComponent(bae::GameObject& owner) :
+    bae::Component(owner)
 {
-    AddComponent<Game::HealthComponent>(*this, 100.f);
-    AddComponent<bae::SpriteComponent>(*this, "Textures/60496.png", SDL_Rect(0, 0, 128, 16), 8, 8);
-    auto* spriteComp = GetComponent<bae::SpriteComponent>();
+    m_Owner->AddComponent<Game::HealthComponent>(*m_Owner, 100.f);
+    m_Owner->AddComponent<bae::SpriteComponent>(*m_Owner, "Textures/60496.png", SDL_Rect(0, 0, 128, 16), 8, 8);
+    auto* spriteComp = m_Owner->GetComponent<bae::SpriteComponent>();
     if (!spriteComp)
         return;
 
-    auto& location = GetWorldLocation();
+    auto& location = m_Owner->GetWorldLocation();
     spriteComp->SetDstRect(SDL_Rect(static_cast<int>(location.x), static_cast<int>(location.y), 50, 50));
 
 };
