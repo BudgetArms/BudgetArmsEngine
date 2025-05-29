@@ -12,10 +12,23 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+
+#ifdef STEAMWORKS_ENABLED
+#pragma warning (push)
+#pragma warning (disable: 4996)
+#include <steam_api.h>
+#pragma warning (pop)
+#endif
+
 #include "BudgetEngine.h"
 #include "Managers/InputManager.h"
 #include "Managers/SceneManager.h"
 #include "Managers/ResourceManager.h"
+
+#ifdef STEAMWORKS_ENABLED
+#include "Managers/SteamManager.h"
+#endif
+
 #include "Singletons/GameTime.h"
 #include "Renderer.h"
 
@@ -87,6 +100,10 @@ void bae::BudgetEngine::RunOneFrame()
     m_AccumlatedTime += GameTime::GetInstance().GetDeltaTime();
 
     m_Quit = !InputManager::GetInstance().ProcessInput();
+
+#ifdef STEAMWORKS_ENABLED
+    SteamManager::GetInstance().Update();
+#endif
 
     // This FixedUpdate system exist for physics and networking
     // eg. if a player runs into a wall, and the game lags for a second,

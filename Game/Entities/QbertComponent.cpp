@@ -19,7 +19,6 @@
 #include "Wrappers/Keyboard.h"
 
 
-
 using namespace Game;
 
 QbertComponent::QbertComponent(bae::GameObject& owner) :

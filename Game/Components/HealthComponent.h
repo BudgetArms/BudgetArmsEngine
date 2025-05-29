@@ -3,6 +3,8 @@
 #include "Components/Component.h"
 #include "Core/Subject.h"
 
+class bae::GameObject;
+
 namespace Game
 {
 

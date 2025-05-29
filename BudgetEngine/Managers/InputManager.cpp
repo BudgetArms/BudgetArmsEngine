@@ -9,6 +9,10 @@
 #include "Wrappers/Controller.h"
 #include "Wrappers/Keyboard.h"
 
+#ifdef STEAMWORKS_ENABLED
+#include "Managers/SteamManager.h"
+#endif
+
 
 using namespace bae;
 
@@ -38,6 +42,12 @@ bool InputManager::ProcessInput()
         if (e.type == SDL_QUIT)
             return false;
 
+#ifdef STEAMWORKS_ENABLED
+        if (e.key.keysym.sym == SDLK_PERIOD)
+            SteamManager::GetInstance().ResetAllAchievements();
+#endif
+
+
         //process event for IMGUI
         ImGui_ImplSDL2_ProcessEvent(&e);
     }
@@ -46,7 +56,6 @@ bool InputManager::ProcessInput()
     {
         controller->ProcessInput();
     }
-
 
 
     return true;

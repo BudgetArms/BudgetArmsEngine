@@ -54,7 +54,7 @@ namespace Game
 
         virtual void Execute() override
         {
-            std::cout << "Firing\n";
+            std::cout << "Rotating" << '\n';
             auto test = GetActor()->GetComponent<bae::TransformComponent>();
             test->AddRotation(180);
         }

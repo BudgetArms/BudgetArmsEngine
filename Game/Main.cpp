@@ -3,7 +3,6 @@
 #pragma region Includes
 
 #if _DEBUG
-// ReSharper disable once CppUnusedIncludeDirective
 #if __has_include(<vld.h>)
 #include <vld.h>
 #endif
@@ -21,6 +20,13 @@
 #include <SDL.h>
 #include <imgui.h>
 #include <imgui_plot.h>
+
+#ifdef STEAMWORKS_ENABLED
+#pragma warning (push)
+#pragma warning (disable: 4996)
+#include <steam_api.h>
+#pragma warning (pop)
+#endif
 
 
 // BudgetArmsEngine Includes
@@ -42,6 +48,15 @@
 
 #include "Managers/ResourceManager.h"
 #include "Managers/SceneManager.h"
+
+
+#ifdef STEAMWORKS_ENABLED
+
+#include "Managers/SteamManager.h"
+#include "Core/Achievement.h"
+#include "Managers/AchievementManager.h"
+
+#endif
 
 #include "Wrappers/Controller.h"
 #include "Wrappers/Keyboard.h"
@@ -97,10 +112,21 @@ int main(int, char* [])
         exit(-1);
     }
 
+#ifdef STEAMWORKS_ENABLED
+    SteamManager::GetInstance().Initialize();
+
 #endif
+
+#endif
+
 
     BudgetEngine engine(resourcesFolder);
     engine.Run(Start);
+
+
+#ifdef STEAMWORKS_ENABLED
+    SteamManager::GetInstance().Shutdown();
+#endif
 
     return 0;
 }
@@ -259,11 +285,11 @@ void Start()
     // Score Display
     auto scoreDisplayPlayer1 = std::make_shared<GameObject>("ScoreDisplay Player 1");
     scoreDisplayPlayer1->AddComponent<Game::ScoreDisplayComponent>(*scoreDisplayPlayer1, font);
-    auto* scoreComponentPlayer1 = scoreDisplayPlayer1->GetComponent<Game::ScoreDisplayComponent>();
+    auto* scoreDisplayComponentPlayer1 = scoreDisplayPlayer1->GetComponent<Game::ScoreDisplayComponent>();
 
     auto scoreDisplayPlayer2 = std::make_shared<GameObject>("ScoreDisplay Player 2");
     scoreDisplayPlayer2->AddComponent<Game::ScoreDisplayComponent>(*scoreDisplayPlayer2, font);
-    auto* scoreComponentPlayer2 = scoreDisplayPlayer2->GetComponent<Game::ScoreDisplayComponent>();
+    auto* scoreDisplayComponentPlayer2 = scoreDisplayPlayer2->GetComponent<Game::ScoreDisplayComponent>();
 
 
     // add observers
@@ -276,8 +302,86 @@ void Start()
     player2->GetComponent<Game::HealthComponent>()->AddObserver(healthComponentPlayer2);
 
 
-    player1->GetComponent<Game::ScoreComponent>()->AddObserver(scoreComponentPlayer1);
-    player2->GetComponent<Game::ScoreComponent>()->AddObserver(scoreComponentPlayer2);
+    player1->GetComponent<Game::ScoreComponent>()->AddObserver(scoreDisplayComponentPlayer1);
+    player2->GetComponent<Game::ScoreComponent>()->AddObserver(scoreDisplayComponentPlayer2);
+
+
+#ifdef STEAMWORKS_ENABLED
+
+    auto& achievementManager = AchievementManager::GetInstance();
+    Achievement dieAchievement
+    {
+        "ACH_TRAVEL_FAR_SINGLE",
+        bae::Event::PLAYER_DIED,
+        [](Subject* subject)
+        {
+            auto* healthComponent = subject->GetGameObject()->GetComponent<Game::HealthComponent>();
+            if (!healthComponent)
+                return false;
+
+            return (healthComponent->GetHealth() <= 0);
+        }
+    };
+
+    Achievement overPoweredAchievement
+    {
+        "ACH_TRAVEL_FAR_ACCUM",
+        bae::Event::PLAYER_HEALTH_CHANGE,
+        [](Subject* subject)
+        {
+            auto* healthComponent = subject->GetGameObject()->GetComponent<Game::HealthComponent>();
+            if (!healthComponent)
+                return false;
+
+            return (healthComponent->GetHealth() > 100);
+        }
+    };
+
+
+    Achievement loserAchievement
+    {
+        "ACH_WIN_ONE_GAME",
+        bae::Event::PLAYER_SCORE_CHANGE,
+        [](Subject* subject)
+        {
+            auto* scoreComponent = subject->GetGameObject()->GetComponent<Game::ScoreComponent>();
+            if (!scoreComponent)
+                return false;
+
+            return (scoreComponent->GetScore() <= 0);
+        }
+    };
+
+
+
+    Achievement winnerAchievement
+    {
+        "ACH_WIN_100_GAMES",
+        bae::Event::PLAYER_SCORE_CHANGE,
+        [](Subject* subject)
+        {
+            auto* scoreComponent = subject->GetGameObject()->GetComponent<Game::ScoreComponent>();
+            if (!scoreComponent)
+                return false;
+
+            return (scoreComponent->GetScore() >= 100);
+        }
+    };
+
+
+    achievementManager.AddAchievement(dieAchievement);
+    achievementManager.AddAchievement(overPoweredAchievement);
+    achievementManager.AddAchievement(loserAchievement);
+    achievementManager.AddAchievement(winnerAchievement);
+
+    player1->GetComponent<Game::HealthComponent>()->AddObserver(&achievementManager);
+    player2->GetComponent<Game::HealthComponent>()->AddObserver(&achievementManager);
+
+    player1->GetComponent<Game::ScoreComponent>()->AddObserver(&achievementManager);
+    player2->GetComponent<Game::ScoreComponent>()->AddObserver(&achievementManager);
+
+
+#endif
 
 
     healthDisplayPlayer1->AddLocation({ 0, 50, 0 });
@@ -286,7 +390,6 @@ void Start()
     healthDisplayPlayer2->AddLocation({ 0, 150, 0 });
     scoreDisplayPlayer2->AddLocation({ 0, 180, 0 });
 
-    //*/
 
     scene.Add(go);
     scene.Add(title);
