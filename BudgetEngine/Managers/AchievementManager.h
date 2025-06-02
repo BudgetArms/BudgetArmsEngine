@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <iostream>
+#include <memory>
 
 #include "Core/Achievement.h"
 #include "Singletons/Singleton.h"
@@ -22,16 +23,16 @@ namespace bae
         AchievementManager& operator=(const AchievementManager& other) = delete;
         AchievementManager& operator=(AchievementManager&& other) = delete;
 
-        void AddAchievement(Achievement achievement)
+        void AddAchievement(std::unique_ptr<Achievement> achievement)
         {
-            m_Achievements.emplace_back(achievement);
+            m_Achievements.emplace_back(std::move(achievement));
         }
 
 
         virtual void Notify(Event event, Subject* subject) override
         {
             for (auto& achievement : m_Achievements)
-                achievement.TryUnlock(event, subject);
+                achievement->TryUnlock(event, subject);
 
             return;
         }
@@ -41,7 +42,7 @@ namespace bae
         friend class Singleton<AchievementManager>;
         AchievementManager() = default;
 
-        std::vector<Achievement> m_Achievements;
+        std::vector<std::unique_ptr<Achievement>> m_Achievements;
 
 
     };

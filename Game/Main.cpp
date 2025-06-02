@@ -309,70 +309,69 @@ void Start()
 #ifdef STEAMWORKS_ENABLED
 
     auto& achievementManager = AchievementManager::GetInstance();
-    Achievement dieAchievement
-    {
-        "ACH_TRAVEL_FAR_SINGLE",
-        bae::Event::PLAYER_DIED,
-        [](Subject* subject)
-        {
-            auto* healthComponent = subject->GetGameObject()->GetComponent<Game::HealthComponent>();
-            if (!healthComponent)
-                return false;
 
-            return (healthComponent->GetHealth() <= 0);
-        }
-    };
+    auto dieAchievement = std::make_unique<Achievement>
+        (
+            "ACH_TRAVEL_FAR_SINGLE",
+            bae::Event::PLAYER_DIED,
+            [](Subject* subject)
+            {
+                auto* healthComponent = subject->GetGameObject()->GetComponent<Game::HealthComponent>();
+                if (!healthComponent)
+                    return false;
 
-    Achievement overPoweredAchievement
-    {
-        "ACH_TRAVEL_FAR_ACCUM",
-        bae::Event::PLAYER_HEALTH_CHANGE,
-        [](Subject* subject)
-        {
-            auto* healthComponent = subject->GetGameObject()->GetComponent<Game::HealthComponent>();
-            if (!healthComponent)
-                return false;
+                return (healthComponent->GetHealth() <= 0);
+            }
+        );
 
-            return (healthComponent->GetHealth() > 100);
-        }
-    };
+    auto overPoweredAchievement = std::make_unique<Achievement>
+        (
+            "ACH_TRAVEL_FAR_ACCUM",
+            bae::Event::PLAYER_HEALTH_CHANGE,
+            [](Subject* subject)
+            {
+                auto* healthComponent = subject->GetGameObject()->GetComponent<Game::HealthComponent>();
+                if (!healthComponent)
+                    return false;
 
+                return (healthComponent->GetHealth() > 100);
+            }
+        );
 
-    Achievement loserAchievement
-    {
-        "ACH_WIN_ONE_GAME",
-        bae::Event::PLAYER_SCORE_CHANGE,
-        [](Subject* subject)
-        {
-            auto* scoreComponent = subject->GetGameObject()->GetComponent<Game::ScoreComponent>();
-            if (!scoreComponent)
-                return false;
+    auto loserAchievement = std::make_unique<Achievement>
+        (
+            "ACH_WIN_ONE_GAME",
+            bae::Event::PLAYER_SCORE_CHANGE,
+            [](Subject* subject)
+            {
+                auto* scoreComponent = subject->GetGameObject()->GetComponent<Game::ScoreComponent>();
+                if (!scoreComponent)
+                    return false;
 
-            return (scoreComponent->GetScore() <= 0);
-        }
-    };
+                return (scoreComponent->GetScore() <= 0);
+            }
+        );
 
+    auto winnerAchievement = std::make_unique<Achievement>
+        (
+            "ACH_WIN_100_GAMES",
+            bae::Event::PLAYER_SCORE_CHANGE,
+            [](Subject* subject)
+            {
+                auto* scoreComponent = subject->GetGameObject()->GetComponent<Game::ScoreComponent>();
+                if (!scoreComponent)
+                    return false;
 
-
-    Achievement winnerAchievement
-    {
-        "ACH_WIN_100_GAMES",
-        bae::Event::PLAYER_SCORE_CHANGE,
-        [](Subject* subject)
-        {
-            auto* scoreComponent = subject->GetGameObject()->GetComponent<Game::ScoreComponent>();
-            if (!scoreComponent)
-                return false;
-
-            return (scoreComponent->GetScore() >= 100);
-        }
-    };
+                return (scoreComponent->GetScore() >= 100);
+            }
+        );
 
 
-    achievementManager.AddAchievement(dieAchievement);
-    achievementManager.AddAchievement(overPoweredAchievement);
-    achievementManager.AddAchievement(loserAchievement);
-    achievementManager.AddAchievement(winnerAchievement);
+    achievementManager.AddAchievement(std::move(dieAchievement));
+    achievementManager.AddAchievement(std::move(overPoweredAchievement));
+    achievementManager.AddAchievement(std::move(loserAchievement));
+    achievementManager.AddAchievement(std::move(winnerAchievement));
+
 
     player1->GetComponent<Game::HealthComponent>()->AddObserver(&achievementManager);
     player2->GetComponent<Game::HealthComponent>()->AddObserver(&achievementManager);
