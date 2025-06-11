@@ -6,7 +6,7 @@
 #include "Core/Achievement.h"
 #include "Singletons/Singleton.h"
 
-#include "Core/Events.h"
+#include "Core/EventTypes.h"
 #include "Core/Subject.h"
 
 
@@ -29,7 +29,7 @@ namespace bae
         }
 
 
-        virtual void Notify(Event event, Subject* subject) override
+        virtual void Notify(EventType event, Subject* subject) override
         {
             for (auto& achievement : m_Achievements)
                 achievement->TryUnlock(event, subject);

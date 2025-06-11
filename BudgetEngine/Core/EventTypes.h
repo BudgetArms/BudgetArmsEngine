@@ -4,7 +4,7 @@
 namespace bae
 {
 
-    enum class Event
+    enum class EventType
     {
         LEVEL_STARTED,
         BOMB_EXPLODED,

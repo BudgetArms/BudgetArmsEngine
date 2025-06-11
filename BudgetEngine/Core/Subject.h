@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include <vector>
-#include "Core/Events.h"
+#include "Core/EventTypes.h"
 #include "Core/Observer.h"
 #include "Core/GameObject.h"
 
@@ -42,7 +42,7 @@ namespace bae
 
 
     protected:
-        void NotifyObservers(Event event)
+        void NotifyObservers(EventType event)
         {
             for (auto observer : m_Observers)
                 observer->Notify(event, this);

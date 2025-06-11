@@ -12,12 +12,12 @@ HealthDisplayComponent::HealthDisplayComponent(bae::GameObject& owner, std::shar
 {
 }
 
-void HealthDisplayComponent::Notify(bae::Event event, bae::Subject* subject)
+void HealthDisplayComponent::Notify(bae::EventType event, bae::Subject* subject)
 {
-    if (event != bae::Event::PLAYER_DIED && event != bae::Event::PLAYER_HEALTH_CHANGE)
+    if (event != bae::EventType::PLAYER_DIED && event != bae::EventType::PLAYER_HEALTH_CHANGE)
         return;
 
-    if (event == bae::Event::PLAYER_DIED)
+    if (event == bae::EventType::PLAYER_DIED)
     {
         SetText("Player died");
         return;

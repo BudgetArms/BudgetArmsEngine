@@ -313,7 +313,7 @@ void Start()
     auto dieAchievement = std::make_unique<Achievement>
         (
             "ACH_TRAVEL_FAR_SINGLE",
-            bae::Event::PLAYER_DIED,
+            bae::EventType::PLAYER_DIED,
             [](Subject* subject)
             {
                 auto* healthComponent = subject->GetGameObject()->GetComponent<Game::HealthComponent>();
@@ -327,7 +327,7 @@ void Start()
     auto overPoweredAchievement = std::make_unique<Achievement>
         (
             "ACH_TRAVEL_FAR_ACCUM",
-            bae::Event::PLAYER_HEALTH_CHANGE,
+            bae::EventType::PLAYER_HEALTH_CHANGE,
             [](Subject* subject)
             {
                 auto* healthComponent = subject->GetGameObject()->GetComponent<Game::HealthComponent>();
@@ -341,7 +341,7 @@ void Start()
     auto loserAchievement = std::make_unique<Achievement>
         (
             "ACH_WIN_ONE_GAME",
-            bae::Event::PLAYER_SCORE_CHANGE,
+            bae::EventType::PLAYER_SCORE_CHANGE,
             [](Subject* subject)
             {
                 auto* scoreComponent = subject->GetGameObject()->GetComponent<Game::ScoreComponent>();
@@ -355,7 +355,7 @@ void Start()
     auto winnerAchievement = std::make_unique<Achievement>
         (
             "ACH_WIN_100_GAMES",
-            bae::Event::PLAYER_SCORE_CHANGE,
+            bae::EventType::PLAYER_SCORE_CHANGE,
             [](Subject* subject)
             {
                 auto* scoreComponent = subject->GetGameObject()->GetComponent<Game::ScoreComponent>();

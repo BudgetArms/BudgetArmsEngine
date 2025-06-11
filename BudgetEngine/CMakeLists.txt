@@ -25,7 +25,9 @@ endif()
 add_library(${ENGINE_NAME} STATIC
     "Core/BudgetEngine.cpp"                     "Core/BudgetEngine.h"
     "Core/GameObject.cpp"                       "Core/GameObject.h"
-    "Core/Events.h"
+    "Core/EventTypes.h"
+    "Core/EventQueue.h"                         "Core/EventQueue.cpp"
+    "Core/EventListener.h"
     "Core/Subject.h"
     "Core/Observer.h"
     "Core/Renderer.cpp"                         "Core/Renderer.h"

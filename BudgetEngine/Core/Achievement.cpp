@@ -2,14 +2,14 @@
 
 
 #include "Core/Subject.h"
-#include "Core/Events.h"
+#include "Core/EventTypes.h"
 
 #include "Managers/SteamManager.h"
 
 using namespace bae;
 
 
-Achievement::Achievement(const std::string& id, Event event, std::function<bool(Subject*)> condition) :
+Achievement::Achievement(const std::string& id, EventType event, std::function<bool(Subject*)> condition) :
     m_Id{ id },
     m_Event{ event },
     m_Condition{ std::move(condition) },
@@ -18,7 +18,7 @@ Achievement::Achievement(const std::string& id, Event event, std::function<bool(
 };
 
 
-void Achievement::TryUnlock(Event event, Subject* subject)
+void Achievement::TryUnlock(EventType event, Subject* subject)
 {
     if (m_bUnlocked || m_Event != event)
         return;

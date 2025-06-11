@@ -19,7 +19,7 @@ namespace Game
         HealthDisplayComponent& operator=(const HealthDisplayComponent& other) = delete;
         HealthDisplayComponent& operator=(HealthDisplayComponent&& other) = delete;
 
-        virtual void Notify(bae::Event event, bae::Subject* subject) override;
+        virtual void Notify(bae::EventType event, bae::Subject* subject) override;
 
 
     };

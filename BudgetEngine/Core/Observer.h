@@ -2,7 +2,7 @@
 #include <cstdint>
 
 #include "Core/GameObject.h"
-#include "Core/Events.h"
+#include "Core/EventTypes.h"
 
 
 
@@ -14,7 +14,7 @@ namespace bae
     {
     public:
         virtual ~Observer() = default;
-        virtual void Notify(Event event, Subject* subject) = 0;
+        virtual void Notify(EventType event, Subject* subject) = 0;
 
     };
 

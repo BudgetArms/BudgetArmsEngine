@@ -11,9 +11,9 @@ ScoreDisplayComponent::ScoreDisplayComponent(bae::GameObject& owner, std::shared
 {
 }
 
-void ScoreDisplayComponent::Notify(bae::Event event, bae::Subject* subject)
+void ScoreDisplayComponent::Notify(bae::EventType event, bae::Subject* subject)
 {
-    if (event != bae::Event::PLAYER_SCORE_CHANGE)
+    if (event != bae::EventType::PLAYER_SCORE_CHANGE)
         return;
 
     auto* scoreComponent = subject->GetGameObject()->GetComponent<ScoreComponent>();

@@ -1,7 +1,7 @@
 ﻿#include "ScoreComponent.h"
 
 #include "Core/Subject.h"
-#include "Core/Events.h"
+#include "Core/EventTypes.h"
 
 
 using namespace Game;
@@ -16,11 +16,11 @@ ScoreComponent::ScoreComponent(bae::GameObject& owner) :
 void ScoreComponent::AddScore(int score)
 {
     m_Score += score;
-    NotifyObservers(bae::Event::PLAYER_SCORE_CHANGE);
+    NotifyObservers(bae::EventType::PLAYER_SCORE_CHANGE);
 };
 
 void ScoreComponent::SubtractScore(int score)
 {
     m_Score -= score;
-    NotifyObservers(bae::Event::PLAYER_SCORE_CHANGE);
+    NotifyObservers(bae::EventType::PLAYER_SCORE_CHANGE);
 };

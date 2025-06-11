@@ -41,7 +41,7 @@ float HealthComponent::GetHealth()
 void HealthComponent::SetHealth(float health)
 {
     m_Health = health;
-    NotifyObservers(bae::Event::PLAYER_HEALTH_CHANGE);
+    NotifyObservers(bae::EventType::PLAYER_HEALTH_CHANGE);
 }
 
 
@@ -64,10 +64,10 @@ void HealthComponent::Damage(float damage)
 
     if (m_Health <= 0)
     {
-        NotifyObservers(bae::Event::PLAYER_DIED);
+        NotifyObservers(bae::EventType::PLAYER_DIED);
         return;
     }
-    NotifyObservers(bae::Event::PLAYER_HEALTH_CHANGE);
+    NotifyObservers(bae::EventType::PLAYER_HEALTH_CHANGE);
 }
 
 

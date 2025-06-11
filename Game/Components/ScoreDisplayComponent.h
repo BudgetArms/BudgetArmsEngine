@@ -18,7 +18,7 @@ namespace Game
         ScoreDisplayComponent& operator=(const ScoreDisplayComponent& other) = delete;
         ScoreDisplayComponent& operator=(ScoreDisplayComponent&& other) = delete;
 
-        virtual void Notify(bae::Event event, bae::Subject* subject) override;
+        virtual void Notify(bae::EventType event, bae::Subject* subject) override;
 
 
     };

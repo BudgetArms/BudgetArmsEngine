@@ -10,7 +10,7 @@
 #include "Singletons/Singleton.h"
 #include "Core/Observer.h"
 #include "Core/Subject.h"
-#include "Core/Events.h"
+#include "Core/EventTypes.h"
 
 #include <string>
 #include <functional>
