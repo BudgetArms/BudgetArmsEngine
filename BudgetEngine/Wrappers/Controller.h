@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <Windows.h>
-#include <Xinput.h>
+#include <XInput.h>
 
 #include "Commands/Command.h"
 #include "Managers/InputManager.h"

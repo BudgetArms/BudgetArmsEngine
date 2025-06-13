@@ -15,6 +15,7 @@
 #include <Windows.h>
 #include <filesystem>
 #include <iostream>
+#include <unordered_map>
 
 #include <glm.hpp>
 #include <SDL.h>
@@ -34,6 +35,9 @@
 #include "Core/GameObject.h"
 #include "Core/Renderer.h"
 #include "Core/Scene.h"
+#include "Core/SoundSystem.h"
+#include "Core/SdlSoundSystem.h"
+#include "Core/ServiceLocator.h"
 #include "Components/TextComponent.h"
 #include "Components/TextureComponent.h"
 
@@ -52,8 +56,8 @@
 
 #ifdef STEAMWORKS_ENABLED
 
-#include "Managers/SteamManager.h"
 #include "Core/Achievement.h"
+#include "Managers/SteamManager.h"
 #include "Managers/AchievementManager.h"
 
 #endif
@@ -63,6 +67,7 @@
 
 
 // Game Includes
+#include "Base/SoundEvents.h"
 #include "Commands/FireCommand.h"
 #include "Commands/DamageCommand.h"
 #include "Commands/ScoreCommand.h"
@@ -132,10 +137,14 @@ int main(int, char* [])
 }
 
 
+void LoadSounds();
+
 
 void Start()
 {
     auto& scene = SceneManager::GetInstance().CreateScene("Demo");
+
+    LoadSounds();
 
     // use of go for two variables
     auto go = std::make_shared<GameObject>("Background");
@@ -401,3 +410,38 @@ void Start()
     scene.Add(scoreDisplayPlayer2);
 
 }
+
+
+
+void LoadSounds()
+{
+    bae::ServiceLocator::RegisterSoundSystem(std::make_unique<bae::SdlSoundSystem>());
+    bae::ServiceLocator::RegisterSoundSystem(std::make_unique<bae::SdlSoundSystem>());
+    auto soundSystem = &bae::ServiceLocator::GetSoundSystem();
+    int audioId = soundSystem->LoadSound("Resources/Sounds/Coin_SFX.wav");
+
+    soundSystem->Play(audioId, 1.f);
+
+
+
+    //=
+   //{
+       //{ Game::SoundEvents::QbertHurt, slocator.LoadSound("Resources/Sounds/Coin_SFX.wav") }
+
+   //};
+
+   /*
+   std::vector<std::pair<SoundEvents, int>> SoundEventsPair =
+   {
+      { SoundEvents::QbertHurt, slocator.LoadSound("Resources/Sounds/Coin_SFX.wav")},
+      //{ SoundEvents::QbertJump, slocator.LoadSound("") },
+      //{ SoundEvents::Tune, slocator.LoadSound("") },
+
+   };
+   */
+
+
+
+}
+
+

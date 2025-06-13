@@ -24,11 +24,19 @@ endif()
 
 add_library(${ENGINE_NAME} STATIC
     "Core/BudgetEngine.cpp"                     "Core/BudgetEngine.h"
+    "Core/AudioClip.h"
+    "Core/SdlAudioClip.cpp"                     "Core/SdlAudioClip.h"
     "Core/GameObject.cpp"                       "Core/GameObject.h"
     "Core/EventTypes.h"
+    "Core/Event.h"
     "Core/EventQueue.h"                         "Core/EventQueue.cpp"
     "Core/EventListener.h"
     "Core/Subject.h"
+    "Core/SoundSystem.h"
+    "Core/NullSoundSystem.h"
+    "Core/SdlSoundSystem.h"                     "Core/SdlSoundSystem.cpp"
+    "Core/LoggingSoundSystem.cpp"               "Core/LoggingSoundSystem.h"                 
+    "Core/ServiceLocator.cpp"                   "Core/ServiceLocator.h"
     "Core/Observer.h"
     "Core/Renderer.cpp"                         "Core/Renderer.h"
     "Core/Scene.cpp"                            "Core/Scene.h"
@@ -49,6 +57,7 @@ add_library(${ENGINE_NAME} STATIC
     "Managers/SceneManager.cpp"                 "Managers/SceneManager.h"
     "Singletons/GameTime.h"
     "Singletons/Singleton.h"
+    "Wrappers/AudioChunk.cpp"                   "Wrappers/AudioChunk.h"
     "Wrappers/Controller.cpp"                   "Wrappers/Controller.h"
     "Wrappers/Keyboard.cpp"                     "Wrappers/Controller.h"
     "Wrappers/Font.cpp"                         "Wrappers/Font.h"
@@ -89,7 +98,10 @@ if(NOT glm_POPULATED)
 endif()
 
 
-
+# when I have time, I want to remove the fetching of the precompiled binary files
+# since then it's code-wise less hard on the eyes and more intuative, 
+# and then it's also cross-platform. But then I will need another type of input manager
+# since I get XInput straight from Window's api.
 if (WIN32)
 
     FetchContent_Declare(
@@ -162,7 +174,7 @@ if (WIN32)
     # add SDL2
     FetchContent_Declare(
         SDL2
-        URL https://www.libsdl.org/release/SDL2-devel-2.30.10-VC.zip 
+        URL https://www.libsdl.org/release/SDL2-devel-2.32.8-VC.zip 
         DOWNLOAD_NO_PROGRESS ON
         DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads 
     )
@@ -186,7 +198,7 @@ if (WIN32)
     # add SDL2_image
     FetchContent_Declare(
         SDL2_image
-        URL https://www.libsdl.org/projects/SDL_image/release/SDL2_image-devel-2.8.3-VC.zip 
+        URL https://www.libsdl.org/projects/SDL_image/release/SDL2_image-devel-2.8.8-VC.zip 
         DOWNLOAD_NO_PROGRESS ON
         DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
     )
@@ -210,6 +222,7 @@ if (WIN32)
     # add SDL2_ttf
     FetchContent_Declare(
         SDL2_ttf
+        #URL https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.24.0-VC.zip
         URL https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.22.0-VC.zip
         DOWNLOAD_NO_PROGRESS ON
         DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
@@ -227,6 +240,32 @@ if (WIN32)
     else()
         set(SDL2_TTF_LIBRARIES ${sdl2_ttf_SOURCE_DIR}/lib/x86/SDL2_ttf.lib)
         set(SDL2_TTF_LIBRARY_DLL "${sdl2_ttf_SOURCE_DIR}/lib/x86/SDL2_ttf.dll")
+    endif()
+
+    endif() 
+
+    # add SDL2_mixer
+    FetchContent_Declare(
+        SDL2_mixer
+        URL https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-devel-2.8.1-VC.zip
+        DOWNLOAD_NO_PROGRESS ON
+        DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
+    )
+
+    FetchContent_GetProperties(SDL2_mixer)
+
+    if(NOT sdl2_mixer_POPULATED)
+        message("mixer cmake\n\n\n")
+        FetchContent_MakeAvailable(SDL2_mixer)
+        set(SDL2_MIXER_INCLUDE_DIR ${sdl2_mixer_SOURCE_DIR}/include)
+
+    if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+        message("64 \n\n\n")
+        set(SDL2_MIXER_LIBRARIES ${sdl2_mixer_SOURCE_DIR}/lib/x64/SDL2_mixer.lib)
+        set(SDL2_MIXER_LIBRARY_DLL "${sdl2_mixer_SOURCE_DIR}/lib/x64/SDL2_mixer.dll")
+    else()
+        set(SDL2_MIXER_LIBRARIES ${sdl2_mixer_SOURCE_DIR}/lib/x86/SDL2_mixer.lib)
+        set(SDL2_MIXER_LIBRARY_DLL "${sdl2_mixer_SOURCE_DIR}/lib/x86/SDL2_mixer.dll")
     endif()
 
     endif()
@@ -254,11 +293,13 @@ if (WIN32)
 
 
     # set all include directories
-    target_include_directories(${ENGINE_NAME} PRIVATE
+    #target_include_directories(${ENGINE_NAME} PRIVATE
+    target_include_directories(${ENGINE_NAME} PUBLIC
         ${VLD_INCLUDE_DIR}
         ${SDL2_INCLUDE_DIR} 
         ${SDL2_IMAGE_INCLUDE_DIR} 
         ${SDL2_TTF_INCLUDE_DIR}
+        ${SDL2_MIXER_INCLUDE_DIR}
 
         ${imgui_SOURCE_DIR}
         ${imgui_SOURCE_DIR}/backends
@@ -283,6 +324,8 @@ if (WIN32)
         ${SDL2_LIBRARIES} 
         ${SDL2_IMAGE_LIBRARIES} 
         ${SDL2_TTF_LIBRARIES} 
+        ${SDL2_MIXER_LIBRARIES} 
+
         ${VLD_LIBRARY}
         ${XINPUT_LIB}
         imgui
@@ -304,7 +347,7 @@ elseif(NOT EMSCRIPTEN)
     FetchContent_Declare(
         SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-2.30.10
+        GIT_TAG release-2.32.8
         GIT_SHALLOW TRUE
         GIT_PROGRESS TRUE
     )
@@ -313,7 +356,7 @@ elseif(NOT EMSCRIPTEN)
     FetchContent_Declare(
         SDL2_image
         GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
-        GIT_TAG release-2.8.3
+        GIT_TAG release-2.8.8
         GIT_SHALLOW TRUE
         GIT_PROGRESS TRUE
     )
@@ -324,22 +367,40 @@ elseif(NOT EMSCRIPTEN)
     FetchContent_Declare(
         SDL2_ttf
         GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
+        #GIT_TAG release-2.24.0
         GIT_TAG release-2.22.0
         GIT_SHALLOW TRUE
         GIT_PROGRESS TRUE
     )
     
     set(SDL2TTF_INSTALL OFF)
-    FetchContent_MakeAvailable(SDL2_ttf)
+    FetchContent_MakeAvailable(SDL2_ttf) 
     
-    target_include_directories("${ENGINE_NAME}" PUBLIC 
-        ${sdl2_SOURCE_DIR}/include
-        ${sdl2_image_SOURCE_DIR}/include
-        ${sdl2_ttf_SOURCE_DIR}
+
+    FetchContent_Declare(
+        SDL2_mixer
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
+        GIT_TAG release-2.8.1
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
     )
     
-    target_link_libraries("${ENGINE_NAME}" PUBLIC 
-        SDL2::SDL2main SDL2::SDL2 SDL2_image::SDL2_image SDL2_ttf::SDL2_ttf
+    set(SDL2MIXER_INSTALL OFF)
+    FetchContent_MakeAvailable(SDL2_mixer)
+    
+    target_include_directories(${ENGINE_NAME} PUBLIC 
+        ${sdl2_SOURCE_DIR}/include
+        ${sdl2_image_SOURCE_DIR}/include
+        ${sdl2_ttf_SOURCE_DIR}/include
+        ${sdl2_mixer_SOURCE_DIR}/include
+    )
+    
+    target_link_libraries(${ENGINE_NAME} PUBLIC 
+        SDL2::SDL2main 
+        SDL2::SDL2 
+        SDL2_image::SDL2_image 
+        SDL2_ttf::SDL2_ttf
+        SDL2_mixer::SDL2_mixer
     )
 
 endif()
@@ -350,7 +411,6 @@ endif()
 target_include_directories(${ENGINE_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${glm_SOURCE_DIR}
-    #${CMAKE_SOURCE_DIR}/includes/imgui
 )
 
 
@@ -377,6 +437,10 @@ if(WIN32)
     add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy "${SDL2_TTF_LIBRARY_DLL}" "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}"
     )
+ 
+    add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy "${SDL2_MIXER_LIBRARY_DLL}" "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}"
+    )
 
 
    if(STEAMWORKS_AVAILABLE)
@@ -397,10 +461,26 @@ if(WIN32)
         COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_SOURCE_DIR}/Resources" "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}/Resources"
     )
 
+
 elseif(EMSCRIPTEN)
 
-    set(EMSCRIPTEN_COMPILE_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_SDL_TTF=2 -g")
-    set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_SDL_TTF=2 -g -sALLOW_MEMORY_GROWTH --preload-file \"${CMAKE_SOURCE_DIR}/Resources@/\" -sSDL2_IMAGE_FORMATS=['tga','png']")
+    set(EMSCRIPTEN_COMPILE_FLAGS "${EMSCRIPTEN_LINK_FLAGS} \ 
+        -sUSE_SDL=2 \
+        -sUSE_SDL_IMAGE=2 \ 
+        -sUSE_SDL_TTF=2 \
+        -sUSE_SDL_MIXER=2 \ 
+        -g"
+    )
+    set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} \
+        -sUSE_SDL=2 \
+        -sUSE_SDL_IMAGE=2 \
+        -sUSE_SDL_TTF=2 \
+        -sUSE_SDL_MIXER=2 \
+        -g \
+        -sALLOW_MEMORY_GROWTH \ 
+        --preload-file \"${CMAKE_SOURCE_DIR}/Resources@/\" \
+        -sSDL2_IMAGE_FORMATS=['tga','png']"
+    )
 
     # work around https://github.com/emscripten-core/emscripten/issues/11513
     set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -fno-stack-protector")

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/EventQueue.h"
+#include "Core/Event.h"
 
 
 namespace bae
@@ -15,7 +16,7 @@ namespace bae
 
         ~EventListener() = default;
 
-        //void HandleEvent(Event*) = 0;
+        virtual void HandleEvent(Event* event) = 0;
 
 
 

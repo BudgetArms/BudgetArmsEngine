@@ -1,7 +1,7 @@
 ﻿#include "Controller.h"
 
-using namespace bae;
 
+using namespace bae;
 
 
 class Controller::Impl
@@ -42,8 +42,6 @@ public:
             } break;
             }
         }
-
-
     }
 
     void AddControllerCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)
@@ -74,16 +72,11 @@ public:
     };
 
 
-
-
 private:
     XINPUT_STATE m_PreviousState{};
     XINPUT_STATE m_CurrentState{};
 
     std::vector<std::tuple<std::unique_ptr<Command>, unsigned int, InputManager::ButtonState>> m_ControllerCommands{};
-
-
-protected:
 
 
 };

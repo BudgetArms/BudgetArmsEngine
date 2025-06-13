@@ -24,6 +24,8 @@
 #include "Managers/InputManager.h"
 #include "Managers/SceneManager.h"
 #include "Managers/ResourceManager.h"
+#include "Core/EventQueue.h"
+#include "Core/ServiceLocator.h"
 
 #ifdef STEAMWORKS_ENABLED
 #include "Managers/SteamManager.h"
@@ -67,6 +69,7 @@ bae::BudgetEngine::BudgetEngine(const std::filesystem::path& dataPath)
 
     Renderer::GetInstance().Init(g_window);
     ResourceManager::GetInstance().Init(dataPath);
+    ServiceLocator::RegisterSoundSystem(nullptr);
 }
 
 bae::BudgetEngine::~BudgetEngine()
@@ -119,6 +122,7 @@ void bae::BudgetEngine::RunOneFrame()
     SceneManager::GetInstance().Update();
     SceneManager::GetInstance().LateUpdate();
     Renderer::GetInstance().Render();
+    EventQueue::GetInstance().ProcessEvents();
 
     //std::cout << "FPS: " << static_cast<int>(GameTime::GetInstance().GetFPS()) << '\n';
     std::this_thread::sleep_for(std::chrono::duration<float>(GameTime::GetInstance().GetSleepTime()));
