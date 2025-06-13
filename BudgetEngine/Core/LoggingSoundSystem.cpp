@@ -40,9 +40,29 @@ void LoggingSoundSystem::Stop(int soundId)
     m_RealSoundSystem->Stop(soundId);
 }
 
+
+void LoggingSoundSystem::Resume(int soundId)
+{
+    std::cout << "LoggingSoundSystem: Resume Sound: " << soundId << '\n';
+    m_RealSoundSystem->Resume(soundId);
+}
+
+void LoggingSoundSystem::Pause(int soundId)
+{
+    std::cout << "LoggingSoundSystem: Pause Sound: " << soundId << '\n';
+    m_RealSoundSystem->Pause(soundId);
+}
+
+
 void LoggingSoundSystem::Mute(int soundId)
 {
     std::cout << "LoggingSoundSystem: Mute Sound: " << soundId << '\n';
+    m_RealSoundSystem->Mute(soundId);
+}
+
+void LoggingSoundSystem::UnMute(int soundId)
+{
+    std::cout << "LoggingSoundSystem: UnMute Sound: " << soundId << '\n';
     m_RealSoundSystem->Mute(soundId);
 }
 
@@ -57,6 +77,19 @@ bool LoggingSoundSystem::IsPlaying(int soundId)
 {
     std::cout << "LoggingSoundSystem: IsPlaying, sondId: " << soundId << '\n';
     return m_RealSoundSystem->IsPlaying(soundId);
+}
+
+
+bool LoggingSoundSystem::IsPaused(int soundId)
+{
+    std::cout << "LoggingSoundSystem: IsPaused, sondId: " << soundId << '\n';
+    return m_RealSoundSystem->IsPaused(soundId);
+}
+
+bool LoggingSoundSystem::IsMuted(int soundId)
+{
+    std::cout << "LoggingSoundSystem: IsMuted, sondId: " << soundId << '\n';
+    return m_RealSoundSystem->IsMuted(soundId);
 }
 
 

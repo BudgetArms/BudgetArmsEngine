@@ -71,6 +71,8 @@
 #include "Commands/FireCommand.h"
 #include "Commands/DamageCommand.h"
 #include "Commands/ScoreCommand.h"
+#include "Commands/SoundTestCommand.h"
+
 
 #include "Components/HealthComponent.h"
 #include "Components/HealthDisplayComponent.h"
@@ -172,10 +174,6 @@ void Start()
     fpsCounter->AddLocation({ -75, 0, 0 });
 
 
-    auto fireCommand = std::make_unique<Game::RotateCommand>(*fpsCounter);
-    fireCommand->Execute();
-
-
     auto player1 = std::make_shared<GameObject>("Player 1");
     player1->AddComponent<Game::QbertComponent>(*player1);
     player1->SetWorldLocation({ 100, 100, 0 });
@@ -265,6 +263,18 @@ void Start()
     damageCommand = std::make_unique<Game::DamageCommand>(*player2, -3.f);
     keyboard.AddKeyboardCommands(std::move(damageCommand), SDLK_KP_PLUS, bae::InputManager::ButtonState::Down);
 
+
+
+    // Sound commands
+    std::unique_ptr<Game::SoundTestCommand> soundCommand = nullptr;
+    soundCommand = std::make_unique<Game::SoundPlayCommand>(Game::Sounds::SoundEvents::Victory);
+    keyboard.AddKeyboardCommands(std::move(soundCommand), SDLK_5, bae::InputManager::ButtonState::Down);
+
+    soundCommand = std::make_unique<Game::SoundPauseCommand>(Game::Sounds::SoundEvents::Victory);
+    keyboard.AddKeyboardCommands(std::move(soundCommand), SDLK_6, bae::InputManager::ButtonState::Down);
+
+    soundCommand = std::make_unique<Game::SoundResumeCommand>(Game::Sounds::SoundEvents::Victory);
+    keyboard.AddKeyboardCommands(std::move(soundCommand), SDLK_7, bae::InputManager::ButtonState::Down);
 
 
     // score commands
@@ -415,33 +425,37 @@ void Start()
 
 void LoadSounds()
 {
-    bae::ServiceLocator::RegisterSoundSystem(std::make_unique<bae::SdlSoundSystem>());
+    namespace gs = Game::Sounds;
+
     bae::ServiceLocator::RegisterSoundSystem(std::make_unique<bae::SdlSoundSystem>());
     auto soundSystem = &bae::ServiceLocator::GetSoundSystem();
-    int audioId = soundSystem->LoadSound("Resources/Sounds/Coin_SFX.wav");
 
-    soundSystem->Play(audioId, 1.f);
+    gs::g_sSoundEvents =
+    {
+        { gs::SoundEvents::BallJump,         soundSystem->LoadSound("Resources/Sounds/Coin.wav") },
+        { gs::SoundEvents::CoillyBallJump,   soundSystem->LoadSound("Resources/Sounds/CoilyBallJump.wav") },
+        { gs::SoundEvents::CoillyFall,       soundSystem->LoadSound("Resources/Sounds/CoilyFall.wav") },
+        { gs::SoundEvents::CoillyJump,       soundSystem->LoadSound("Resources/Sounds/CoilyJump.wav") },
+        { gs::SoundEvents::Coin,             soundSystem->LoadSound("Resources/Sounds/Coin.wav") },
+        { gs::SoundEvents::Prize,            soundSystem->LoadSound("Resources/Sounds/Prize.wav") },
+        { gs::SoundEvents::QbertFall,        soundSystem->LoadSound("Resources/Sounds/QbertFall.wav") },
+        { gs::SoundEvents::QbertJump,        soundSystem->LoadSound("Resources/Sounds/QbertJump.wav") },
+        { gs::SoundEvents::QbertLift,        soundSystem->LoadSound("Resources/Sounds/QbertLift.wav") },
+        { gs::SoundEvents::QbertSpeech1,     soundSystem->LoadSound("Resources/Sounds/QbertSpeech1.wav") },
+        { gs::SoundEvents::QbertSpeech2,     soundSystem->LoadSound("Resources/Sounds/QbertSpeech2.wav") },
+        { gs::SoundEvents::QbertSpeech3,     soundSystem->LoadSound("Resources/Sounds/QbertSpeech3.wav") },
+        { gs::SoundEvents::QbertSpeech4,     soundSystem->LoadSound("Resources/Sounds/QbertSpeech4.wav") },
+        { gs::SoundEvents::StartLevel,       soundSystem->LoadSound("Resources/Sounds/StartLevel.wav") },
+        { gs::SoundEvents::Tune,             soundSystem->LoadSound("Resources/Sounds/Tune.wav") },
+        { gs::SoundEvents::UgglySpeech,      soundSystem->LoadSound("Resources/Sounds/UggySpeech.wav") },
+        { gs::SoundEvents::Victory,          soundSystem->LoadSound("Resources/Sounds/Victory.wav") },
 
-
-
-    //=
-   //{
-       //{ Game::SoundEvents::QbertHurt, slocator.LoadSound("Resources/Sounds/Coin_SFX.wav") }
-
-   //};
-
-   /*
-   std::vector<std::pair<SoundEvents, int>> SoundEventsPair =
-   {
-      { SoundEvents::QbertHurt, slocator.LoadSound("Resources/Sounds/Coin_SFX.wav")},
-      //{ SoundEvents::QbertJump, slocator.LoadSound("") },
-      //{ SoundEvents::Tune, slocator.LoadSound("") },
-
-   };
-   */
-
-
+    };
 
 }
+
+
+
+
 
 

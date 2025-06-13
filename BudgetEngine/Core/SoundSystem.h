@@ -15,10 +15,18 @@ namespace bae
 
         virtual void Play(int soundId, float volume) = 0;
         virtual void Stop(int soundId) = 0;
+
+        virtual void Resume(int soundId) = 0;
+        virtual void Pause(int soundId) = 0;
+
         virtual void Mute(int soundId) = 0;
+        virtual void UnMute(int soundId) = 0;
 
         virtual bool IsLoaded(int soundId) = 0;
         virtual bool IsPlaying(int soundId) = 0;
+
+        virtual bool IsPaused(int soundId) = 0;
+        virtual bool IsMuted(int soundId) = 0;
 
 
         virtual void StopAllSounds() = 0;

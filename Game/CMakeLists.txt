@@ -10,6 +10,7 @@ add_executable(${PROJECT_NAME}
 
     "Base/SoundEvents.h"
 
+    "Commands/SoundTestCommand.h" 
     "Commands/DamageCommand.h" 
     "Commands/FireCommand.h"
     "Commands/ScoreCommand.h"

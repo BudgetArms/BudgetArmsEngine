@@ -10,7 +10,7 @@ namespace Game
 {
     class GameObject;
 
-    class QbertComponent : public bae::Component
+    class QbertComponent final : public bae::Component
     {
     public:
         explicit QbertComponent(bae::GameObject& owner);
@@ -23,7 +23,7 @@ namespace Game
 
 
     private:
-        enum class QBertState
+        enum class QBertSprites
         {
             UpRightCrouched,
             UpRightStand,
@@ -35,9 +35,14 @@ namespace Game
             DownLeftStand
         };
 
+        enum class QBertStates
+        {
+            Idle,
+            Jumping,
+            Floating,
+            Dying,
+        };
 
-
-    protected:
 
 
     };

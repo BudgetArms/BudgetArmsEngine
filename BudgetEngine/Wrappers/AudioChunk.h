@@ -5,7 +5,7 @@ struct Mix_Chunk;
 namespace bae
 {
     /**
-     * Simple RAII wrapper for a _Mix_Chunk
+     * Simple RAII wrapper for a Mix_Chunk
      */
     class AudioChunk final
     {

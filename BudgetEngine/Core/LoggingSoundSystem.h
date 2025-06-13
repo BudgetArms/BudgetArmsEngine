@@ -19,10 +19,18 @@ namespace bae
 
         virtual void Play(int soundId, float volume) override;
         virtual void Stop(int soundId) override;
+
+        virtual void Resume(int soundId) override;
+        virtual void Pause(int soundId) override;
+
         virtual void Mute(int soundId) override;
+        virtual void UnMute(int soundId) override;
 
         virtual bool IsLoaded(int soundId) override;
         virtual bool IsPlaying(int soundId) override;
+
+        virtual bool IsPaused(int soundId) override;
+        virtual bool IsMuted(int soundId) override;
 
         virtual void StopAllSounds() override;
         virtual void MuteAllSounds() override;
