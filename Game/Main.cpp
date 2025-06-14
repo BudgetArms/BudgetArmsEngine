@@ -79,8 +79,10 @@
 #include "Components/HealthDisplayComponent.h"
 #include "Components/ScoreComponent.h"
 #include "Components/ScoreDisplayComponent.h"
+#include "Components/PyramidComponent.h"
 
 #include "Entities/QbertComponent.h"
+#include "Entities/CoilyComponent.h"
 
 
 #pragma endregion
@@ -149,21 +151,9 @@ void Start()
 
     LoadSounds();
 
-    // use of go for two variables
-    auto go = std::make_shared<GameObject>("Background");
-    go->AddComponent<TextureComponent>(*go, "Textures/background.tga");
-    scene.Add(go);
-
-    go = std::make_shared<GameObject>("Logo");
-    go->AddComponent<TextureComponent>(*go, "Textures/logo.tga");
-    go->SetLocalLocation({ 216, 180, 0 });
 
     auto font = ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 36);
     auto fontSmall = ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 18);
-
-    auto title = std::make_shared<GameObject>("Title");
-    title->AddComponent<TextComponent>(*title, "Programming 4 Assignment", font);
-    title->SetLocalLocation({ 20, 10, 0 });
 
     auto fpsCounter = std::make_shared<GameObject>("Fps Counter");
     fpsCounter->AddComponent<FpsTextComponent>(*fpsCounter, fontSmall);
@@ -172,7 +162,27 @@ void Start()
     int width, height;
     SDL_GetWindowSize(window, &width, &height);
     fpsCounter->SetWorldLocation({ width, 0, 0 });
-    fpsCounter->AddLocation({ -75, 0, 0 });
+    fpsCounter->AddLocation({ 200, 150, 0 });
+
+
+    scene.Add(fpsCounter);
+
+
+    auto pyramid = std::make_shared<GameObject>("Pyramid");
+    pyramid->AddComponent<Game::PyramidComponent>(*pyramid);
+    pyramid->SetWorldLocation({ width / 2, 100, 0 });
+    //pyramid->SetWorldScale({ 2.f, 2.f });
+
+    scene.Add(pyramid);
+
+    auto coily = std::make_shared<GameObject>("Coily1");
+    coily->AddComponent<Game::CoilyComponent>(*coily);
+    coily->SetWorldLocation({ width / 2, 100, 0 });
+    coily->AddLocation({ 100.f, 100.f, 0.f });
+    coily->SetWorldScale({ 2.f, 2.f });
+
+    scene.Add(coily);
+
 
 
     auto player1 = std::make_shared<GameObject>("Player 1");
@@ -266,6 +276,7 @@ void Start()
 
 
 
+
     // Sound commands
     std::unique_ptr<Game::SoundTestCommand> soundCommand = nullptr;
     soundCommand = std::make_unique<Game::SoundPlayCommand>(Game::Sounds::SoundEvents::Victory);
@@ -278,38 +289,10 @@ void Start()
     keyboard.AddKeyboardCommands(std::move(soundCommand), SDLK_7, bae::InputManager::ButtonState::Down);
 
 
-    // score commands
-    auto scoreCommand = std::make_unique<Game::ScoreCommand>(*player1, -1);
-    myController->AddControllerCommands(std::move(scoreCommand), XINPUT_GAMEPAD_LEFT_SHOULDER, bae::InputManager::ButtonState::Down);
+    // F12
+    auto commandSound = std::make_unique<Game::SoundMuteAllSoundsCommand>();
+    keyboard.AddKeyboardCommands(std::move(commandSound), SDLK_F12, bae::InputManager::ButtonState::Down);
 
-    scoreCommand = std::make_unique<Game::ScoreCommand>(*player1, 2);
-    myController->AddControllerCommands(std::move(scoreCommand), XINPUT_GAMEPAD_RIGHT_SHOULDER, bae::InputManager::ButtonState::Down);
-
-    scoreCommand = std::make_unique<Game::ScoreCommand>(*player2, -1);
-    keyboard.AddKeyboardCommands(std::move(scoreCommand), SDLK_LEFTBRACKET, bae::InputManager::ButtonState::Down);
-
-    scoreCommand = std::make_unique<Game::ScoreCommand>(*player2, 2);
-    keyboard.AddKeyboardCommands(std::move(scoreCommand), SDLK_RIGHTBRACKET, bae::InputManager::ButtonState::Down);
-
-
-    // Health Display
-    auto healthDisplayPlayer1 = std::make_shared<GameObject>("HealthDisplay Player 1");
-    healthDisplayPlayer1->AddComponent<Game::HealthDisplayComponent>(*healthDisplayPlayer1, font);
-    auto* healthComponentPlayer1 = healthDisplayPlayer1->GetComponent<Game::HealthDisplayComponent>();
-
-    auto healthDisplayPlayer2 = std::make_shared<GameObject>("HealthDisplay Player 2");
-    healthDisplayPlayer2->AddComponent<Game::HealthDisplayComponent>(*healthDisplayPlayer2, font);
-    auto* healthComponentPlayer2 = healthDisplayPlayer2->GetComponent<Game::HealthDisplayComponent>();
-
-
-    // Score Display
-    auto scoreDisplayPlayer1 = std::make_shared<GameObject>("ScoreDisplay Player 1");
-    scoreDisplayPlayer1->AddComponent<Game::ScoreDisplayComponent>(*scoreDisplayPlayer1, font);
-    auto* scoreDisplayComponentPlayer1 = scoreDisplayPlayer1->GetComponent<Game::ScoreDisplayComponent>();
-
-    auto scoreDisplayPlayer2 = std::make_shared<GameObject>("ScoreDisplay Player 2");
-    scoreDisplayPlayer2->AddComponent<Game::ScoreDisplayComponent>(*scoreDisplayPlayer2, font);
-    auto* scoreDisplayComponentPlayer2 = scoreDisplayPlayer2->GetComponent<Game::ScoreDisplayComponent>();
 
 
     // add observers
@@ -317,14 +300,6 @@ void Start()
     {
         throw std::runtime_error("Main::Start(), player1 or player2 don't have healthComponent");
     }
-
-    player1->GetComponent<Game::HealthComponent>()->AddObserver(healthComponentPlayer1);
-    player2->GetComponent<Game::HealthComponent>()->AddObserver(healthComponentPlayer2);
-
-
-    player1->GetComponent<Game::ScoreComponent>()->AddObserver(scoreDisplayComponentPlayer1);
-    player2->GetComponent<Game::ScoreComponent>()->AddObserver(scoreDisplayComponentPlayer2);
-
 
 #ifdef STEAMWORKS_ENABLED
 
@@ -403,22 +378,11 @@ void Start()
 #endif
 
 
-    healthDisplayPlayer1->AddLocation({ 0, 50, 0 });
-    scoreDisplayPlayer1->AddLocation({ 0, 80, 0 });
-
-    healthDisplayPlayer2->AddLocation({ 0, 150, 0 });
-    scoreDisplayPlayer2->AddLocation({ 0, 180, 0 });
-
-
-    scene.Add(go);
-    scene.Add(title);
-    scene.Add(fpsCounter);
     scene.Add(player1);
     scene.Add(player2);
-    scene.Add(healthDisplayPlayer1);
-    scene.Add(healthDisplayPlayer2);
-    scene.Add(scoreDisplayPlayer1);
-    scene.Add(scoreDisplayPlayer2);
+
+    auto soundSystem = &bae::ServiceLocator::GetSoundSystem();
+    soundSystem->Play(Game::Sounds::GetSoundId(Game::Sounds::SoundEvents::Tune), 1.f);
 
 }
 

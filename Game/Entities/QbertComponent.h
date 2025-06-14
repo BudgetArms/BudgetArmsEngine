@@ -3,16 +3,23 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <vector>
 #include <unordered_map>
 
 #include "Components/Component.h"
+#include "Components/SpriteComponent.h"
+#include "Wrappers/Texture2D.h"
 
 #include "Base/QbertStates.h"
 
+//namespace bae
+//{
+    //class Texture2D;
+//};
 
 namespace Game
 {
-    enum class QBertSprites
+    enum class QbertSprites
     {
         UpRightCrouched,
         UpRightStand,
@@ -24,7 +31,6 @@ namespace Game
         DownLeftStand
     };
 
-    class GameObject;
 
     class QbertComponent final : public bae::Component
     {
@@ -41,9 +47,11 @@ namespace Game
         virtual void Update() override;
         virtual void Render() const override;
 
+        void HandleInput(const glm::vec2& dir);
+
 
     private:
-        std::unique_ptr<Game::States::QbertState> m_State;
+        Game::States::QbertStateComponent* m_StateComponent;
 
 
     };

@@ -1,5 +1,11 @@
 ﻿#pragma once
+
+#include <memory>
+
+#include <glm.hpp>
+
 #include "Core/State.h"
+#include "Components/Component.h"
 
 
 namespace Game
@@ -9,9 +15,30 @@ namespace Game
 
 namespace Game::States
 {
-    // partially cursed structure, bc Coily also has an Idling, Jumping, etc State
+    // yes, this goes about 1 spot difference
+    class QbertState;
 
-    class QbertState : bae::State
+    class QbertStateComponent final : public bae::Component
+    {
+    public:
+        QbertStateComponent(bae::GameObject* owner) :
+            bae::Component(*owner)
+        {
+        }
+        virtual ~QbertStateComponent() = default;
+
+        virtual void Update() override;
+        virtual void HandleInput(const glm::vec2& dir);
+
+
+    private:
+        std::unique_ptr<QbertState> m_State{};
+
+    };
+
+
+    // partially cursed structure, bc Coily also has an Idling, Jumping, etc State
+    class QbertState : public bae::State
     {
     public:
         QbertState(QbertComponent* qbertComponent) :
@@ -28,14 +55,14 @@ namespace Game::States
     };
 
 
-    class IdlingState final : public QbertState
+    class QbertIdlingState final : public QbertState
     {
     public:
-        explicit IdlingState(QbertComponent* qbertComponent) :
+        explicit QbertIdlingState(QbertComponent* qbertComponent) :
             QbertState(qbertComponent)
         {
         };
-        virtual ~IdlingState() = default;
+        virtual ~QbertIdlingState() = default;
 
         virtual void Enter() override;
         virtual void Exit() override;
@@ -46,18 +73,18 @@ namespace Game::States
 
     private:
         float m_ElapsedSec{};
-        const float m_SpriteSwitchDelay{ 3.f };
+        const float m_SpriteSwitchDelay{ 2.f };
 
     };
 
-    class JumpingState final : public QbertState
+    class QbertJumpingState final : public QbertState
     {
     public:
-        explicit JumpingState(QbertComponent* qbertComponent) :
+        explicit QbertJumpingState(QbertComponent* qbertComponent) :
             QbertState(qbertComponent)
         {
         };
-        virtual ~JumpingState() = default;
+        virtual ~QbertJumpingState() = default;
 
         virtual void Enter() override;
         virtual void Exit() override;
@@ -71,14 +98,14 @@ namespace Game::States
 
     };
 
-    class FallingState final : public QbertState
+    class QbertFallingState final : public QbertState
     {
     public:
-        explicit FallingState(QbertComponent* qbertComponent) :
+        explicit QbertFallingState(QbertComponent* qbertComponent) :
             QbertState(qbertComponent)
         {
         };
-        virtual ~FallingState() = default;
+        virtual ~QbertFallingState() = default;
 
         virtual void Enter() override;
         virtual void Exit() override;
@@ -91,14 +118,14 @@ namespace Game::States
 
     };
 
-    class FloatingState final : public QbertState
+    class QbertFloatingState final : public QbertState
     {
     public:
-        explicit FloatingState(QbertComponent* qbertComponent) :
+        explicit QbertFloatingState(QbertComponent* qbertComponent) :
             QbertState(qbertComponent)
         {
         };
-        virtual ~FloatingState() = default;
+        virtual ~QbertFloatingState() = default;
 
         virtual void Enter() override;
         virtual void Exit() override;
@@ -111,14 +138,14 @@ namespace Game::States
 
     };
 
-    class DyingState final : public QbertState
+    class QbertDyingState final : public QbertState
     {
     public:
-        explicit DyingState(QbertComponent* qbertComponent) :
+        explicit QbertDyingState(QbertComponent* qbertComponent) :
             QbertState(qbertComponent)
         {
         };
-        virtual ~DyingState() = default;
+        virtual ~QbertDyingState() = default;
 
         virtual void Enter() override;
         virtual void Exit() override;

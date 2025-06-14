@@ -56,7 +56,7 @@ bae::BudgetEngine::BudgetEngine(const std::filesystem::path& dataPath)
         throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 
     g_window = SDL_CreateWindow(
-        "Programming 4 assignment Q-Bert, PROGRESS :D",
+        "Q-Bert",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         640,

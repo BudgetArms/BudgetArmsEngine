@@ -1,21 +1,21 @@
-﻿#include "QbertStates.h"
+﻿#include "CoilyStates.h"
 
 #include "Components/SpriteComponent.h"
 #include "Singletons/GameTime.h"
 
-#include "Entities/QbertComponent.h"
+#include "Entities/CoilyComponent.h"
 
 
 using namespace Game::States;
 
 
 
-void QbertStateComponent::Update()
+void CoilyStateComponent::Update()
 {
 
 }
 
-void QbertStateComponent::HandleInput(const glm::vec2&)
+void CoilyStateComponent::HandleInput(const glm::vec2&)
 {
     //if (auto state = )
 
@@ -26,19 +26,19 @@ void QbertStateComponent::HandleInput(const glm::vec2&)
 #pragma region Idling
 
 
-void QbertIdlingState::Enter()
+void CoilyIdlingState::Enter()
 {
 
 }
 
-void QbertIdlingState::Exit()
+void CoilyIdlingState::Exit()
 {
 
 }
 
-void QbertIdlingState::Update()
+void CoilyIdlingState::Update()
 {
-    auto owner = m_QbertComponent.GetOwner();
+    auto owner = m_CoilyComponent.GetOwner();
     if (!owner)
     {
         std::cout << "IdleState this should not happen\n";
@@ -60,7 +60,7 @@ void QbertIdlingState::Update()
 
 }
 
-QbertState* QbertIdlingState::HandleInput()
+CoilyState* CoilyIdlingState::HandleInput()
 {
 
 
@@ -73,22 +73,22 @@ QbertState* QbertIdlingState::HandleInput()
 #pragma region Jumping
 
 
-void QbertJumpingState::Enter()
+void CoilyJumpingState::Enter()
 {
 
 }
 
-void QbertJumpingState::Exit()
+void CoilyJumpingState::Exit()
 {
 
 }
 
-void QbertJumpingState::Update()
+void CoilyJumpingState::Update()
 {
 
 }
 
-QbertState* QbertJumpingState::HandleInput()
+CoilyState* CoilyJumpingState::HandleInput()
 {
 
 
@@ -103,22 +103,22 @@ QbertState* QbertJumpingState::HandleInput()
 #pragma region Falling
 
 
-void QbertFallingState::Enter()
+void CoilyFallingState::Enter()
 {
 
 }
 
-void QbertFallingState::Exit()
+void CoilyFallingState::Exit()
 {
 
 }
 
-void QbertFallingState::Update()
+void CoilyFallingState::Update()
 {
 
 }
 
-QbertState* QbertFallingState::HandleInput()
+CoilyState* CoilyFallingState::HandleInput()
 {
 
 
@@ -131,22 +131,22 @@ QbertState* QbertFallingState::HandleInput()
 
 #pragma region Floating
 
-void QbertFloatingState::Enter()
+void CoilyFloatingState::Enter()
 {
 
 }
 
-void QbertFloatingState::Exit()
+void CoilyFloatingState::Exit()
 {
 
 }
 
-void QbertFloatingState::Update()
+void CoilyFloatingState::Update()
 {
 
 }
 
-QbertState* QbertFloatingState::HandleInput()
+CoilyState* CoilyFloatingState::HandleInput()
 {
 
 
@@ -161,22 +161,22 @@ QbertState* QbertFloatingState::HandleInput()
 #pragma region Dying
 
 
-void QbertDyingState::Enter()
+void CoilyDyingState::Enter()
 {
 
 }
 
-void QbertDyingState::Exit()
+void CoilyDyingState::Exit()
 {
 
 }
 
-void QbertDyingState::Update()
+void CoilyDyingState::Update()
 {
 
 }
 
-QbertState* QbertDyingState::HandleInput()
+CoilyState* CoilyDyingState::HandleInput()
 {
 
 
@@ -188,4 +188,3 @@ QbertState* QbertDyingState::HandleInput()
 
 
 
-//*/

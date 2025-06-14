@@ -10,11 +10,14 @@
 using namespace bae;
 
 
-SpriteComponent::SpriteComponent(GameObject& owner, const std::string& filename, const SDL_Rect& srcRect, int nrColumns, int nrSprites) :
+SpriteComponent::SpriteComponent(GameObject& owner, const std::string& filename, const SDL_Rect& srcRect,
+    int nrColumns, int nrSprites, int offsetX, int offsetY) :
     TextureComponent(owner, filename),
     m_SrcRect{ srcRect },
     m_DstRect{},
     m_Index{},
+    m_OffsetX{ offsetX },
+    m_OffsetY{ offsetY },
     m_NrSprites{ nrSprites },
     m_NrColumns{ nrColumns },
     m_NrRows{ static_cast<int>(std::ceil(static_cast<float>(nrSprites) / nrColumns)) }
@@ -33,22 +36,6 @@ void SpriteComponent::Render() const
         const float rotation = m_Owner->GetWorldRotation();
         const glm::vec2& scale = m_Owner->GetWorldScale();
 
-        SDL_Rect srcRect{};
-
-        const int currentColumn = m_Index % m_NrColumns;
-        const int currentRow = static_cast<int>(static_cast<float>(m_Index) / m_NrColumns);
-
-        const int spriteWidth = static_cast<int>((static_cast<float>(m_SrcRect.w) / m_NrColumns));
-        const int spriteHeight = static_cast<int>((static_cast<float>(m_SrcRect.h) / m_NrRows));
-
-        srcRect.x = currentColumn * spriteWidth;
-        srcRect.y = currentRow * spriteHeight;
-
-        srcRect.w = spriteWidth;
-        srcRect.h = spriteHeight;
-
-        //std::cout << "column: " << currentColumn << ", row: " << currentRow << '\n';
-
 
         SDL_Rect dstRect{};
         dstRect.x = static_cast<int>(position.x - m_DstRect.w / 2.f);
@@ -56,9 +43,35 @@ void SpriteComponent::Render() const
         dstRect.w = static_cast<int>(m_DstRect.w);
         dstRect.h = static_cast<int>(m_DstRect.h);
 
-        Renderer::GetInstance().RenderTexture(*m_Texture, srcRect, dstRect, rotation, scale.x, scale.y);
+        Renderer::GetInstance().RenderTexture(*m_Texture, GetSrcRect(), dstRect, rotation, scale.x, scale.y);
     }
 }
+
+SDL_Rect SpriteComponent::GetDstRect() const
+{
+    return m_DstRect;
+}
+
+
+SDL_Rect SpriteComponent::GetSrcRect() const
+{
+    SDL_Rect srcRect{};
+
+    const int currentColumn = m_Index % m_NrColumns;
+    const int currentRow = static_cast<int>(static_cast<float>(m_Index) / m_NrColumns);
+
+    const int spriteWidth = static_cast<int>(static_cast<float>(m_SrcRect.w - (m_NrColumns)*m_OffsetX) / m_NrColumns);
+    const int spriteHeight = static_cast<int>(static_cast<float>(m_SrcRect.h - (m_NrRows)*m_OffsetY) / m_NrRows);
+
+    srcRect.x = static_cast<int>(m_SrcRect.x) + currentColumn * (spriteWidth + m_OffsetX);
+    srcRect.y = static_cast<int>(m_SrcRect.y) + currentRow * (spriteHeight + m_OffsetY);
+
+    srcRect.w = spriteWidth;
+    srcRect.h = spriteHeight;
+
+    return srcRect;
+}
+
 
 
 void SpriteComponent::PreviousSprite()
