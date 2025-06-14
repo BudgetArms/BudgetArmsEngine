@@ -25,8 +25,8 @@ namespace bae
         const SDL_Rect& GetDstRect() const { return m_DstRect; };                                      //
         void SetDstRect(const SDL_Rect& dstRect) { m_DstRect = dstRect; };                             //
 
-        int GetCurrentIndex() const { return m_Index; };
-        void SetCurrentIndex(int index) { m_Index = index; };
+        int GetSpriteIndex() const { return m_Index; };
+        void SetSpriteIndex(int index) { m_Index = index; };
 
         void PreviousSprite();
         void NextSprite();

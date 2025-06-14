@@ -69,6 +69,7 @@
 // Game Includes
 #include "Base/SoundEvents.h"
 #include "Commands/FireCommand.h"
+#include "Commands/SpriteTestCommand.h"
 #include "Commands/DamageCommand.h"
 #include "Commands/ScoreCommand.h"
 #include "Commands/SoundTestCommand.h"

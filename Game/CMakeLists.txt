@@ -9,11 +9,14 @@ add_executable(${PROJECT_NAME}
 	"Main.cpp"
 
     "Base/SoundEvents.h"
+    
+    "Base/QbertStates.cpp"                      "Base/QbertStates.h"
 
     "Commands/SoundTestCommand.h" 
     "Commands/DamageCommand.h" 
     "Commands/FireCommand.h"
     "Commands/ScoreCommand.h"
+    "Commands/SpriteTestCommand.h"
     
     "Components/ScoreComponent.cpp"             "Components/ScoreComponent.h"
     "Components/ScoreDisplayComponent.cpp"      "Components/ScoreDisplayComponent.h"
@@ -21,6 +24,8 @@ add_executable(${PROJECT_NAME}
     "Components/HealthDisplayComponent.cpp"     "Components/HealthDisplayComponent.h"
 
     "Entities/QbertComponent.cpp"               "Entities/QbertComponent.h"
+
+
 )
  
 
