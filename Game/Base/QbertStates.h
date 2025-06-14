@@ -18,6 +18,7 @@ namespace Game::States
     // yes, this goes about 1 spot difference
     class QbertState;
 
+    // Credit to Adriaan 
     class QbertStateComponent final : public bae::Component
     {
     public:
