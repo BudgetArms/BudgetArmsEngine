@@ -10,7 +10,7 @@ namespace bae
     class FpsTextComponent final : public TextComponent
     {
     public:
-        explicit FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font = nullptr);
+        explicit FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font = nullptr, SDL_Color color = SDL_Color{ 0, 0, 0, 255 });
         virtual ~FpsTextComponent() = default;
 
         FpsTextComponent(const FpsTextComponent& other) = delete;

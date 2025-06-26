@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required(VERSION 3.26)
-project(Qbert)
+project(Game)
 
 # CMake inspired by Mikail Kahya
 

@@ -9,9 +9,10 @@
 
 using namespace bae;
 
-FpsTextComponent::FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font) :
+FpsTextComponent::FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font, SDL_Color color) :
     TextComponent(owner, "FPS: xxx", font)
 {
+    SetColor(color);
 }
 
 

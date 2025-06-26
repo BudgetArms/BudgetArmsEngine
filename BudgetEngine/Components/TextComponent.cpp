@@ -11,11 +11,12 @@
 using namespace bae;
 
 
-TextComponent::TextComponent(GameObject& owner, const std::string& text, std::shared_ptr<Font> font) :
-    Component(owner),
-    m_NeedsUpdate(true),
-    m_Text(text),
-    m_TextTexture(nullptr)
+TextComponent::TextComponent(GameObject& owner, const std::string& text, std::shared_ptr<Font> font, SDL_Color color) :
+    Component{ owner },
+    m_NeedsUpdate{ true },
+    m_Text{ text },
+    m_Color{ color },
+    m_TextTexture{ nullptr }
 {
     if (!font)
         font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
@@ -27,9 +28,8 @@ void TextComponent::Update()
 {
     if (m_NeedsUpdate)
     {
-        const SDL_Color color = { 255, 255, 255, 255 }; // only white text is supported now
 
-        const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), color);
+        const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Color);
         if (!surf)
         {
             throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
@@ -59,12 +59,36 @@ void TextComponent::Render() const
     }
 }
 
-// This implementation uses the "dirty flag" pattern
+
+std::string TextComponent::GetText()
+{
+    if (m_NeedsUpdate)
+        Update();
+
+    return m_Text;
+}
+
 void TextComponent::SetText(const std::string& text)
 {
     m_Text = text;
     m_NeedsUpdate = true;
 }
+
+
+SDL_Color TextComponent::GetColor()
+{
+    if (m_NeedsUpdate)
+        Update();
+
+    return m_Color;
+}
+
+void TextComponent::SetColor(const SDL_Color& color)
+{
+    m_Color = color;
+    m_NeedsUpdate = true;
+}
+
 
 void TextComponent::SetFont(std::shared_ptr<Font> font)
 {

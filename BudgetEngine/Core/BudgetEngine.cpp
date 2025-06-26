@@ -56,7 +56,7 @@ bae::BudgetEngine::BudgetEngine(const std::filesystem::path& dataPath)
         throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 
     g_window = SDL_CreateWindow(
-        "Q-Bert",
+        "BudgetGameEngine",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         640,
@@ -74,7 +74,6 @@ bae::BudgetEngine::BudgetEngine(const std::filesystem::path& dataPath)
 
 bae::BudgetEngine::~BudgetEngine()
 {
-    std::cout << "BYEEEEE :(" << '\n';
     Renderer::GetInstance().Destroy();
     SDL_DestroyWindow(g_window);
     g_window = nullptr;
