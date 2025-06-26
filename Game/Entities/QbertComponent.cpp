@@ -32,7 +32,9 @@ QbertComponent::QbertComponent(bae::GameObject& owner) :
     m_StateComponent{}
 {
     m_Owner->AddComponent<Game::HealthComponent>(*m_Owner, 100.f);
-    m_Owner->AddComponent<bae::SpriteComponent>(*m_Owner, "Textures/60496.png", SDL_Rect(0, 0, 128, 16), 8, 8);
+    m_Owner->AddComponent<bae::SpriteComponent>(*m_Owner, "Textures/60496.png",
+        SDL_Rect(0, 0, 128, 16), 8, 8);
+
     m_Owner->AddComponent<Game::States::QbertStateComponent>(m_Owner);
 
     auto* spriteComp = m_Owner->GetComponent<bae::SpriteComponent>();

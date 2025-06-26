@@ -12,7 +12,7 @@ namespace bae
     public:
         // we should use a settings's struct to initialize the variables first, to make it more organized 
         explicit SpriteComponent(GameObject& owner, const std::string& filename, const SDL_Rect& srcRect,
-            int nrColumns, int nrSprites, int offsetX = 0.f, int offsetY = 0.f);
+            int nrColumns, int nrSprites, const glm::ivec2& srcOffset = {});
         virtual ~SpriteComponent() = default;
 
         SpriteComponent(const SpriteComponent& other) = delete;
@@ -23,10 +23,13 @@ namespace bae
         virtual void Render() const override;
 
 
-        SDL_Rect GetDstRect() const;
+        SDL_Rect GetDstRect() const { return m_DstRect; };
         void SetDstRect(const SDL_Rect& dstRect) { m_DstRect = dstRect; };
 
-        SDL_Rect GetSrcRect() const;
+        SDL_Rect GetCurrentSpriteRect() const;
+
+        SDL_Rect GetSrcRect() const { return m_SrcRect; };
+        SDL_Rect SetSrcRect(const SDL_Rect& srcRect) { m_SrcRect = srcRect; };
 
         void PreviousSprite();
         void NextSprite();
@@ -34,8 +37,12 @@ namespace bae
 
         int m_Index{};
 
-        int m_OffsetX{};
-        int m_OffsetY{};
+        glm::ivec2 m_SrcOffset{};
+        glm::ivec2 m_PositionOffset{};
+
+        bool m_bUseParentLocation{ true };
+        bool m_bUseParentRotation{ true };
+        bool m_bUseParentScale{ true };
 
 
     private:
@@ -49,3 +56,4 @@ namespace bae
 
     };
 }
+

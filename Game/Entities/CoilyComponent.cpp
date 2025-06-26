@@ -29,7 +29,8 @@ CoilyComponent::CoilyComponent(bae::GameObject& owner) :
     m_StateComponent{}
 {
     m_Owner->AddComponent<Game::HealthComponent>(*m_Owner, 100.f);
-    m_Owner->AddComponent<bae::SpriteComponent>(*m_Owner, "Textures/60496.png", SDL_Rect(0, 32, 128, 32), 8, 8);
+    m_Owner->AddComponent<bae::SpriteComponent>(*m_Owner, "Textures/60496.png",
+        SDL_Rect(0, 32, 128, 32), 8, 8);
     m_Owner->AddComponent<Game::States::CoilyStateComponent>(m_Owner);
 
     auto* spriteComp = m_Owner->GetComponent<bae::SpriteComponent>();

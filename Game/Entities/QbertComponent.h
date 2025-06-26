@@ -53,6 +53,8 @@ namespace Game
     private:
         Game::States::QbertStateComponent* m_StateComponent;
 
+        // because the component system I have now is incomplete for the job required
+        std::vector<std::unique_ptr<bae::Component>> m_Components;
 
     };
 

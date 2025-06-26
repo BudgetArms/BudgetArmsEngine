@@ -36,13 +36,12 @@ namespace bae
         void SetLocalRotation(float rotation);
         void SetLocalScale(const glm::vec2& scale);
 
-        // I get why GameEngine's don't make this
-        // the names get sooo confusing
         void AddLocation(const glm::vec3& addLocation);
         void AddRotation(float addRotation);
         void AddScale(const glm::vec2& addScale);
 
 
+        // trivial setter, so should actually be removed
         constexpr void SetLocationDirty() { m_bLocationDirty = true; };
         constexpr void SetRotationDirty() { m_bRotationDirty = true; };
         constexpr void SetScaleDirty() { m_bScaleDirty = true; };
@@ -63,13 +62,9 @@ namespace bae
         float m_LocalRotation{};
 
 
-
         bool m_bLocationDirty{ false };
         bool m_bRotationDirty{ false };
         bool m_bScaleDirty{ false };
-
-
-    protected:
 
 
     };
