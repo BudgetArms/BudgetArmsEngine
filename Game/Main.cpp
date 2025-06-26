@@ -130,7 +130,7 @@ int main(int, char* [])
 
 void Start()
 {
-    auto& scene = SceneManager::GetInstance().CreateScene("BudgetGameEngine");
+    auto& scene = SceneManager::GetInstance().CreateScene("BudgetArmsEngine");
 
     auto background = std::make_shared<GameObject>("Background");
     background->AddComponent<TextureComponent>(*background, "Textures/background.tga");

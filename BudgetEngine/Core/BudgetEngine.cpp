@@ -46,7 +46,6 @@ void LogSDLVersion(const std::string& message, const SDL_version& v);
 void PrintSDLVersion();
 
 SDL_Window* g_window{};
-bae::GameObject* wow{};
 
 bae::BudgetEngine::BudgetEngine(const std::filesystem::path& dataPath)
 {
@@ -56,7 +55,7 @@ bae::BudgetEngine::BudgetEngine(const std::filesystem::path& dataPath)
         throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 
     g_window = SDL_CreateWindow(
-        "BudgetGameEngine",
+        "BudgetArmsEngine",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         640,
@@ -80,7 +79,6 @@ bae::BudgetEngine::~BudgetEngine()
     SDL_Quit();
 }
 
-// This exists 
 void bae::BudgetEngine::Run(const std::function<void()>& load)
 {
     load();
