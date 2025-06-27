@@ -63,7 +63,7 @@ add_library(${ENGINE_NAME} STATIC
     "Wrappers/Font.cpp"                         "Wrappers/Font.h"
     "Wrappers/Texture2D.cpp"                    "Wrappers/Texture2D.h"
  )
- #]]
+ 
 
 
 if(STEAMWORKS_AVAILABLE)
@@ -498,6 +498,5 @@ elseif(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
 endif()
-
 
 
