@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.26)
 project(BudgetEngine)
 
-message("\nBudgetEngine CMake")
+message("\nBudgetArmsEngine CMake")
 
 
 if(EMSCRIPTEN)
@@ -147,8 +147,7 @@ if (WIN32)
     #target_link_libraries(${ENGINE_NAME} PUBLIC XInput)
 
 
-
-    if(STEAMWORKS_AVAILABLE)
+    if(STEAMWORKS_AVAILABLE AND EXISTS "${STEAMWORKS_SDK_PATH}")
 
         set(STEAMWORKS_INCLUDE_DIR "${STEAMWORKS_SDK_PATH}/public/steam")
 
@@ -255,12 +254,10 @@ if (WIN32)
     FetchContent_GetProperties(SDL2_mixer)
 
     if(NOT sdl2_mixer_POPULATED)
-        message("mixer cmake\n\n\n")
         FetchContent_MakeAvailable(SDL2_mixer)
         set(SDL2_MIXER_INCLUDE_DIR ${sdl2_mixer_SOURCE_DIR}/include)
 
     if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-        message("64 \n\n\n")
         set(SDL2_MIXER_LIBRARIES ${sdl2_mixer_SOURCE_DIR}/lib/x64/SDL2_mixer.lib)
         set(SDL2_MIXER_LIBRARY_DLL "${sdl2_mixer_SOURCE_DIR}/lib/x64/SDL2_mixer.dll")
     else()
