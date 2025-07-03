@@ -24,12 +24,12 @@ namespace bae
         void Render() const;
         void RenderGUI();
 
-
         void Add(std::shared_ptr<GameObject> object);
         void Remove(std::shared_ptr<GameObject> object);
         void RemoveAll();
 
 
+        bool m_IsEnabled{ true };
 
     private:
         explicit Scene(const std::string& name);
