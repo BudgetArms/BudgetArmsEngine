@@ -39,6 +39,7 @@ public:
 
     void StopAllSounds();
     void MuteAllSounds();
+    void UnMuteAllSounds();
 
 
 private:
@@ -130,6 +131,11 @@ void SdlSoundSystem::StopAllSounds()
 void SdlSoundSystem::MuteAllSounds()
 {
     m_Pimpl->MuteAllSounds();
+}
+
+void SdlSoundSystem::UnMuteAllSounds()
+{
+    m_Pimpl->UnMuteAllSounds();
 }
 
 
@@ -359,7 +365,7 @@ void SdlSoundSystem::Impl::MuteAllSounds()
 {
     if (m_LoadedAudioClips.empty())
     {
-        std::cout << "Trying To " << "MuteAllSounds" << " but there are no sounds to Stop" << '\n';
+        std::cout << "Trying To " << "MuteAllSounds" << " but there are no sounds to Mute" << '\n';
         return;
     }
 
@@ -368,6 +374,23 @@ void SdlSoundSystem::Impl::MuteAllSounds()
         auto* audioClip = uAudioClip.get();
         if (audioClip)
             audioClip->Mute();
+    }
+
+}
+
+void SdlSoundSystem::Impl::UnMuteAllSounds()
+{
+    if (m_LoadedAudioClips.empty())
+    {
+        std::cout << "Trying To " << "UnMuteAllSounds" << " but there are no sounds to UnMute" << '\n';
+        return;
+    }
+
+    for (auto& [string, uAudioClip] : m_LoadedAudioClips)
+    {
+        auto* audioClip = uAudioClip.get();
+        if (audioClip)
+            audioClip->UnMute();
     }
 
 }

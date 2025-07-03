@@ -105,4 +105,10 @@ void LoggingSoundSystem::MuteAllSounds()
     m_RealSoundSystem->MuteAllSounds();
 }
 
+void LoggingSoundSystem::UnMuteAllSounds()
+{
+    std::cout << "LoggingSoundSystem: UnMuteAllSounds" << '\n';
+    m_RealSoundSystem->UnMuteAllSounds();
+}
+
 

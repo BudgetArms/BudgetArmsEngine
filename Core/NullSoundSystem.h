@@ -30,6 +30,7 @@ namespace bae
 
         virtual void StopAllSounds() override {};
         virtual void MuteAllSounds() override {};
+        virtual void UnMuteAllSounds() override {};
 
     };
 }
