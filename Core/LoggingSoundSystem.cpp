@@ -93,6 +93,18 @@ bool LoggingSoundSystem::IsMuted(int soundId)
 }
 
 
+void LoggingSoundSystem::ResumeAllSounds()
+{
+    std::cout << "LoggingSoundSystem: ResumeAllSounds" << '\n';
+    m_RealSoundSystem->ResumeAllSounds();
+}
+
+void LoggingSoundSystem::PauseAllSounds()
+{
+    std::cout << "LoggingSoundSystem: PauseAllSounds" << '\n';
+    m_RealSoundSystem->PauseAllSounds();
+}
+
 void LoggingSoundSystem::StopAllSounds()
 {
     std::cout << "LoggingSoundSystem: StopAllSounds" << '\n';

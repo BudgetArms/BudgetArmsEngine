@@ -29,8 +29,9 @@ namespace bae
         virtual bool IsMuted(int soundId) = 0;
 
 
-        // there is no PlayAllSounds bc that is unmanagable 
-        // there is no PauseAllSounds bc you can't tell all sounds to Resume again, that would just be weird. 
+        // there is no PlayAllSounds bc that would be insane with 100+ sounds 
+        virtual void ResumeAllSounds() = 0;
+        virtual void PauseAllSounds() = 0;
         virtual void StopAllSounds() = 0;
         virtual void MuteAllSounds() = 0;
         virtual void UnMuteAllSounds() = 0;

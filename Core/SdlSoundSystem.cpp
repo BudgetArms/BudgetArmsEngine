@@ -37,6 +37,8 @@ public:
     bool IsMuted(int soundId);
 
 
+    void ResumeAllSounds();
+    void PauseAllSounds();
     void StopAllSounds();
     void MuteAllSounds();
     void UnMuteAllSounds();
@@ -122,6 +124,16 @@ bool SdlSoundSystem::IsMuted(int soundId)
     return m_Pimpl->IsMuted(soundId);
 }
 
+
+void SdlSoundSystem::ResumeAllSounds()
+{
+    m_Pimpl->ResumeAllSounds();
+}
+
+void SdlSoundSystem::PauseAllSounds()
+{
+    m_Pimpl->PauseAllSounds();
+}
 
 void SdlSoundSystem::StopAllSounds()
 {
@@ -343,6 +355,40 @@ bool SdlSoundSystem::Impl::IsMuted(int soundId)
     return audioClip->IsMuted();
 }
 
+
+void SdlSoundSystem::Impl::ResumeAllSounds()
+{
+    if (m_LoadedAudioClips.empty())
+    {
+        std::cout << "Trying To " << "ResumeAllSounds" << " but there are no sounds to Resume" << '\n';
+        return;
+    }
+
+    for (auto& [string, uAudioClip] : m_LoadedAudioClips)
+    {
+        auto* audioClip = uAudioClip.get();
+        if (audioClip)
+            audioClip->Resume();
+    }
+
+}
+
+void SdlSoundSystem::Impl::PauseAllSounds()
+{
+    if (m_LoadedAudioClips.empty())
+    {
+        std::cout << "Trying To " << "PauseAllSounds" << " but there are no sounds to Pause" << '\n';
+        return;
+    }
+
+    for (auto& [string, uAudioClip] : m_LoadedAudioClips)
+    {
+        auto* audioClip = uAudioClip.get();
+        if (audioClip)
+            audioClip->Pause();
+    }
+
+}
 
 void SdlSoundSystem::Impl::StopAllSounds()
 {

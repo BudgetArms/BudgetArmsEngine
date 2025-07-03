@@ -30,7 +30,8 @@ namespace bae
         virtual bool IsPaused(int soundId) override;
         virtual bool IsMuted(int soundId) override;
 
-
+        virtual void ResumeAllSounds() override;
+        virtual void PauseAllSounds() override;
         virtual void StopAllSounds() override;
         virtual void MuteAllSounds() override;
         virtual void UnMuteAllSounds() override;
