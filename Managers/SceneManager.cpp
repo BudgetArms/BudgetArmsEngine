@@ -5,14 +5,14 @@
 void bae::SceneManager::Update()
 {
     for (auto& scene : m_Scenes)
-        if (scene->m_IsEnabled)
+        if (scene->m_bIsEnabled)
             scene->Update();
 }
 
 void bae::SceneManager::FixedUpdate()
 {
     for (auto& scene : m_Scenes)
-        if (scene->m_IsEnabled)
+        if (scene->m_bIsEnabled)
             scene->FixedUpdate();
 
 }
@@ -20,7 +20,7 @@ void bae::SceneManager::FixedUpdate()
 void bae::SceneManager::LateUpdate()
 {
     for (auto& scene : m_Scenes)
-        if (scene->m_IsEnabled)
+        if (scene->m_bIsEnabled)
             scene->LateUpdate();
 
 }
@@ -28,14 +28,14 @@ void bae::SceneManager::LateUpdate()
 void bae::SceneManager::Render()
 {
     for (const auto& scene : m_Scenes)
-        if (scene->m_IsEnabled)
+        if (scene->m_bIsEnabled)
             scene->Render();
 
 }
 void bae::SceneManager::RenderGUI()
 {
     for (const auto& scene : m_Scenes)
-        if (scene->m_IsEnabled)
+        if (scene->m_bIsEnabled)
             scene->RenderGUI();
 }
 

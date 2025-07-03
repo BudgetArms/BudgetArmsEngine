@@ -29,7 +29,7 @@ namespace bae
         void RemoveAll();
 
 
-        bool m_IsEnabled{ true };
+        bool m_bIsEnabled{ true };
 
     private:
         explicit Scene(const std::string& name);
