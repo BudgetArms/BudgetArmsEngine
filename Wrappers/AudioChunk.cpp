@@ -23,22 +23,6 @@ bae::AudioChunk::AudioChunk(const std::string& fullPath) :
 	}
 
 
-	/*
-	// this should not be done constantly, it's a one time thing
-	if (!Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG))
-	{
-		std::cout << "AudioChunk: Failed to Initialize Mixer \n";
-		throw std::runtime_error(std::string("Failed to Initialize Mixer: ") + SDL_GetError());
-	}
-
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
-	{
-		std::cout << "AudioChunk: Failed to OpenAudio \n";
-		throw std::runtime_error(std::string("Failed to OpenAudio: ") + SDL_GetError());
-	}
-
-	*/
-
 	m_Chunk = Mix_LoadWAV(fullPath.c_str());
 	if (!m_Chunk)
 	{
@@ -52,9 +36,6 @@ bae::AudioChunk::~AudioChunk()
 {
 	Mix_FreeChunk(m_Chunk);
 	m_Chunk = nullptr;
-
-	//Mix_CloseAudio();
-	//Mix_Quit();
 }
 
 

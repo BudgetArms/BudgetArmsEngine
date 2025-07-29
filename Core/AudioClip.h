@@ -9,7 +9,6 @@ namespace bae
 	class AudioClip
 	{
 	public:
-		//explicit AudioClip(const std::string& path);
 		virtual ~AudioClip() = default;
 
 		// return indicates sucess creation

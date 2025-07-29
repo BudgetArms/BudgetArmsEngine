@@ -66,7 +66,7 @@ void LoggingSoundSystem::Mute(ActiveSoundID activeSoundId)
 void LoggingSoundSystem::UnMute(ActiveSoundID activeSoundId)
 {
 	std::cout << GetFunctionName() << " ActiveSoundId: " << activeSoundId.ID << '\n';
-	m_RealSoundSystem->Mute(activeSoundId);
+	m_RealSoundSystem->UnMute(activeSoundId);
 }
 
 

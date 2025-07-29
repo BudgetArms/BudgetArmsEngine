@@ -261,8 +261,8 @@ void SdlAudioClip::Impl::Mute()
 	if (m_Channel == -1)
 		return;
 
-	Mix_Volume(m_Channel, 0);
 	m_bIsMuted = true;
+	Mix_Volume(m_Channel, 0); // can't use SetVolume, bc it also changes m_Volume
 }
 
 void SdlAudioClip::Impl::UnMute()
@@ -270,21 +270,15 @@ void SdlAudioClip::Impl::UnMute()
 	if (m_Channel == -1)
 		return;
 
-	if (!m_bIsMuted)
-		return;
-
-	SetVolume(m_Volume);
 	m_bIsMuted = false;
+	SetVolume(m_Volume);
 }
 
 
 bool SdlAudioClip::Impl::IsPlaying() const
 {
 	if (m_Channel == -1)
-	{
-		//std::cout << GetFunctionName() << " m_Channel is -1, CURSED\n";
 		return false;
-	}
 
 	return Mix_Playing(m_Channel);
 }
@@ -312,7 +306,9 @@ void SdlAudioClip::Impl::SetVolume(float volume)
 		return;
 
 	m_Volume = std::clamp(volume, 0.f, 1.f);
-	Mix_Volume(m_Channel, static_cast<int>(MIX_MAX_VOLUME * m_Volume));
+
+	if (!m_bIsMuted)
+		Mix_Volume(m_Channel, static_cast<int>(MIX_MAX_VOLUME * m_Volume));
 }
 
 SoundID SdlAudioClip::Impl::GetSoundId()
