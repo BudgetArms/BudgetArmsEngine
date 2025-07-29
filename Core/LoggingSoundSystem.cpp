@@ -2,125 +2,153 @@
 
 #include <iostream>
 
+#include "Core/HelperFunctions.h"
+
 
 using namespace bae;
 
 
 LoggingSoundSystem::LoggingSoundSystem(std::unique_ptr<SoundSystem> soundSystem)
 {
-    std::cout << "LoggingSoundSystem\n";
-    if (!soundSystem)
-        m_RealSoundSystem = std::make_unique<NullSoundSystem>();
-    else
-        m_RealSoundSystem = std::move(soundSystem);
+	std::cout << GetFunctionName() << '\n';
+	if (!soundSystem)
+		m_RealSoundSystem = std::make_unique<NullSoundSystem>();
+	else
+		m_RealSoundSystem = std::move(soundSystem);
 }
 
 LoggingSoundSystem::~LoggingSoundSystem()
 {
-    std::cout << "~LoggingSoundSystem\n";
+	std::cout << GetFunctionName() << '\n';
 }
 
 
-int LoggingSoundSystem::LoadSound(const std::string& path)
+SoundID LoggingSoundSystem::LoadSound(const std::string& path)
 {
-    std::cout << "LoggingSoundSystem: Loading Sound, path: " << path << '\n';
-    return m_RealSoundSystem->LoadSound(path);
+	std::cout << "LoggingSoundSystem: Loading Sound, path: " << path << '\n';
+	return m_RealSoundSystem->LoadSound(path);
 }
 
 
-void LoggingSoundSystem::Play(int soundId, float volume)
+ActiveSoundID LoggingSoundSystem::Play(SoundID soundId, float volume)
 {
-    std::cout << "LoggingSoundSystem: Play Sound: " << soundId << ", value: " << volume << '\n';
-    m_RealSoundSystem->Play(soundId, volume);
+	ActiveSoundID asID = m_RealSoundSystem->Play(soundId, volume);
+	std::cout << GetFunctionName() << " SoundId: " << soundId.ID << " ActiveSoundId: " << asID.ID << ", volume: " << volume << '\n';
+	return asID;
 }
 
-void LoggingSoundSystem::Stop(int soundId)
+void LoggingSoundSystem::Stop(ActiveSoundID activeSoundId)
 {
-    std::cout << "LoggingSoundSystem: Stop Sound: " << soundId << '\n';
-    m_RealSoundSystem->Stop(soundId);
-}
-
-
-void LoggingSoundSystem::Resume(int soundId)
-{
-    std::cout << "LoggingSoundSystem: Resume Sound: " << soundId << '\n';
-    m_RealSoundSystem->Resume(soundId);
-}
-
-void LoggingSoundSystem::Pause(int soundId)
-{
-    std::cout << "LoggingSoundSystem: Pause Sound: " << soundId << '\n';
-    m_RealSoundSystem->Pause(soundId);
+	std::cout << GetFunctionName() << " ActiveSoundId: " << activeSoundId.ID << '\n';
+	m_RealSoundSystem->Stop(activeSoundId);
 }
 
 
-void LoggingSoundSystem::Mute(int soundId)
+void LoggingSoundSystem::Resume(ActiveSoundID activeSoundId)
 {
-    std::cout << "LoggingSoundSystem: Mute Sound: " << soundId << '\n';
-    m_RealSoundSystem->Mute(soundId);
+	std::cout << GetFunctionName() << " ActiveSoundId: " << activeSoundId.ID << '\n';
+	m_RealSoundSystem->Resume(activeSoundId);
 }
 
-void LoggingSoundSystem::UnMute(int soundId)
+void LoggingSoundSystem::Pause(ActiveSoundID activeSoundId)
 {
-    std::cout << "LoggingSoundSystem: UnMute Sound: " << soundId << '\n';
-    m_RealSoundSystem->Mute(soundId);
-}
-
-
-bool LoggingSoundSystem::IsLoaded(int soundId)
-{
-    std::cout << "LoggingSoundSystem: IsLoaded, sondId: " << soundId << '\n';
-    return m_RealSoundSystem->IsLoaded(soundId);
-}
-
-bool LoggingSoundSystem::IsPlaying(int soundId)
-{
-    std::cout << "LoggingSoundSystem: IsPlaying, sondId: " << soundId << '\n';
-    return m_RealSoundSystem->IsPlaying(soundId);
+	std::cout << GetFunctionName() << " ActiveSoundId: " << activeSoundId.ID << '\n';
+	m_RealSoundSystem->Pause(activeSoundId);
 }
 
 
-bool LoggingSoundSystem::IsPaused(int soundId)
+void LoggingSoundSystem::Mute(ActiveSoundID activeSoundId)
 {
-    std::cout << "LoggingSoundSystem: IsPaused, sondId: " << soundId << '\n';
-    return m_RealSoundSystem->IsPaused(soundId);
+	std::cout << GetFunctionName() << " ActiveSoundId: " << activeSoundId.ID << '\n';
+	m_RealSoundSystem->Mute(activeSoundId);
 }
 
-bool LoggingSoundSystem::IsMuted(int soundId)
+void LoggingSoundSystem::UnMute(ActiveSoundID activeSoundId)
 {
-    std::cout << "LoggingSoundSystem: IsMuted, sondId: " << soundId << '\n';
-    return m_RealSoundSystem->IsMuted(soundId);
+	std::cout << GetFunctionName() << " ActiveSoundId: " << activeSoundId.ID << '\n';
+	m_RealSoundSystem->Mute(activeSoundId);
+}
+
+
+bool LoggingSoundSystem::IsLoaded(SoundID soundId)
+{
+	std::cout << GetFunctionName() << " soundId: " << soundId.ID << '\n';
+	return m_RealSoundSystem->IsLoaded(soundId);
+}
+
+bool LoggingSoundSystem::IsPlaying(ActiveSoundID activeSoundId)
+{
+	std::cout << GetFunctionName() << " ActiveSoundId: " << activeSoundId.ID << '\n';
+	return m_RealSoundSystem->IsPlaying(activeSoundId);
+}
+
+
+bool LoggingSoundSystem::IsPaused(ActiveSoundID activeSoundId)
+{
+	std::cout << GetFunctionName() << " ActiveSoundId: " << activeSoundId.ID << '\n';
+	return m_RealSoundSystem->IsPaused(activeSoundId);
+}
+
+bool LoggingSoundSystem::IsMuted(ActiveSoundID activeSoundId)
+{
+	std::cout << GetFunctionName() << " ActiveSoundId: " << activeSoundId.ID << '\n';
+	return m_RealSoundSystem->IsMuted(activeSoundId);
+}
+
+
+float LoggingSoundSystem::GetVolume(ActiveSoundID activeSoundId)
+{
+	std::cout << GetFunctionName() << " ActiveSoundId: " << activeSoundId.ID << '\n';
+	return m_RealSoundSystem->GetVolume(activeSoundId);
+}
+
+void LoggingSoundSystem::SetVolume(ActiveSoundID activeSoundId, float volume)
+{
+	std::cout << GetFunctionName() << " ActiveSoundId: " << activeSoundId.ID << '\n';
+	m_RealSoundSystem->SetVolume(activeSoundId, volume);
 }
 
 
 void LoggingSoundSystem::ResumeAllSounds()
 {
-    std::cout << "LoggingSoundSystem: ResumeAllSounds" << '\n';
-    m_RealSoundSystem->ResumeAllSounds();
+	std::cout << GetFunctionName() << '\n';
+	m_RealSoundSystem->ResumeAllSounds();
 }
 
 void LoggingSoundSystem::PauseAllSounds()
 {
-    std::cout << "LoggingSoundSystem: PauseAllSounds" << '\n';
-    m_RealSoundSystem->PauseAllSounds();
+	std::cout << GetFunctionName() << '\n';
+	m_RealSoundSystem->PauseAllSounds();
 }
 
 void LoggingSoundSystem::StopAllSounds()
 {
-    std::cout << "LoggingSoundSystem: StopAllSounds" << '\n';
-    m_RealSoundSystem->StopAllSounds();
+	std::cout << GetFunctionName() << '\n';
+	m_RealSoundSystem->StopAllSounds();
 }
 
 void LoggingSoundSystem::MuteAllSounds()
 {
-    std::cout << "LoggingSoundSystem: MuteAllSounds" << '\n';
-    m_RealSoundSystem->MuteAllSounds();
+	std::cout << GetFunctionName() << '\n';
+	m_RealSoundSystem->MuteAllSounds();
 }
 
 void LoggingSoundSystem::UnMuteAllSounds()
 {
-    std::cout << "LoggingSoundSystem: UnMuteAllSounds" << '\n';
-    m_RealSoundSystem->UnMuteAllSounds();
+	std::cout << GetFunctionName() << '\n';
+	m_RealSoundSystem->UnMuteAllSounds();
+}
+
+void LoggingSoundSystem::SetVolumeAllSounds(float volume)
+{
+	std::cout << GetFunctionName() << '\n';
+	m_RealSoundSystem->SetVolumeAllSounds(volume);
+}
+
+AudioChunk* LoggingSoundSystem::GetAudioChunk(SoundID soundId)
+{
+	std::cout << GetFunctionName() << '\n';
+	return m_RealSoundSystem->GetAudioChunk(soundId);
 }
 
 

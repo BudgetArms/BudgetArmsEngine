@@ -1,16 +1,26 @@
 ﻿#include "SdlSoundSystem.h"
 
 #include <iostream>
+#include <string>
 #include <filesystem>
 #include <vector>
 #include <iterator>
 #include <map>
 #include <unordered_map>
-
-#include "Core/AudioClip.h"
-#include "Core/SdlAudioClip.h"
+#include <source_location>
+#include <memory>
 
 #include <SDL_mixer.h>
+
+#include "Core/AudioClip.h"
+#include "Core/RingBuffer.h"
+#include "Wrappers/AudioChunk.h"
+#include "Core/SdlAudioClip.h"
+#include "Core/HelperFunctions.h"
+#include "Core/ServiceLocator.h"
+
+#include "Core/SoundSystem.h"
+
 
 
 using namespace bae;
@@ -19,36 +29,50 @@ using namespace bae;
 class SdlSoundSystem::Impl
 {
 public:
-    int LoadSound(const std::string& path);
-
-    void Play(int soundId, float volume);
-    void Stop(int soundId);
-
-    void Resume(int soundId);
-    void Pause(int soundId);
-
-    void Mute(int soundId);
-    void UnMute(int soundId);
-
-    bool IsLoaded(int soundId);
-    bool IsPlaying(int soundId);
-
-    bool IsPaused(int soundId);
-    bool IsMuted(int soundId);
+	Impl();
+	~Impl();
 
 
-    void ResumeAllSounds();
-    void PauseAllSounds();
-    void StopAllSounds();
-    void MuteAllSounds();
-    void UnMuteAllSounds();
+	SoundID LoadSound(const std::string& path);
+
+	ActiveSoundID Play(SoundID soundId, float volume);
+	void Stop(ActiveSoundID activeSoundId);
+
+	void Resume(ActiveSoundID activeSoundId);
+	void Pause(ActiveSoundID activeSoundId);
+
+	void Mute(ActiveSoundID activeSoundId);
+	void UnMute(ActiveSoundID activeSoundId);
+
+	bool IsLoaded(SoundID soundId);
+	bool IsPlaying(ActiveSoundID activeSoundId);
+
+	bool IsPaused(ActiveSoundID activeSoundId);
+	bool IsMuted(ActiveSoundID activeSoundId);
+
+	float GetVolume(ActiveSoundID activeSoundId);
+	void SetVolume(ActiveSoundID activeSoundId, float volume);
+
+
+	void ResumeAllSounds();
+	void PauseAllSounds();
+	void StopAllSounds();
+	void MuteAllSounds();
+	void UnMuteAllSounds();
+
+	void SetVolumeAllSounds(float volume);
+
+
+	AudioChunk* GetChunk(SoundID soundId);
 
 
 private:
-    std::unordered_map<std::string, std::unique_ptr<SdlAudioClip>> m_LoadedAudioClips;
+	std::unordered_map<std::string, SoundID> m_LoadedSoudIDs;
+	std::unordered_map<SoundID, std::unique_ptr<AudioChunk>> m_LoadedAudio;
 
 
 };
+
 
 
 
@@ -64,90 +88,111 @@ SdlSoundSystem::~SdlSoundSystem()
 }
 
 
-int SdlSoundSystem::LoadSound(const std::string& path)
+SoundID SdlSoundSystem::LoadSound(const std::string& path)
 {
-    return m_Pimpl->LoadSound(path);
+	return m_Pimpl->LoadSound(path);
 }
 
 
-void SdlSoundSystem::Play(int soundId, float volume)
+ActiveSoundID SdlSoundSystem::Play(SoundID soundId, float volume)
 {
-    m_Pimpl->Play(soundId, volume);
+	return m_Pimpl->Play(soundId, volume);
 }
 
-void SdlSoundSystem::Stop(int soundId)
+void SdlSoundSystem::Stop(ActiveSoundID activeSoundId)
 {
-    m_Pimpl->Stop(soundId);
-}
-
-
-void SdlSoundSystem::Resume(int soundId)
-{
-    m_Pimpl->Resume(soundId);
-}
-
-void SdlSoundSystem::Pause(int soundId)
-{
-    m_Pimpl->Pause(soundId);
+	m_Pimpl->Stop(activeSoundId);
 }
 
 
-void SdlSoundSystem::Mute(int soundId)
+void SdlSoundSystem::Resume(ActiveSoundID activeSoundId)
 {
-    m_Pimpl->Mute(soundId);
+	m_Pimpl->Resume(activeSoundId);
 }
 
-void SdlSoundSystem::UnMute(int soundId)
+void SdlSoundSystem::Pause(ActiveSoundID activeSoundId)
 {
-    m_Pimpl->UnMute(soundId);
-}
-
-
-bool SdlSoundSystem::IsLoaded(int soundId)
-{
-    return m_Pimpl->IsLoaded(soundId);
-}
-
-bool SdlSoundSystem::IsPlaying(int soundId)
-{
-    return m_Pimpl->IsPlaying(soundId);
+	m_Pimpl->Pause(activeSoundId);
 }
 
 
-bool SdlSoundSystem::IsPaused(int soundId)
+void SdlSoundSystem::Mute(ActiveSoundID activeSoundId)
 {
-    return m_Pimpl->IsPaused(soundId);
+	m_Pimpl->Mute(activeSoundId);
 }
 
-bool SdlSoundSystem::IsMuted(int soundId)
+void SdlSoundSystem::UnMute(ActiveSoundID activeSoundId)
 {
-    return m_Pimpl->IsMuted(soundId);
+	m_Pimpl->UnMute(activeSoundId);
+}
+
+
+bool SdlSoundSystem::IsLoaded(SoundID soundId)
+{
+	return m_Pimpl->IsLoaded(soundId);
+}
+
+bool SdlSoundSystem::IsPlaying(ActiveSoundID activeSoundId)
+{
+	return m_Pimpl->IsPlaying(activeSoundId);
+}
+
+
+bool SdlSoundSystem::IsPaused(ActiveSoundID activeSoundId)
+{
+	return m_Pimpl->IsPaused(activeSoundId);
+}
+
+bool SdlSoundSystem::IsMuted(ActiveSoundID activeSoundId)
+{
+	return m_Pimpl->IsMuted(activeSoundId);
+}
+
+
+float SdlSoundSystem::GetVolume(ActiveSoundID activeSoundId)
+{
+	return m_Pimpl->GetVolume(activeSoundId);
+}
+
+void SdlSoundSystem::SetVolume(ActiveSoundID activeSoundId, float volume)
+{
+	m_Pimpl->SetVolume(activeSoundId, volume);
 }
 
 
 void SdlSoundSystem::ResumeAllSounds()
 {
-    m_Pimpl->ResumeAllSounds();
+	m_Pimpl->ResumeAllSounds();
 }
 
 void SdlSoundSystem::PauseAllSounds()
 {
-    m_Pimpl->PauseAllSounds();
+	m_Pimpl->PauseAllSounds();
 }
 
 void SdlSoundSystem::StopAllSounds()
 {
-    m_Pimpl->StopAllSounds();
+	m_Pimpl->StopAllSounds();
 }
 
 void SdlSoundSystem::MuteAllSounds()
 {
-    m_Pimpl->MuteAllSounds();
+	m_Pimpl->MuteAllSounds();
 }
 
 void SdlSoundSystem::UnMuteAllSounds()
 {
-    m_Pimpl->UnMuteAllSounds();
+	m_Pimpl->UnMuteAllSounds();
+}
+
+void SdlSoundSystem::SetVolumeAllSounds(float volume)
+{
+	m_Pimpl->SetVolumeAllSounds(volume);
+}
+
+AudioChunk* SdlSoundSystem::GetAudioChunk(SoundID soundId)
+{
+	return m_Pimpl->GetChunk(soundId);
 }
 
 
@@ -158,287 +203,393 @@ void SdlSoundSystem::UnMuteAllSounds()
 #pragma region SdlSoundSystem | PIMPL
 
 
-int SdlSoundSystem::Impl::LoadSound(const std::string& path)
+
+SdlSoundSystem::Impl::Impl()
 {
-    if (!std::filesystem::exists(path))
-    {
-        std::cerr << "SdlSoundSystem::LoadSound File " << path << " not found" << '\n';
-        return -1;
-    }
+	std::cout << GetFunctionName() << '\n';
 
-    // if already loaded
-    if (auto it = m_LoadedAudioClips.find(path); it != m_LoadedAudioClips.end())
-    {
-        //int index = static_cast<int>(std::distance(m_LoadedAudioClips.begin(), it));
-        int index = it->second->GetSoundId();
-        return index;
-    }
+	if (!Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG))
+	{
+		std::cout << "AudioChunk: Failed to Initialize Mixer \n";
+		throw std::runtime_error(std::string("Failed to Initialize Mixer: ") + SDL_GetError());
+	}
 
-    int index = static_cast<int>(m_LoadedAudioClips.size());
-    m_LoadedAudioClips.insert(std::pair(path, std::make_unique<SdlAudioClip>(path, index)));
-    return index;
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+	{
+		std::cout << "AudioChunk: Failed to OpenAudio \n";
+		throw std::runtime_error(std::string("Failed to OpenAudio: ") + SDL_GetError());
+	}
+
+}
+
+SdlSoundSystem::Impl::~Impl()
+{
+	std::cout << GetFunctionName() << '\n';
+
+	m_LoadedAudio.clear();
+
+	Mix_CloseAudio();
+	Mix_Quit();
+
 }
 
 
-void SdlSoundSystem::Impl::Play(int soundId, float volume)
+
+
+SoundID SdlSoundSystem::Impl::LoadSound(const std::string& path)
 {
-    if (m_LoadedAudioClips.empty() || (soundId < 0) || (soundId >= m_LoadedAudioClips.size()))
-    {
-        std::cout << "Trying To" << "Play" << " Sound that doesn't Exist, soundId: " << soundId << '\n';
-        return;
-    }
+	if (!std::filesystem::exists(path))
+	{
+		std::cerr << "SdlSoundSystem::LoadSound File " << path << " not found" << '\n';
+		return SoundID();
+	}
 
-    auto it = m_LoadedAudioClips.begin();
-    std::advance(it, soundId);
-    auto& audioClip = it->second;
-    if (!audioClip)
-        return;
+	// if already loaded
+	if (auto it = m_LoadedSoudIDs.find(path); it != m_LoadedSoudIDs.end())
+		return it->second;
 
-    audioClip->SetVolume(volume);
-    audioClip->Play();
-}
+	// Set before inserting so the soundId starts from 0, and not from 1
+	SoundID soundId{ .ID = static_cast<int>(m_LoadedAudio.size()) };
 
-void SdlSoundSystem::Impl::Stop(int soundId)
-{
-    if (m_LoadedAudioClips.empty() || (soundId < 0) || (soundId >= m_LoadedAudioClips.size()))
-    {
-        std::cout << "Trying To " << "Stop" << " Sound that doesn't Exist, soundId: " << soundId << '\n';
-        return;
-    }
+	// load audio chunk
+	m_LoadedSoudIDs.insert(std::pair(path, soundId));
+	m_LoadedAudio.insert(std::pair(soundId, std::make_unique<AudioChunk>(path)));
 
-    auto it = m_LoadedAudioClips.begin();
-    std::advance(it, soundId);
-    auto& audioClip = it->second;
-    if (!audioClip)
-        return;
-
-    audioClip->Stop();
+	return soundId;
 }
 
 
-void SdlSoundSystem::Impl::Resume(int soundId)
+ActiveSoundID SdlSoundSystem::Impl::Play(SoundID soundId, float volume)
 {
-    if (m_LoadedAudioClips.empty() || (soundId < 0) || (soundId >= m_LoadedAudioClips.size()))
-    {
-        std::cout << "Trying To " << "Resume" << " Sound that doesn't Exist, soundId: " << soundId << '\n';
-        return;
-    }
+	auto it = m_LoadedAudio.find(soundId);
+	if (it == m_LoadedAudio.end())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " Sound that doesn't Exist, soundId: " << soundId.ID << '\n';
+		return ActiveSoundID();
+	}
 
-    auto it = m_LoadedAudioClips.begin();
-    std::advance(it, soundId);
-    auto& audioClip = it->second;
-    if (!audioClip)
-        return;
+	auto& audioChunk = it->second;
+	if (!audioChunk)
+		return ActiveSoundID(-1);
 
-    audioClip->Resume();
+	// this also gives an error if not in the correct initialization order :D
+	SoundEventData data
+	{
+		.Type = SoundEventType::Play,
+		.SoundID = soundId,
+		.ActiveSoundID = ActiveSoundID{.ID = GetRandomNumber() },
+		.Volume = volume,
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
+
+	return data.ActiveSoundID;
 }
 
-void SdlSoundSystem::Impl::Pause(int soundId)
+void SdlSoundSystem::Impl::Stop(ActiveSoundID activeSoundId)
 {
-    if (m_LoadedAudioClips.empty() || (soundId < 0) || (soundId >= m_LoadedAudioClips.size()))
-    {
-        std::cout << "Trying To " << "Pause" << " Sound that doesn't Exist, soundId: " << soundId << '\n';
-        return;
-    }
-
-    auto it = m_LoadedAudioClips.begin();
-    std::advance(it, soundId);
-    auto& audioClip = it->second;
-    if (!audioClip)
-        return;
-
-    audioClip->Pause();
-}
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
 
 
-void SdlSoundSystem::Impl::Mute(int soundId)
-{
-    if (m_LoadedAudioClips.empty() || (soundId < 0) || (soundId >= m_LoadedAudioClips.size()))
-    {
-        std::cout << "Trying To " << "Mute" << " Sound that doesn't Exist, soundId: " << soundId << '\n';
-        return;
-    }
+	SoundEventData data
+	{
+		.Type = SoundEventType::Stop,
+		//.SoundID = -1, // this is never mentioned, maybe I should make it a class and have specific initializers
+		.ActiveSoundID = activeSoundId,
+		//.Volume = 0,
+	};
 
-    auto it = m_LoadedAudioClips.begin();
-    std::advance(it, soundId);
-    auto& audioClip = it->second;
-    if (!audioClip)
-        return;
-
-    audioClip->Mute();
-}
-
-void SdlSoundSystem::Impl::UnMute(int soundId)
-{
-    if (m_LoadedAudioClips.empty() || (soundId < 0) || (soundId >= m_LoadedAudioClips.size()))
-    {
-        std::cout << "Trying To " << "UnMute" << " Sound that doesn't Exist, soundId: " << soundId << '\n';
-        return;
-    }
-
-    auto it = m_LoadedAudioClips.begin();
-    std::advance(it, soundId);
-    auto& audioClip = it->second;
-    if (!audioClip)
-        return;
-
-    audioClip->UnMute();
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
 }
 
 
-bool SdlSoundSystem::Impl::IsLoaded(int soundId)
+void SdlSoundSystem::Impl::Resume(ActiveSoundID activeSoundId)
 {
-    if (m_LoadedAudioClips.empty() || (soundId < 0) || (soundId >= m_LoadedAudioClips.size()))
-    {
-        std::cout << "Trying To " << "IsLoaded" << " Sound that doesn't Exist, soundId: " << soundId << '\n';
-        return false;
-    }
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
 
-    auto it = m_LoadedAudioClips.begin();
-    std::advance(it, soundId);
-    auto& audioClip = it->second;
-    if (!audioClip)
-        return false;
 
-    return audioClip->IsLoaded();
+	SoundEventData data
+	{
+		.Type = SoundEventType::Resume,
+		.ActiveSoundID = activeSoundId,
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
 }
 
-bool SdlSoundSystem::Impl::IsPlaying(int soundId)
+void SdlSoundSystem::Impl::Pause(ActiveSoundID activeSoundId)
 {
-    if (m_LoadedAudioClips.empty() || (soundId < 0) || (soundId >= m_LoadedAudioClips.size()))
-    {
-        std::cout << "Trying To " << "IsPlaying" << " Sound that doesn't Exist, soundId: " << soundId << '\n';
-        return false;
-    }
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
 
-    auto it = m_LoadedAudioClips.begin();
-    std::advance(it, soundId);
-    auto& audioClip = it->second;
-    if (!audioClip)
-        return false;
 
-    return audioClip->IsPlaying();
+	SoundEventData data
+	{
+		.Type = SoundEventType::Pause,
+		.ActiveSoundID = activeSoundId,
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
 }
 
 
-bool SdlSoundSystem::Impl::IsPaused(int soundId)
+void SdlSoundSystem::Impl::Mute(ActiveSoundID activeSoundId)
 {
-    if (m_LoadedAudioClips.empty() || (soundId < 0) || (soundId >= m_LoadedAudioClips.size()))
-    {
-        std::cout << "Trying To " << "IsPaused" << " Sound that doesn't Exist, soundId: " << soundId << '\n';
-        return false;
-    }
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
 
-    auto it = m_LoadedAudioClips.begin();
-    std::advance(it, soundId);
-    auto& audioClip = it->second;
-    if (!audioClip)
-        return false;
 
-    return audioClip->IsPaused();
+	SoundEventData data
+	{
+		.Type = SoundEventType::Mute,
+		.ActiveSoundID = activeSoundId,
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
 }
 
-bool SdlSoundSystem::Impl::IsMuted(int soundId)
+void SdlSoundSystem::Impl::UnMute(ActiveSoundID activeSoundId)
 {
-    if (m_LoadedAudioClips.empty() || (soundId < 0) || (soundId >= m_LoadedAudioClips.size()))
-    {
-        std::cout << "Trying To " << "IsMuted" << " Sound that doesn't Exist, soundId: " << soundId << '\n';
-        return false;
-    }
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
 
-    auto it = m_LoadedAudioClips.begin();
-    std::advance(it, soundId);
-    auto& audioClip = it->second;
-    if (!audioClip)
-        return false;
 
-    return audioClip->IsMuted();
+	SoundEventData data
+	{
+		.Type = SoundEventType::UnMute,
+		.ActiveSoundID = activeSoundId,
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
+}
+
+
+bool SdlSoundSystem::Impl::IsLoaded(SoundID soundId)
+{
+	if (m_LoadedAudio.find(soundId) == m_LoadedAudio.end())
+		return false;
+
+	return true;
+}
+
+bool SdlSoundSystem::Impl::IsPlaying(ActiveSoundID activeSoundId)
+{
+	// this is special bc we are sending request and you can't immediately get a response back
+	// OR
+	// we don't use the audioqueue's thread and get the m_ActiveSound's or something like that, ...
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return false;
+	}
+
+	auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
+	if (!pAudioClip)
+		return false;
+
+	return pAudioClip->IsPlaying();
+}
+
+
+bool SdlSoundSystem::Impl::IsPaused(ActiveSoundID activeSoundId)
+{
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return false;
+	}
+
+
+	auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
+	if (!pAudioClip)
+		return false;
+
+	return pAudioClip->IsPaused();
+}
+
+bool SdlSoundSystem::Impl::IsMuted(ActiveSoundID activeSoundId)
+{
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return false;
+	}
+
+
+	auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
+	if (!pAudioClip)
+		return false;
+
+	return pAudioClip->IsMuted();
+}
+
+
+float SdlSoundSystem::Impl::GetVolume(ActiveSoundID activeSoundId)
+{
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return -1.f;
+	}
+
+
+	auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
+	if (!pAudioClip)
+		return -1.f;
+
+	return pAudioClip->GetVolume();
+}
+
+void SdlSoundSystem::Impl::SetVolume(ActiveSoundID activeSoundId, float volume)
+{
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
+
+
+	SoundEventData data
+	{
+		.Type = SoundEventType::SetVolume,
+		.ActiveSoundID = activeSoundId,
+		.Volume = volume
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
 }
 
 
 void SdlSoundSystem::Impl::ResumeAllSounds()
 {
-    if (m_LoadedAudioClips.empty())
-    {
-        std::cout << "Trying To " << "ResumeAllSounds" << " but there are no sounds to Resume" << '\n';
-        return;
-    }
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
 
-    for (auto& [string, uAudioClip] : m_LoadedAudioClips)
-    {
-        auto* audioClip = uAudioClip.get();
-        if (audioClip)
-            audioClip->Resume();
-    }
 
+	SoundEventData data
+	{
+		.Type = SoundEventType::ResumeAll,
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
 }
 
 void SdlSoundSystem::Impl::PauseAllSounds()
 {
-    if (m_LoadedAudioClips.empty())
-    {
-        std::cout << "Trying To " << "PauseAllSounds" << " but there are no sounds to Pause" << '\n';
-        return;
-    }
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
 
-    for (auto& [string, uAudioClip] : m_LoadedAudioClips)
-    {
-        auto* audioClip = uAudioClip.get();
-        if (audioClip)
-            audioClip->Pause();
-    }
 
+	SoundEventData data
+	{
+		.Type = SoundEventType::PauseAll,
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
 }
 
 void SdlSoundSystem::Impl::StopAllSounds()
 {
-    if (m_LoadedAudioClips.empty())
-    {
-        std::cout << "Trying To " << "StopAllSounds" << " but there are no sounds to Stop" << '\n';
-        return;
-    }
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
 
-    for (auto& [string, uAudioClip] : m_LoadedAudioClips)
-    {
-        auto* audioClip = uAudioClip.get();
-        if (audioClip)
-            audioClip->Stop();
-    }
 
+	SoundEventData data
+	{
+		.Type = SoundEventType::StopAll,
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
 }
 
 void SdlSoundSystem::Impl::MuteAllSounds()
 {
-    if (m_LoadedAudioClips.empty())
-    {
-        std::cout << "Trying To " << "MuteAllSounds" << " but there are no sounds to Mute" << '\n';
-        return;
-    }
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
 
-    for (auto& [string, uAudioClip] : m_LoadedAudioClips)
-    {
-        auto* audioClip = uAudioClip.get();
-        if (audioClip)
-            audioClip->Mute();
-    }
 
+	SoundEventData data
+	{
+		.Type = SoundEventType::MuteAll,
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
 }
 
 void SdlSoundSystem::Impl::UnMuteAllSounds()
 {
-    if (m_LoadedAudioClips.empty())
-    {
-        std::cout << "Trying To " << "UnMuteAllSounds" << " but there are no sounds to UnMute" << '\n';
-        return;
-    }
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
 
-    for (auto& [string, uAudioClip] : m_LoadedAudioClips)
-    {
-        auto* audioClip = uAudioClip.get();
-        if (audioClip)
-            audioClip->UnMute();
-    }
 
+	SoundEventData data
+	{
+		.Type = SoundEventType::UnMuteAll,
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
+}
+
+void SdlSoundSystem::Impl::SetVolumeAllSounds(float volume)
+{
+	if (m_LoadedAudio.empty())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
+		return;
+	}
+
+
+	SoundEventData data
+	{
+		.Type = SoundEventType::SetVolumeAll,
+		.Volume = volume
+	};
+
+	ServiceLocator::GetAudioQueue().SendSoundEvent(data);
+}
+
+AudioChunk* SdlSoundSystem::Impl::GetChunk(SoundID soundId)
+{
+	auto it = m_LoadedAudio.find(soundId);
+	if (it == m_LoadedAudio.end())
+	{
+		std::cout << "Trying To " << GetFunctionName() << " but there are no sounds to UnMute" << '\n';
+		return nullptr;
+	}
+
+	return it->second.get();
 }
 
 

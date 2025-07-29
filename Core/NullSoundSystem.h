@@ -4,37 +4,46 @@
 
 namespace bae
 {
-    class SoundSystem;
-    class NullSoundSystem : public SoundSystem
-    {
-    public:
-        virtual ~NullSoundSystem() override {};
+	class SoundSystem;
+	class NullSoundSystem : public SoundSystem
+	{
+	public:
+		virtual ~NullSoundSystem() override {};
 
-        virtual int LoadSound(const std::string&) override { return 0; };
+		virtual SoundID LoadSound(const std::string&) override { return SoundID(); };
 
-        virtual void Play(int, float) override {};
-        virtual void Stop(int) override {};
+		virtual ActiveSoundID Play(SoundID, float) override { return ActiveSoundID(); };
+		virtual void Stop(ActiveSoundID) override {};
 
-        virtual void Resume(int) override {};
-        virtual void Pause(int) override {};
+		virtual void Resume(ActiveSoundID) override {};
+		virtual void Pause(ActiveSoundID) override {};
 
-        virtual void Mute(int) override {};
-        virtual void UnMute(int) override {};
+		virtual void Mute(ActiveSoundID) override {};
+		virtual void UnMute(ActiveSoundID) override {};
 
-        virtual bool IsLoaded(int) override { return 0; };
-        virtual bool IsPlaying(int) override { return 0; };
+		virtual bool IsLoaded(SoundID) override { return 0; };
+		virtual bool IsPlaying(ActiveSoundID) override { return 0; };
 
-        virtual bool IsPaused(int) override { return 0; };
-        virtual bool IsMuted(int) override { return 0; };
+		virtual bool IsPaused(ActiveSoundID) override { return 0; };
+		virtual bool IsMuted(ActiveSoundID) override { return 0; };
 
 
-        virtual void ResumeAllSounds() override {};
-        virtual void PauseAllSounds() override {};
-        virtual void StopAllSounds() override {};
-        virtual void MuteAllSounds() override {};
-        virtual void UnMuteAllSounds() override {};
+		virtual float GetVolume(ActiveSoundID) override { return 0.f; };
+		virtual void SetVolume(ActiveSoundID, float) override {};
 
-    };
+
+		virtual void ResumeAllSounds() override {};
+		virtual void PauseAllSounds() override {};
+		virtual void StopAllSounds() override {};
+		virtual void MuteAllSounds() override {};
+		virtual void UnMuteAllSounds() override {};
+
+		virtual void SetVolumeAllSounds(float) override {};
+
+		virtual AudioChunk* GetAudioChunk(SoundID) { return nullptr; };
+
+
+	};
 }
 
 

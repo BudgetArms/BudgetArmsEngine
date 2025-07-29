@@ -7,41 +7,45 @@
 
 namespace bae
 {
-    class SdlAudioClip : public AudioClip
-    {
-    public:
-        SdlAudioClip(const std::string& path, int soudId);
-        ~SdlAudioClip(); // empty, needed for Pimpl
+	// Note: I want to have a logging system, just like SoundSystem has one, but for AudioClips
+	class SdlAudioClip : public AudioClip
+	{
+	public:
+		SdlAudioClip(ActiveSoundID activeId, SoundID soudId);
+		~SdlAudioClip(); // empty, needed for Pimpl
 
-        virtual void Play() override;
-        virtual void Stop() override;
+		virtual bool Play() override;
+		virtual void Stop() override;
 
-        virtual void Resume() override;
-        virtual void Pause() override;
+		virtual void Resume() override;
+		virtual void Pause() override;
 
-        virtual void Mute() override;
-        virtual void UnMute() override;
-
-
-        virtual bool IsPlaying() override;
-        virtual bool IsLoaded() override;
-
-        virtual bool IsPaused() override;
-        virtual bool IsMuted() override;
+		virtual void Mute() override;
+		virtual void UnMute() override;
 
 
-        virtual float GetVolume() override;
-        virtual void SetVolume(float volume) override;
+		virtual bool IsPlaying() const override;
 
-        virtual int GetSoundId() override;
-
-
-    private:
-        class Impl;
-        std::unique_ptr<Impl> m_Pimpl;
+		virtual bool IsPaused() const override;
+		virtual bool IsMuted() const override;
 
 
-    };
+		virtual float GetVolume() const override;
+		virtual void SetVolume(float volume) override;
+
+		virtual SoundID GetSoundId() override;
+		virtual ActiveSoundID GetActiveSoundId() override;
+		virtual int GetChannel() override;
+		// channel probably also should a be a class bc other audio libraries might not 
+		// use int to identify their channels
+
+
+	private:
+		class Impl;
+		std::unique_ptr<Impl> m_Pimpl;
+
+
+	};
 }
 
 

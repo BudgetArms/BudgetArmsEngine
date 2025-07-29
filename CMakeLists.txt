@@ -23,44 +23,52 @@ endif()
 
 
 add_library(${ENGINE_NAME} STATIC
-    "Core/BudgetEngine.cpp"                     "Core/BudgetEngine.h"
     "Core/AudioClip.h"
-    "Core/SdlAudioClip.cpp"                     "Core/SdlAudioClip.h"
-    "Core/GameObject.cpp"                       "Core/GameObject.h"
+    "Core/AudioQueue.cpp"                         "Core/AudioQueue.h"
+    "Core/BudgetEngine.cpp"                       "Core/BudgetEngine.h"
     "Core/EventTypes.h"
     "Core/Event.h"
-    "Core/EventQueue.h"                         "Core/EventQueue.cpp"
+    "Core/EventQueue.cpp"                         "Core/EventQueue.h"
     "Core/EventListener.h"
-    "Core/Subject.h"
-    "Core/SoundSystem.h"
+    "Core/GameObject.cpp"                         "Core/GameObject.h"                       
+    "Core/HelperFunctions.h"                       
+    "Core/LoggingSoundSystem.cpp"                 "Core/LoggingSoundSystem.h"                 
     "Core/NullSoundSystem.h"
-    "Core/SdlSoundSystem.h"                     "Core/SdlSoundSystem.cpp"
-    "Core/LoggingSoundSystem.cpp"               "Core/LoggingSoundSystem.h"                 
-    "Core/ServiceLocator.cpp"                   "Core/ServiceLocator.h"
     "Core/Observer.h"
-    "Core/Renderer.cpp"                         "Core/Renderer.h"
-    "Core/Scene.cpp"                            "Core/Scene.h"
+    "Core/Renderer.cpp"                           "Core/Renderer.h"
+    "Core/RingBuffer.h"                         
+    "Core/Scene.cpp"                              "Core/Scene.h"
+    "Core/SdlAudioClip.cpp"                       "Core/SdlAudioClip.h"                
+    "Core/SdlSoundSystem.cpp"                     "Core/SdlSoundSystem.h"
+    "Core/SoundSystem.h"
+    "Core/ServiceLocator.cpp"                     "Core/ServiceLocator.h"
+    "Core/Subject.h"
+
     "Commands/Command.h"
     "Commands/GameActorCommand.h"
     "Commands/MoveCommand.h"
-    "Components/TextComponent.cpp"              "Components/TextComponent.h"
+
     "Components/Component.h"
-    "Components/FpsCounterComponent.cpp"        "Components/FpsCounterComponent.h"
-    "Components/ImguiComponent.cpp"             "Components/ImguiComponent.h"
+    "Components/FpsCounterComponent.cpp"          "Components/FpsCounterComponent.h"
+    "Components/ImguiComponent.cpp"               "Components/ImguiComponent.h"
     "Components/InputComponent.h"
-    "Components/SpriteComponent.cpp"            "Components/SpriteComponent.h"
-    "Components/TextureComponent.cpp"           "Components/TextureComponent.h"
-    "Components/TrashTheCacheComponent.cpp"     "Components/TrashTheCacheComponent.h"
-    "Components/TransformComponent.cpp"         "Components/TransformComponent.h"
-    "Managers/InputManager.cpp"                 "Managers/InputManager.h"
-    "Managers/ResourceManager.cpp"              "Managers/ResourceManager.h"
-    "Managers/SceneManager.cpp"                 "Managers/SceneManager.h"
+    "Components/SpriteComponent.cpp"              "Components/SpriteComponent.h"
+    "Components/TextComponent.cpp"                "Components/TextComponent.h"
+    "Components/TextureComponent.cpp"             "Components/TextureComponent.h"
+    "Components/TrashTheCacheComponent.cpp"       "Components/TrashTheCacheComponent.h"
+    "Components/TransformComponent.cpp"           "Components/TransformComponent.h"
+
+    "Managers/InputManager.cpp"                   "Managers/InputManager.h"
+    "Managers/ResourceManager.cpp"                "Managers/ResourceManager.h"
+    "Managers/SceneManager.cpp"                   "Managers/SceneManager.h"
+
     "Singletons/GameTime.h"
     "Singletons/Singleton.h"
+
     "Wrappers/AudioChunk.cpp"                   "Wrappers/AudioChunk.h"
     "Wrappers/Controller.cpp"                   "Wrappers/Controller.h"
-    "Wrappers/Keyboard.cpp"                     "Wrappers/Controller.h"
     "Wrappers/Font.cpp"                         "Wrappers/Font.h"
+    "Wrappers/Keyboard.cpp"                     "Wrappers/Controller.h"
     "Wrappers/Texture2D.cpp"                    "Wrappers/Texture2D.h"
  )
  
@@ -69,9 +77,9 @@ add_library(${ENGINE_NAME} STATIC
 if(STEAMWORKS_AVAILABLE)
 
     target_sources(${ENGINE_NAME} PRIVATE
-        "Core/Achievement.cpp"     "Core/Achievement.h"
+        "Core/Achievement.h"                "Core/Achievement.cpp"
         "Managers/AchievementManager.h"
-        "Managers/SteamManager.cpp"     "Managers/SteamManager.h"
+        "Managers/SteamManager.h"           "Managers/SteamManager.cpp"
     )
 
 endif()

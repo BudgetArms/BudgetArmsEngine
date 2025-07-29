@@ -11,7 +11,7 @@ using namespace bae;
 
 void EventQueue::AddEvent(const Event& event)
 {
-    std::unique_lock<std::mutex> lock(m_Mutex);
+    std::lock_guard<std::mutex> lock(m_Mutex);
 
     if (IsFull())
     {
@@ -47,7 +47,7 @@ void EventQueue::RemoveListener(EventListener* eventListener)
 
 void EventQueue::ProcessEvents()
 {
-    std::unique_lock<std::mutex> lock(m_Mutex);
+    std::lock_guard<std::mutex> lock(m_Mutex);
 
     while (!IsEmpty())
     {

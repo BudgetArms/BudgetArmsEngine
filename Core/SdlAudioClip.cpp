@@ -4,9 +4,14 @@
 #include <mutex>
 #include <algorithm>
 
+
 #include <SDL_mixer.h>
 
+#include "Core/ServiceLocator.h"
 #include "Wrappers/AudioChunk.h"
+#include "Core/SoundSystem.h"
+
+#include "Core/HelperFunctions.h"
 
 
 using namespace bae;
@@ -15,44 +20,46 @@ using namespace bae;
 class SdlAudioClip::Impl
 {
 public:
-    Impl(const std::string& path, int soundId);
-    ~Impl();
+	Impl();
+	Impl(ActiveSoundID activeSoundId, SoundID soundId);
+	~Impl();
 
 
-    void Play();
-    void Stop();
+	bool Play();
+	void Stop();
 
-    void Resume();
-    void Pause();
+	void Resume();
+	void Pause();
 
-    void Mute();
-    void UnMute();
-
-
-    bool IsPlaying();
-    bool IsLoaded();
-
-    bool IsPaused();
-    bool IsMuted();
+	void Mute();
+	void UnMute();
 
 
-    float GetVolume();
-    void SetVolume(float volume);
+	bool IsPlaying() const;
 
-    int GetSoundId();
+	bool IsPaused() const;
+	bool IsMuted() const;
 
 
-    std::mutex m_Mutex;
+	float GetVolume() const;
+	void SetVolume(float volume);
 
+	SoundID GetSoundId();
+	ActiveSoundID GetActiveSoundId();
+	int GetChannel();
+
+
+
+	std::mutex m_Mutex;
 
 private:
-    std::unique_ptr<AudioChunk> m_Chunk{};
-    int m_SoundId{};
-    int m_Channel{ -1 };
-    float m_Volume{ 1.f };
-    bool m_bIsLoaded{ false };
-    bool m_bIsPaused{ false };
-    bool m_bIsMuted{ false };
+	SoundID m_SoundId{};
+	ActiveSoundID m_ActiveSoundID{};
+	int m_Channel{ -1 };
+	float m_Volume{ 1.f };
+	bool m_Test{ false };
+	bool m_bIsPaused{ false };
+	bool m_bIsMuted{ false };
 
 
 };
@@ -61,10 +68,14 @@ private:
 
 #pragma region SdlAudioClip | NOT PIMPL
 
+//SdlAudioClip::SdlAudioClip()
+//{
+//
+//}
 
-SdlAudioClip::SdlAudioClip(const std::string& path, int soundId)
+SdlAudioClip::SdlAudioClip(ActiveSoundID activeId, SoundID soundId)
 {
-    m_Pimpl = std::make_unique<Impl>(path, soundId);
+	m_Pimpl = std::make_unique<Impl>(activeId, soundId);
 }
 
 SdlAudioClip::~SdlAudioClip()
@@ -72,89 +83,95 @@ SdlAudioClip::~SdlAudioClip()
 }
 
 
-void SdlAudioClip::Play()
+bool SdlAudioClip::Play()
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    m_Pimpl->Play();
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	return m_Pimpl->Play();
 }
 
 void SdlAudioClip::Stop()
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    m_Pimpl->Stop();
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	m_Pimpl->Stop();
 }
 
 
 void SdlAudioClip::Resume()
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    m_Pimpl->Resume();
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	m_Pimpl->Resume();
 }
 
 void SdlAudioClip::Pause()
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    m_Pimpl->Pause();
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	m_Pimpl->Pause();
 }
 
 
 void SdlAudioClip::Mute()
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    m_Pimpl->Mute();
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	m_Pimpl->Mute();
 }
 
 void SdlAudioClip::UnMute()
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    m_Pimpl->UnMute();
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	m_Pimpl->UnMute();
 }
 
 
-bool SdlAudioClip::IsPlaying()
+bool SdlAudioClip::IsPlaying() const
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    return m_Pimpl->IsPlaying();
-}
-
-bool SdlAudioClip::IsLoaded()
-{
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    return m_Pimpl->IsLoaded();
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	return m_Pimpl->IsPlaying();
 }
 
 
-bool SdlAudioClip::IsPaused()
+bool SdlAudioClip::IsPaused() const
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    return m_Pimpl->IsPaused();
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	return m_Pimpl->IsPaused();
 }
 
-bool SdlAudioClip::IsMuted()
+bool SdlAudioClip::IsMuted() const
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    return m_Pimpl->IsMuted();
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	return m_Pimpl->IsMuted();
 }
 
 
 
-float SdlAudioClip::GetVolume()
+float SdlAudioClip::GetVolume() const
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    return m_Pimpl->GetVolume();
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	return m_Pimpl->GetVolume();
 }
 
 void SdlAudioClip::SetVolume(float volume)
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    m_Pimpl->SetVolume(volume);
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	m_Pimpl->SetVolume(volume);
 }
 
 
-int SdlAudioClip::GetSoundId()
+SoundID SdlAudioClip::GetSoundId()
 {
-    std::unique_lock<std::mutex> lock{ m_Pimpl->m_Mutex };
-    return m_Pimpl->GetSoundId();
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	return m_Pimpl->GetSoundId();
+}
+
+ActiveSoundID SdlAudioClip::GetActiveSoundId()
+{
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	return m_Pimpl->GetActiveSoundId();
+}
+
+int SdlAudioClip::GetChannel()
+{
+	std::lock_guard<std::mutex> lock{ m_Pimpl->m_Mutex };
+	return m_Pimpl->GetChannel();
 }
 
 
@@ -164,39 +181,17 @@ int SdlAudioClip::GetSoundId()
 #pragma region SdlAudioClip | PIMPL
 
 
-SdlAudioClip::Impl::Impl(const std::string& path, int soundId)
+SdlAudioClip::Impl::Impl(ActiveSoundID id, SoundID soundId)
 {
-    std::lock_guard<std::mutex> lock(m_Mutex);
+	std::lock_guard<std::mutex> lock(m_Mutex);
 
-    m_SoundId = soundId;
+	m_ActiveSoundID = id;
+	m_SoundId = soundId;
 
-    if (!Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG))
-    {
-        std::cout << "SdlAudioClip sdl_mixer could not initialize SDL_mixer \n";
-        m_bIsLoaded = false;
-        return;
-    }
 
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
-    {
-        std::cout << "SdlAudioClip sdl_mixer could not openaudio or something \n";
-        m_bIsLoaded = false;
-        return;
-    }
-
-    m_Chunk = std::make_unique<AudioChunk>(path);
-    if (!m_Chunk)
-    {
-        std::cout << "Chunk failed\n";
-        m_bIsLoaded = false;
-        return;
-    }
-
-    m_bIsLoaded = true;
-    m_Channel = -1;
-    m_Volume = 1.0f;
-    Mix_VolumeChunk(m_Chunk->GetChunk(), static_cast<int>(MIX_MAX_VOLUME * m_Volume));
-
+	m_Channel = -1;
+	m_Volume = 1.0f;
+	SetVolume(m_Volume);
 
 }
 
@@ -205,102 +200,134 @@ SdlAudioClip::Impl::~Impl()
 }
 
 
-void SdlAudioClip::Impl::Play()
+bool SdlAudioClip::Impl::Play()
 {
-    if (m_bIsLoaded)
-        m_Channel = Mix_PlayChannel(-1, m_Chunk->GetChunk(), 0);
+	m_Channel = Mix_PlayChannel(-1, ServiceLocator::GetSoundSystem().GetAudioChunk(m_SoundId)->GetChunk(), 0);
 
-    if (m_bIsMuted)
-        Mute();
+	if (m_Channel == -1)
+	{
+		std::cout << GetFunctionName() << " Channels are full!!!\n";
+		return false;
+	}
 
+	if (m_bIsMuted)
+		Mute();
+
+	return true;
 }
 
 void SdlAudioClip::Impl::Stop()
 {
-    if (IsPlaying())
-    {
-        Mix_HaltChannel(m_Channel);
-        m_Channel = -1;
-    }
+
+	if (IsPlaying())
+	{
+		if (m_Channel == -1)
+			return;
+
+		Mix_HaltChannel(m_Channel);
+		m_Channel = -1;
+	}
 }
 
 
 void SdlAudioClip::Impl::Resume()
 {
-    if (m_Channel != -1)
-        if (Mix_Paused(m_Channel))
-        {
-            Mix_Resume(m_Channel);
-            m_bIsPaused = false;
-        }
+	if (m_Channel == -1)
+		return;
+
+	if (Mix_Paused(m_Channel))
+	{
+		Mix_Resume(m_Channel);
+		m_bIsPaused = false;
+	}
 
 }
 
 void SdlAudioClip::Impl::Pause()
 {
-    if (m_Channel != -1)
-        if (!Mix_Paused(m_Channel))
-        {
-            Mix_Pause(m_Channel);
-            m_bIsPaused = true;
-        }
+	if (m_Channel == -1)
+		return;
 
+	if (!Mix_Paused(m_Channel))
+	{
+		Mix_Pause(m_Channel);
+		m_bIsPaused = true;
+	}
 }
 
 
 void SdlAudioClip::Impl::Mute()
 {
-    Mix_VolumeChunk(m_Chunk->GetChunk(), 0);
-    m_bIsMuted = true;
+	if (m_Channel == -1)
+		return;
+
+	Mix_Volume(m_Channel, 0);
+	m_bIsMuted = true;
 }
 
 void SdlAudioClip::Impl::UnMute()
 {
-    if (!m_bIsMuted)
-        return;
+	if (m_Channel == -1)
+		return;
 
-    SetVolume(m_Volume);
-    m_bIsMuted = false;
+	if (!m_bIsMuted)
+		return;
+
+	SetVolume(m_Volume);
+	m_bIsMuted = false;
 }
 
 
-bool SdlAudioClip::Impl::IsPlaying()
+bool SdlAudioClip::Impl::IsPlaying() const
 {
-    return (m_Channel != -1) && (Mix_Playing(m_Channel) != 0);
-}
+	if (m_Channel == -1)
+	{
+		//std::cout << GetFunctionName() << " m_Channel is -1, CURSED\n";
+		return false;
+	}
 
-bool SdlAudioClip::Impl::IsLoaded()
-{
-    return m_bIsLoaded;
-}
-
-
-bool SdlAudioClip::Impl::IsPaused()
-{
-    return m_bIsPaused;
-}
-
-bool SdlAudioClip::Impl::IsMuted()
-{
-    return m_bIsMuted;
+	return Mix_Playing(m_Channel);
 }
 
 
-float SdlAudioClip::Impl::GetVolume()
+bool SdlAudioClip::Impl::IsPaused() const
 {
-    return m_Volume;
+	return m_bIsPaused;
+}
+
+bool SdlAudioClip::Impl::IsMuted() const
+{
+	return m_bIsMuted;
+}
+
+
+float SdlAudioClip::Impl::GetVolume() const
+{
+	return m_Volume;
 }
 
 void SdlAudioClip::Impl::SetVolume(float volume)
 {
-    m_Volume = std::clamp(volume, 0.f, 1.f);
-    Mix_VolumeChunk(m_Chunk->GetChunk(), static_cast<int>(MIX_MAX_VOLUME * m_Volume));
+	if (m_Channel == -1)
+		return;
+
+	m_Volume = std::clamp(volume, 0.f, 1.f);
+	Mix_Volume(m_Channel, static_cast<int>(MIX_MAX_VOLUME * m_Volume));
 }
 
-
-int SdlAudioClip::Impl::GetSoundId()
+SoundID SdlAudioClip::Impl::GetSoundId()
 {
-    return m_SoundId;
+	return m_SoundId;
+}
+
+ActiveSoundID SdlAudioClip::Impl::GetActiveSoundId()
+{
+	return m_ActiveSoundID;
+}
+
+int SdlAudioClip::Impl::GetChannel()
+{
+	return m_Channel;
 }
 
 
