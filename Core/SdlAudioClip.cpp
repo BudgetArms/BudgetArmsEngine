@@ -49,8 +49,8 @@ public:
 	int GetChannel();
 
 
-
 	std::mutex m_Mutex;
+
 
 private:
 	SoundID m_SoundId{};
@@ -68,12 +68,9 @@ private:
 
 #pragma region SdlAudioClip | NOT PIMPL
 
-//SdlAudioClip::SdlAudioClip()
-//{
-//
-//}
 
-SdlAudioClip::SdlAudioClip(ActiveSoundID activeId, SoundID soundId)
+SdlAudioClip::SdlAudioClip(ActiveSoundID activeId, SoundID soundId) :
+	AudioClip(activeId, soundId)
 {
 	m_Pimpl = std::make_unique<Impl>(activeId, soundId);
 }
@@ -328,6 +325,5 @@ int SdlAudioClip::Impl::GetChannel()
 
 
 #pragma endregion
-
 
 

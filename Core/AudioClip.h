@@ -9,6 +9,7 @@ namespace bae
 	class AudioClip
 	{
 	public:
+		AudioClip(ActiveSoundID, SoundID) {};
 		virtual ~AudioClip() = default;
 
 		// return indicates sucess creation
@@ -34,6 +35,8 @@ namespace bae
 		virtual SoundID GetSoundId() = 0;
 		virtual ActiveSoundID GetActiveSoundId() = 0;
 		virtual int GetChannel() = 0;
+		// channel probably also should a be a class bc other audio libraries might not 
+		// use int to identify their channels
 
 
 	};

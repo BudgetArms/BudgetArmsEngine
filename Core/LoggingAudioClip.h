@@ -10,19 +10,20 @@
 
 namespace bae
 {
-	class LoggingAudioClip : public AudioClip
+
+	template<typename RealAudioClipType,
+		typename = std::enable_if_t<std::is_base_of_v<bae::AudioClip, RealAudioClipType> &&
+		!std::is_same_v<bae::AudioClip, RealAudioClipType>>>
+		class LoggingAudioClip : public AudioClip
 	{
 	public:
 
-		template<typename RealAudioClipType, typename... Args,
-			typename = std::enable_if_t<std::is_base_of_v<bae::AudioClip, RealAudioClipType> &&
-			!std::is_same_v<bae::AudioClip, RealAudioClipType>>>
-			LoggingAudioClip(Args&&... args) :
-			AudioClip(),
+		LoggingAudioClip(ActiveSoundID activeSoundId, SoundID soundId) :
+			AudioClip(activeSoundId, soundId),
 			m_RealAudioClip{ }
 		{
 			std::cout << GetFunctionName() << '\n';
-			m_RealAudioClip = std::make_unique<RealAudioClipType>(std::forward<Args>(args)...);
+			m_RealAudioClip = std::make_unique<RealAudioClipType>(activeSoundId, soundId);
 		};
 
 		virtual ~LoggingAudioClip()
@@ -30,11 +31,13 @@ namespace bae
 			std::cout << GetFunctionName() << '\n';
 		};
 
+
 		virtual bool Play() override
 		{
 			std::cout << GetFunctionName() << '\n';
-			m_RealAudioClip->Play();
+			return m_RealAudioClip->Play();
 		};
+
 		virtual void Stop() override
 		{
 			std::cout << GetFunctionName() << '\n';
@@ -46,6 +49,7 @@ namespace bae
 			std::cout << GetFunctionName() << '\n';
 			m_RealAudioClip->Resume();
 		};
+
 		virtual void Pause() override
 		{
 			std::cout << GetFunctionName() << '\n';
@@ -57,6 +61,7 @@ namespace bae
 			std::cout << GetFunctionName() << '\n';
 			m_RealAudioClip->Mute();
 		};
+
 		virtual void UnMute() override
 		{
 			std::cout << GetFunctionName() << '\n';
@@ -66,7 +71,8 @@ namespace bae
 
 		virtual bool IsPlaying() const override
 		{
-			std::cout << GetFunctionName() << '\n';
+			// // this is disabled because it's called constantly
+			//std::cout << GetFunctionName() << '\n'; 
 			return m_RealAudioClip->IsPlaying();
 		};
 
@@ -75,6 +81,7 @@ namespace bae
 			std::cout << GetFunctionName() << '\n';
 			return m_RealAudioClip->IsPaused();
 		};
+
 		virtual bool IsMuted() const override
 		{
 			std::cout << GetFunctionName() << '\n';
@@ -87,7 +94,6 @@ namespace bae
 			std::cout << GetFunctionName() << '\n';
 			return m_RealAudioClip->GetVolume();
 		};
-
 		virtual void SetVolume(float volume) override
 		{
 			std::cout << GetFunctionName() << '\n';
@@ -115,10 +121,10 @@ namespace bae
 
 
 	private:
-		std::unique_ptr<AudioClip> m_RealAudioClip;
+		std::unique_ptr<RealAudioClipType> m_RealAudioClip;
 
 
 	};
-
 }
+
 

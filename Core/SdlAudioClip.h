@@ -7,12 +7,11 @@
 
 namespace bae
 {
-	// Note: I want to have a logging system, just like SoundSystem has one, but for AudioClips
-	class SdlAudioClip : public AudioClip
+	class SdlAudioClip final : public AudioClip
 	{
 	public:
 		SdlAudioClip(ActiveSoundID activeId, SoundID soudId);
-		~SdlAudioClip(); // empty, needed for Pimpl
+		virtual ~SdlAudioClip(); // empty, needed for Pimpl
 
 		virtual bool Play() override;
 		virtual void Stop() override;
@@ -36,8 +35,6 @@ namespace bae
 		virtual SoundID GetSoundId() override;
 		virtual ActiveSoundID GetActiveSoundId() override;
 		virtual int GetChannel() override;
-		// channel probably also should a be a class bc other audio libraries might not 
-		// use int to identify their channels
 
 
 	private:

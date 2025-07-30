@@ -19,10 +19,38 @@ namespace bae
 		}
 	};
 
+	enum class SoundEventType
+	{
+		Play,
+		Stop,
+		Resume,
+		Pause,
+		Mute,
+		UnMute,
+		SetVolume,
+
+		StopAll,
+		ResumeAll,
+		PauseAll,
+		MuteAll,
+		UnMuteAll,
+		SetVolumeAll,
+	};
+
+	struct SoundEventData
+	{
+		SoundEventType Type;
+		SoundID SoundID{ -1 };
+		ActiveSoundID ActiveSoundID{ -1 };
+		float Volume{ 1 };
+	};
+
+
 	constexpr inline bool operator==(const SoundID& lhs, const SoundID& rhs)
 	{
 		return lhs.ID == rhs.ID;
 	}
+
 	inline bool operator==(const ActiveSoundID& lhs, const ActiveSoundID& rhs)
 	{
 		return lhs.ID == rhs.ID;

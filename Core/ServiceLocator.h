@@ -11,6 +11,7 @@ namespace bae
 	{
 	public:
 		static SoundSystem& GetSoundSystem() { return *m_sSoundSystemInstance; }
+
 		static void RegisterSoundSystem(std::unique_ptr<SoundSystem>&& soundSystem)
 		{
 			if (!soundSystem)
@@ -20,8 +21,7 @@ namespace bae
 		}
 
 
-		template<typename T>
-		static AudioQueue<T>& GetAudioQueue() { return *m_sAudioQueueInstance; }
+		static IAudioQueue& GetAudioQueue() { return *m_sAudioQueueInstance; }
 
 		template<typename AudioClipType,
 			typename = std::enable_if_t<std::is_base_of_v<bae::AudioClip, AudioClipType> &&
@@ -34,8 +34,7 @@ namespace bae
 
 	private:
 		static std::unique_ptr<SoundSystem> m_sSoundSystemInstance;
-		template<typename T>
-		static std::unique_ptr<AudioQueue<T>> m_sAudioQueueInstance;
+		static std::unique_ptr<IAudioQueue> m_sAudioQueueInstance;
 
 
 	};

@@ -7,7 +7,13 @@ namespace bae
 {
 	class NullAudioClip : public AudioClip
 	{
-		virtual bool Play() override {};
+	public:
+		NullAudioClip(ActiveSoundID activeSoundId = ActiveSoundID(-1), SoundID soundId = SoundID(-1)) :
+			AudioClip(activeSoundId, soundId)
+		{
+		};
+
+		virtual bool Play() override { return true; };
 		virtual void Stop() override {};
 
 		virtual void Resume() override {};
@@ -31,4 +37,5 @@ namespace bae
 
 	};
 }
+
 

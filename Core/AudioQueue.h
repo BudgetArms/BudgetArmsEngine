@@ -1,70 +1,46 @@
 ﻿#pragma once
 
+#include <iostream>
 #include <memory>
 #include <algorithm>
 #include <ranges>
 #include <unordered_map>
 
-#include "Core/SoundSystem.h"
+#include "Core/AudioClip.h"
 #include "Core/RingBuffer.h"
 #include "Core/SoundStructs.h"
-
-#include "Core/HelperFunctions.h"
-
-#include "Core/NullAudioClip.h"
-#include "Core/SdlAudioClip.h"
 
 
 namespace bae
 {
 	class AudioClip;
 
-	enum class SoundEventType
+	class IAudioQueue
 	{
-		Play,
-		Stop,
-		Resume,
-		Pause,
-		Mute,
-		UnMute,
-		SetVolume,
-
-		StopAll,
-		ResumeAll,
-		PauseAll,
-		MuteAll,
-		UnMuteAll,
-		SetVolumeAll,
+	public:
+		virtual ~IAudioQueue() = default;
+		virtual void SendSoundEvent(const SoundEventData& soundEvent) = 0;
+		virtual const AudioClip* GetAudioClip(ActiveSoundID activeSoundId) = 0;
 	};
 
-	struct SoundEventData
-	{
-		SoundEventType Type;
-		SoundID SoundID{ -1 };
-		ActiveSoundID ActiveSoundID{ -1 };
-		float Volume{ 1 };
-	};
 
-	template<typename AudioClipType = NullAudioClip>
-	class AudioQueue
+	template<typename AudioClipType>
+	class AudioQueue : public IAudioQueue
 	{
-		static_assert(std::is_base_of<AudioClip, AudioClipType>::value, "AudioClipType must derive from AudioClip");
+		static_assert(std::is_base_of<bae::AudioClip, AudioClipType>::value, "AudioClipType must derive from AudioClip");
 
 
 	public:
 		AudioQueue();
-		~AudioQueue();
+		virtual ~AudioQueue();
 
-		void SendSoundEvent(const SoundEventData& soundEvent);
-		const AudioClip* GetAudioClip(ActiveSoundID activeSoundId);
-
-		bool m_bQuit{ false };
+		virtual void SendSoundEvent(const SoundEventData& soundEvent) override;
+		const AudioClip* GetAudioClip(ActiveSoundID activeSoundId) override;
 
 
 	private:
 		void AudioThreadLoop();
 
-		//void ProcessSoundEvent(const SoundEventData& eventData);
 		void ProcessSoundEvent(const SoundEventData& eventData);
 		void CleanUpFinishedSounds();
 
@@ -76,10 +52,10 @@ namespace bae
 
 		const float m_ThreadSleepTimeMilliSec{ 100.f };
 		bool m_bAreAllSoundsMuted{ false };
+		bool m_bQuit{ false };
 
 
 	};
-
 }
 
 
@@ -91,6 +67,7 @@ bae::AudioQueue<AudioClipType>::AudioQueue() :
 	std::cout << "Initialized AudioQueue\n";
 	m_AudioThread = std::thread(&AudioQueue::AudioThreadLoop, this);
 }
+
 
 template<typename AudioClipType>
 bae::AudioQueue<AudioClipType>::~AudioQueue()
@@ -158,7 +135,6 @@ void bae::AudioQueue<AudioClipType>::ProcessSoundEvent(const SoundEventData& eve
 			if (audioClip)
 				return;
 
-			//auto uAudioClip = std::make_unique<bae::SdlAudioClip>(eventData.ActiveSoundID, eventData.SoundID);
 			auto uAudioClip = std::make_unique<AudioClipType>(eventData.ActiveSoundID, eventData.SoundID);
 
 			// if the channels are full it returns -1
@@ -319,8 +295,5 @@ void bae::AudioQueue<AudioClipType>::CleanUpFinishedSounds()
 	);
 
 }
-
-
-
 
 
