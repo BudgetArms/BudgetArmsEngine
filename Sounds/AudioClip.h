@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include <string>
-#include "Core/SoundSystem.h"
+
+#include "Sounds/SoundSystem.h"
 
 
 namespace bae

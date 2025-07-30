@@ -1,8 +1,10 @@
 ﻿#pragma once
+
 #include <memory>
-#include "Core/SoundSystem.h"
-#include "Core/NullSoundSystem.h"
-#include "Core/AudioQueue.h"
+
+#include "Sounds/SoundSystem.h"
+#include "Sounds/NullSoundSystem.h"
+#include "Sounds/AudioQueue.h"
 
 
 namespace bae

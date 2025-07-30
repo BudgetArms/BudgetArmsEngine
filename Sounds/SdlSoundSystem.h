@@ -1,18 +1,17 @@
 ﻿#pragma once
 
-#include <iostream>
 #include <memory>
-#include "Core/SoundStructs.h"
-#include "Core/SoundSystem.h"
+#include <iostream>
+#include "Sounds/SoundSystem.h"
 
 
 namespace bae
 {
-	class LoggingSoundSystem : public SoundSystem
+	class SdlSoundSystem : public SoundSystem
 	{
 	public:
-		LoggingSoundSystem(std::unique_ptr<SoundSystem> soundSystem);
-		virtual ~LoggingSoundSystem();
+		SdlSoundSystem();
+		virtual ~SdlSoundSystem();
 
 		virtual SoundID LoadSound(const std::string& path) override;
 
@@ -32,7 +31,8 @@ namespace bae
 		virtual bool IsMuted(ActiveSoundID activeSoundId) override;
 
 		virtual float GetVolume(ActiveSoundID activeSoundId) override;
-		virtual void  SetVolume(ActiveSoundID activeSoundId, float volume) override;
+		virtual void SetVolume(ActiveSoundID activeSoundId, float volume) override;
+
 
 		virtual void ResumeAllSounds() override;
 		virtual void PauseAllSounds() override;
@@ -42,12 +42,13 @@ namespace bae
 
 		virtual void SetVolumeAllSounds(float volume) override;
 
-
 		virtual AudioChunk* GetAudioChunk(SoundID soundId) override;
 
 
 	private:
-		std::unique_ptr<SoundSystem> m_RealSoundSystem;
+		// Pimple implmentation
+		class Impl;
+		std::unique_ptr<Impl> m_Pimpl{ std::make_unique<Impl>() };
 
 
 	};

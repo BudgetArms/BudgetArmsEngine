@@ -8,7 +8,7 @@
 
 #include <SDL_mixer.h>
 
-#include "Core/AudioClip.h"
+#include "Sounds/AudioClip.h"
 #include "Wrappers/AudioChunk.h"
 #include "Core/HelperFunctions.h"
 #include "Core/ServiceLocator.h"

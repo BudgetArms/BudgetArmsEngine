@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Core/SoundStructs.h"
+#include "Sounds/SoundStructs.h"
 #include "Wrappers/AudioChunk.h"
 
 

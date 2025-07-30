@@ -6,9 +6,9 @@
 #include <ranges>
 #include <unordered_map>
 
-#include "Core/AudioClip.h"
 #include "Core/RingBuffer.h"
-#include "Core/SoundStructs.h"
+#include "Sounds/AudioClip.h"
+#include "Sounds/SoundStructs.h"
 
 
 namespace bae

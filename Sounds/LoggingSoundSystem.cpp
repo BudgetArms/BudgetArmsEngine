@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "Core/NullSoundSystem.h"
+#include "Sounds/NullSoundSystem.h"
 #include "Core/HelperFunctions.h"
 
 

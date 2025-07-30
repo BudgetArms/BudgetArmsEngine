@@ -9,7 +9,7 @@
 
 #include "Core/ServiceLocator.h"
 #include "Wrappers/AudioChunk.h"
-#include "Core/SoundSystem.h"
+#include "Sounds/SoundSystem.h"
 
 #include "Core/HelperFunctions.h"
 

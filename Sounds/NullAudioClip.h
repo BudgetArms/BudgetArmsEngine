@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Core/AudioClip.h"
+#include "Sounds/AudioClip.h"
 
 
 namespace bae

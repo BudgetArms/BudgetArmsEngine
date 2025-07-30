@@ -4,7 +4,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "Core/AudioClip.h"
+#include "Sounds/AudioClip.h"
 #include "Core/HelperFunctions.h"
 
 
