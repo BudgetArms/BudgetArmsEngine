@@ -1,11 +1,18 @@
 ﻿#pragma once
 
 #include <memory>
+#include <algorithm>
+#include <ranges>
 #include <unordered_map>
 
 #include "Core/SoundSystem.h"
 #include "Core/RingBuffer.h"
-//#include "Core/SdlAudioClip.h"
+#include "Core/SoundStructs.h"
+
+#include "Core/HelperFunctions.h"
+
+#include "Core/NullAudioClip.h"
+#include "Core/SdlAudioClip.h"
 
 
 namespace bae
@@ -38,9 +45,12 @@ namespace bae
 		float Volume{ 1 };
 	};
 
-
+	template<typename AudioClipType = NullAudioClip>
 	class AudioQueue
 	{
+		static_assert(std::is_base_of<AudioClip, AudioClipType>::value, "AudioClipType must derive from AudioClip");
+
+
 	public:
 		AudioQueue();
 		~AudioQueue();
@@ -54,6 +64,7 @@ namespace bae
 	private:
 		void AudioThreadLoop();
 
+		//void ProcessSoundEvent(const SoundEventData& eventData);
 		void ProcessSoundEvent(const SoundEventData& eventData);
 		void CleanUpFinishedSounds();
 
@@ -70,5 +81,246 @@ namespace bae
 	};
 
 }
+
+
+
+template<typename AudioClipType>
+bae::AudioQueue<AudioClipType>::AudioQueue() :
+	m_SoundEventBuffer{ 10 }
+{
+	std::cout << "Initialized AudioQueue\n";
+	m_AudioThread = std::thread(&AudioQueue::AudioThreadLoop, this);
+}
+
+template<typename AudioClipType>
+bae::AudioQueue<AudioClipType>::~AudioQueue()
+{
+	m_bQuit = true;
+	if (m_AudioThread.joinable())
+		m_AudioThread.join();
+
+	for (auto& [id, sound] : m_ActiveAudio)
+		sound->Stop();
+
+	m_ActiveAudio.clear();
+}
+
+
+template<typename AudioClipType>
+void bae::AudioQueue<AudioClipType>::SendSoundEvent(const SoundEventData& soundEvent)
+{
+	m_SoundEventBuffer.Push(soundEvent);
+}
+
+template<typename AudioClipType>
+const bae::AudioClip* bae::AudioQueue<AudioClipType>::GetAudioClip(ActiveSoundID activeSoundId)
+{
+	if (auto it = m_ActiveAudio.find(activeSoundId); it != m_ActiveAudio.end())
+		return it->second.get();
+
+	return nullptr;
+}
+
+
+template<typename AudioClipType>
+void bae::AudioQueue<AudioClipType>::AudioThreadLoop()
+{
+	SoundEventData eventData;
+
+	while (!m_bQuit)
+	{
+		while (m_SoundEventBuffer.Pop(eventData))
+			ProcessSoundEvent(eventData);
+
+		CleanUpFinishedSounds();
+
+		std::this_thread::sleep_for(std::chrono::microseconds(static_cast<long long>(m_ThreadSleepTimeMilliSec)));
+
+	}
+}
+
+
+template<typename AudioClipType>
+void bae::AudioQueue<AudioClipType>::ProcessSoundEvent(const SoundEventData& eventData)
+{
+	bae::AudioClip* audioClip = nullptr;
+
+	if (auto it = m_ActiveAudio.find(eventData.ActiveSoundID); it != m_ActiveAudio.end())
+		if (it->second)
+			audioClip = it->second.get();
+
+
+	switch (eventData.Type)
+	{
+		case bae::SoundEventType::Play:
+		{
+			// SoundClip already loaded, it shouldn't be loaded, bc Play shouldn't have an ActiveSoundID
+			if (audioClip)
+				return;
+
+			//auto uAudioClip = std::make_unique<bae::SdlAudioClip>(eventData.ActiveSoundID, eventData.SoundID);
+			auto uAudioClip = std::make_unique<AudioClipType>(eventData.ActiveSoundID, eventData.SoundID);
+
+			// if the channels are full it returns -1
+			if (!uAudioClip->Play())
+				return;
+
+			uAudioClip->SetVolume(eventData.Volume);
+
+			if (m_bAreAllSoundsMuted)
+				uAudioClip->Mute();
+
+			m_ActiveAudio.insert(std::pair(eventData.ActiveSoundID, std::move(uAudioClip)));
+
+		} break;
+		case bae::SoundEventType::Stop:
+		{
+			if (!audioClip)
+				return;
+
+			audioClip->Stop();
+		} break;
+		case bae::SoundEventType::Resume:
+		{
+			if (!audioClip)
+				return;
+
+			audioClip->Resume();
+		} break;
+		case bae::SoundEventType::Pause:
+		{
+			if (!audioClip)
+				return;
+
+			audioClip->Pause();
+		} break;
+		case bae::SoundEventType::Mute:
+		{
+			if (!audioClip)
+				return;
+
+			audioClip->Mute();
+		} break;
+		case bae::SoundEventType::UnMute:
+		{
+			if (!audioClip)
+				return;
+
+			audioClip->UnMute();
+		} break;
+		case bae::SoundEventType::SetVolume:
+		{
+			if (!audioClip)
+				return;
+
+			audioClip->SetVolume(eventData.Volume);
+		} break;
+		case bae::SoundEventType::StopAll:
+		{
+			std::ranges::for_each(m_ActiveAudio,
+				[](auto& activeAudio)
+				{
+					if (!activeAudio.second)
+						return;
+
+					activeAudio.second->Stop();
+				}
+			);
+
+		} break;
+		case bae::SoundEventType::ResumeAll:
+		{
+			std::ranges::for_each(m_ActiveAudio,
+				[](auto& activeAudio)
+				{
+					if (!activeAudio.second)
+						return;
+
+					activeAudio.second->Resume();
+				}
+			);
+
+		} break;
+		case bae::SoundEventType::PauseAll:
+		{
+			std::ranges::for_each(m_ActiveAudio,
+				[](auto& activeAudio)
+				{
+					if (!activeAudio.second)
+						return;
+
+					activeAudio.second->Pause();
+				}
+			);
+
+		} break;
+		case bae::SoundEventType::MuteAll:
+		{
+			m_bAreAllSoundsMuted = true;
+
+			std::ranges::for_each(m_ActiveAudio,
+				[](auto& activeAudio)
+				{
+					if (!activeAudio.second)
+						return;
+
+					activeAudio.second->Mute();
+				}
+			);
+
+		} break;
+		break;
+		case bae::SoundEventType::UnMuteAll:
+		{
+			m_bAreAllSoundsMuted = false;
+
+			std::ranges::for_each(m_ActiveAudio,
+				[](auto& activeAudio)
+				{
+					if (!activeAudio.second)
+						return;
+
+					activeAudio.second->UnMute();
+				}
+			);
+
+		} break;
+		case bae::SoundEventType::SetVolumeAll:
+		{
+			std::ranges::for_each(m_ActiveAudio,
+				[&eventData](auto& activeAudio)
+				{
+					if (!activeAudio.second)
+						return;
+
+					activeAudio.second->SetVolume(eventData.Volume);
+				}
+			);
+
+		} break;
+
+	}
+}
+
+
+template<typename AudioClipType>
+void bae::AudioQueue<AudioClipType>::CleanUpFinishedSounds()
+{
+
+	for (auto& activeAudio : m_ActiveAudio)
+		if (!activeAudio.second->IsPlaying())
+			std::cout << "AudioQueueLogger::CleanUp SoundID: " << activeAudio.first.ID << '\n';
+
+	std::erase_if(m_ActiveAudio,
+		[](auto& activeAudio)
+		{
+			return !activeAudio.second->IsPlaying();
+		}
+	);
+
+}
+
+
+
 
 

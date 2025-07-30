@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "Core/NullSoundSystem.h"
 #include "Core/HelperFunctions.h"
 
 

@@ -12,6 +12,8 @@
 using namespace bae;
 
 
+/*
+
 AudioQueue::AudioQueue() :
 	m_SoundEventBuffer{ 10 }
 {
@@ -52,12 +54,8 @@ void AudioQueue::AudioThreadLoop()
 
 	while (!m_bQuit)
 	{
-		// auto used instead of the the type bc the type is, ... annoying to write
-		// this is a bad excuse
-
 		while (m_SoundEventBuffer.Pop(eventData))
 			ProcessSoundEvent(eventData);
-
 
 		CleanUpFinishedSounds();
 
@@ -80,11 +78,9 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
 	{
 		case bae::SoundEventType::Play:
 		{
+			// SoundClip already loaded, it shouldn't be loaded, bc Play shouldn't have an ActiveSoundID
 			if (audioClip)
-			{
-				std::cout << "AudioQueue::Play:: SoundClip is already loaded, but shouldn't be loaded yet\n";
 				return;
-			}
 
 			auto uAudioClip = std::make_unique<bae::SdlAudioClip>(eventData.ActiveSoundID, eventData.SoundID);
 
@@ -247,5 +243,5 @@ void AudioQueue::CleanUpFinishedSounds()
 }
 
 
-
+//*/
 

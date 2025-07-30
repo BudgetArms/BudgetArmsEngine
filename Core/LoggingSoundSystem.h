@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <memory>
+#include "Core/SoundStructs.h"
 #include "Core/SoundSystem.h"
-#include "Core/NullSoundSystem.h"
 
 
 namespace bae

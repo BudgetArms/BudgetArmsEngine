@@ -2,26 +2,27 @@
 
 #include <memory>
 #include <iostream>
+#include <algorithm>
+
 #include "Core/AudioClip.h"
-#include "Core/SoundSystem.h"
 #include "Core/HelperFunctions.h"
 
 
 namespace bae
 {
-	template<typename RealAudioClipType,
-		typename = std::enable_if_t<std::is_base_of_v<bae::AudioClip, RealAudioClipType> &&
-		!std::is_same_v<bae::AudioClip, RealAudioClipType>>>
-		class LoggingAudioClip : public AudioClip
+	class LoggingAudioClip : public AudioClip
 	{
 	public:
 
-		LoggingAudioClip(bae::ActiveSoundID activeSoundId, bae::SoundID soundId) :
+		template<typename RealAudioClipType, typename... Args,
+			typename = std::enable_if_t<std::is_base_of_v<bae::AudioClip, RealAudioClipType> &&
+			!std::is_same_v<bae::AudioClip, RealAudioClipType>>>
+			LoggingAudioClip(Args&&... args) :
 			AudioClip(),
 			m_RealAudioClip{ }
 		{
 			std::cout << GetFunctionName() << '\n';
-			m_RealAudioClip = std::make_unique<RealAudioClipType>(activeSoundId, soundId);
+			m_RealAudioClip = std::make_unique<RealAudioClipType>(std::forward<Args>(args)...);
 		};
 
 		virtual ~LoggingAudioClip()
@@ -63,25 +64,25 @@ namespace bae
 		};
 
 
-		virtual bool IsPlaying() override
+		virtual bool IsPlaying() const override
 		{
 			std::cout << GetFunctionName() << '\n';
 			return m_RealAudioClip->IsPlaying();
 		};
 
-		virtual bool IsPaused() override
+		virtual bool IsPaused() const override
 		{
 			std::cout << GetFunctionName() << '\n';
 			return m_RealAudioClip->IsPaused();
 		};
-		virtual bool IsMuted() override
+		virtual bool IsMuted() const override
 		{
 			std::cout << GetFunctionName() << '\n';
 			return m_RealAudioClip->IsMuted();
 		};
 
 
-		virtual float GetVolume() override
+		virtual float GetVolume() const override
 		{
 			std::cout << GetFunctionName() << '\n';
 			return m_RealAudioClip->GetVolume();
