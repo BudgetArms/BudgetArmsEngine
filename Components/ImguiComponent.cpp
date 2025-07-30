@@ -12,7 +12,8 @@ using namespace bae;
 
 
 ImguiComponent::ImguiComponent(GameObject& owner) :
-    Component(owner)
+	Component(owner)
 {
 }
+
 

@@ -8,7 +8,6 @@
 
 namespace bae
 {
-
 	class SoundSystem
 	{
 	public:
@@ -51,4 +50,5 @@ namespace bae
 
 	};
 }
+
 

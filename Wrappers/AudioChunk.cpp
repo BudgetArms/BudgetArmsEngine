@@ -7,11 +7,6 @@
 #include <SDL_mixer.h>
 
 
-Mix_Chunk* bae::AudioChunk::GetChunk() const
-{
-	return m_Chunk;
-}
-
 bae::AudioChunk::AudioChunk(const std::string& fullPath) :
 	m_Chunk{ nullptr }
 {
@@ -36,6 +31,12 @@ bae::AudioChunk::~AudioChunk()
 {
 	Mix_FreeChunk(m_Chunk);
 	m_Chunk = nullptr;
+}
+
+
+Mix_Chunk* bae::AudioChunk::GetChunk() const
+{
+	return m_Chunk;
 }
 
 

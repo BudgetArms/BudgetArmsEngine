@@ -4,29 +4,22 @@
 
 namespace bae
 {
-    class Command
-    {
-    public:
-        explicit Command() {};
-        virtual ~Command() = default;
+	class Command
+	{
+	public:
+		explicit Command() {};
+		virtual ~Command() = default;
 
-        Command(const Command& other) = delete;
-        Command(Command&& other) = delete;
-        Command& operator=(const Command& other) = delete;
-        Command& operator=(Command&& other) = delete;
-
-        virtual void Execute() = 0;
+		Command(const Command& other) = delete;
+		Command(Command&& other) = delete;
+		Command& operator=(const Command& other) = delete;
+		Command& operator=(Command&& other) = delete;
 
 
-    private:
+		virtual void Execute() = 0;
 
 
-    protected:
-
-
-    };
-
-
+	};
 }
 
 

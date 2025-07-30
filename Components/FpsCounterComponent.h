@@ -5,33 +5,29 @@
 
 namespace bae
 {
-    class GameObject;
-    class Font;
-    class FpsTextComponent final : public TextComponent
-    {
-    public:
-        explicit FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font = nullptr, SDL_Color color = SDL_Color{ 0, 0, 0, 255 });
-        virtual ~FpsTextComponent() = default;
+	class GameObject;
+	class Font;
+	class FpsTextComponent final : public TextComponent
+	{
+	public:
+		explicit FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font = nullptr, SDL_Color color = SDL_Color{ 0, 0, 0, 255 });
+		virtual ~FpsTextComponent() = default;
 
-        FpsTextComponent(const FpsTextComponent& other) = delete;
-        FpsTextComponent(FpsTextComponent&& other) = delete;
-        FpsTextComponent& operator=(const FpsTextComponent& other) = delete;
-        FpsTextComponent& operator=(FpsTextComponent&& other) = delete;
+		FpsTextComponent(const FpsTextComponent& other) = delete;
+		FpsTextComponent(FpsTextComponent&& other) = delete;
+		FpsTextComponent& operator=(const FpsTextComponent& other) = delete;
+		FpsTextComponent& operator=(FpsTextComponent&& other) = delete;
 
-        virtual void Update() override;
-
-
-    private:
-        bool m_bRotating{ true };
-        float m_AccumulatedTime{};
-        const float m_NrUpdatesPerSecond{ 1.f };
+		virtual void Update() override;
 
 
-    protected:
+	private:
+		bool m_bRotating{ true };
+		float m_AccumulatedTime{};
+		const float m_NrUpdatesPerSecond{ 1.f };
 
 
-    };
-
+	};
 }
 
 

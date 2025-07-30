@@ -3,24 +3,15 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
-#include <vector>
-#include <iterator>
-#include <map>
 #include <unordered_map>
-#include <source_location>
 #include <memory>
 
 #include <SDL_mixer.h>
 
 #include "Core/AudioClip.h"
-#include "Core/RingBuffer.h"
 #include "Wrappers/AudioChunk.h"
-#include "Core/SdlAudioClip.h"
 #include "Core/HelperFunctions.h"
 #include "Core/ServiceLocator.h"
-
-#include "Core/SoundSystem.h"
-
 
 
 using namespace bae;
@@ -72,7 +63,6 @@ private:
 
 
 };
-
 
 
 
@@ -196,12 +186,10 @@ AudioChunk* SdlSoundSystem::GetAudioChunk(SoundID soundId)
 }
 
 
-
 #pragma endregion
 
 
 #pragma region SdlSoundSystem | PIMPL
-
 
 
 SdlSoundSystem::Impl::Impl()
@@ -232,8 +220,6 @@ SdlSoundSystem::Impl::~Impl()
 	Mix_Quit();
 
 }
-
-
 
 
 SoundID SdlSoundSystem::Impl::LoadSound(const std::string& path)

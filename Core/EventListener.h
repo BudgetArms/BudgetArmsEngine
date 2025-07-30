@@ -6,23 +6,21 @@
 
 namespace bae
 {
-    class EventListener
-    {
-    public:
-        EventListener()
-        {
-            EventQueue::GetInstance().AddListener(this);
-        }
+	class EventListener
+	{
+	public:
+		EventListener()
+		{
+			EventQueue::GetInstance().AddListener(this);
+		}
 
-        ~EventListener() = default;
-
-        virtual void HandleEvent(Event* event) = 0;
+		~EventListener() = default;
 
 
+		virtual void HandleEvent(Event* event) = 0;
 
-    private:
 
-
-    };
+	};
 }
+
 

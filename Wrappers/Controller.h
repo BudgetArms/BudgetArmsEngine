@@ -12,39 +12,35 @@
 
 namespace bae
 {
+	class Controller
+	{
+	public:
+		explicit Controller(int controllerIndex);
+		~Controller();
 
-    class Controller
-    {
-    public:
-        explicit Controller(int controllerIndex);
-        ~Controller();
-
-        Controller(const Controller& other) = delete;
-        Controller(Controller&& other) = delete;
-        Controller& operator=(const Controller& other) = delete;
-        Controller& operator=(Controller&& other) = delete;
-
-
-        void ProcessInput();
-        void AddControllerCommands(std::unique_ptr<Command>, unsigned int button, InputManager::ButtonState activationState);
+		Controller(const Controller& other) = delete;
+		Controller(Controller&& other) = delete;
+		Controller& operator=(const Controller& other) = delete;
+		Controller& operator=(Controller&& other) = delete;
 
 
-        bool IsButtonPressed(unsigned int button) const;
-
-        int GetControllerIndex() const { return m_ControllerIndex; };
-
-
-    private:
-
-        // Pimple implementation
-        class Impl;
-        std::unique_ptr<Impl> m_Pimpl{ std::make_unique<Impl>() };
-
-        int m_ControllerIndex;
-
-    protected:
+		void ProcessInput();
+		void AddControllerCommands(std::unique_ptr<Command>, unsigned int button, InputManager::ButtonState activationState);
 
 
-    };
+		bool IsButtonPressed(unsigned int button) const;
 
+		int GetControllerIndex() const { return m_ControllerIndex; };
+
+
+	private:
+		// Pimple implementation
+		class Impl;
+		std::unique_ptr<Impl> m_Pimpl{ std::make_unique<Impl>() };
+
+		int m_ControllerIndex;
+
+
+	};
 }
+

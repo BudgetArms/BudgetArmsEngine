@@ -24,7 +24,7 @@ endif()
 
 add_library(${ENGINE_NAME} STATIC
     "Core/AudioClip.h"
-    "Core/AudioQueue.cpp"                         "Core/AudioQueue.h"
+    "Core/AudioQueue.h"
     "Core/BudgetEngine.cpp"                       "Core/BudgetEngine.h"
     "Core/EventTypes.h"
     "Core/Event.h"
@@ -33,6 +33,7 @@ add_library(${ENGINE_NAME} STATIC
     "Core/GameObject.cpp"                         "Core/GameObject.h"                       
     "Core/HelperFunctions.h"                       
     "Core/LoggingSoundSystem.cpp"                 "Core/LoggingSoundSystem.h"                 
+    "Core/NullAudioClip.h"
     "Core/NullSoundSystem.h"
     "Core/Observer.h"
     "Core/Renderer.cpp"                           "Core/Renderer.h"
@@ -42,6 +43,7 @@ add_library(${ENGINE_NAME} STATIC
     "Core/SdlSoundSystem.cpp"                     "Core/SdlSoundSystem.h"
     "Core/SoundSystem.h"
     "Core/ServiceLocator.cpp"                     "Core/ServiceLocator.h"
+    "Core/State.h"
     "Core/Subject.h"
 
     "Commands/Command.h"
@@ -51,8 +53,7 @@ add_library(${ENGINE_NAME} STATIC
     "Components/Component.h"
     "Components/FpsCounterComponent.cpp"          "Components/FpsCounterComponent.h"
     "Components/ImguiComponent.cpp"               "Components/ImguiComponent.h"
-    "Components/InputComponent.h"
-    "Components/SpriteComponent.cpp"              "Components/SpriteComponent.h"
+    "Components/SpriteComponent.h"
     "Components/TextComponent.cpp"                "Components/TextComponent.h"
     "Components/TextureComponent.cpp"             "Components/TextureComponent.h"
     "Components/TrashTheCacheComponent.cpp"       "Components/TrashTheCacheComponent.h"

@@ -5,35 +5,34 @@
 
 namespace bae
 {
+	class GameActorCommand : public Command
+	{
+	public:
+		explicit GameActorCommand(GameObject& actor) :
+			Command(),
+			m_Actor{ &actor }
+		{
+		}
+		virtual ~GameActorCommand() = default;
 
-    class GameActorCommand : public Command
-    {
-    public:
-        explicit GameActorCommand(GameObject& actor) :
-            Command(),
-            m_Actor{ &actor }
-        {
-        }
-        virtual ~GameActorCommand() = default;
-
-        GameActorCommand(const GameActorCommand& other) = delete;
-        GameActorCommand(GameActorCommand&& other) = delete;
-        GameActorCommand& operator=(const GameActorCommand& other) = delete;
-        GameActorCommand& operator=(GameActorCommand&& other) = delete;
-
-        virtual void Execute() = 0;
+		GameActorCommand(const GameActorCommand& other) = delete;
+		GameActorCommand(GameActorCommand&& other) = delete;
+		GameActorCommand& operator=(const GameActorCommand& other) = delete;
+		GameActorCommand& operator=(GameActorCommand&& other) = delete;
 
 
-    private:
-        GameObject* m_Actor;
+		virtual void Execute() = 0;
 
 
-    protected:
-        GameObject* GetActor() const { return m_Actor; };
+	private:
+		GameObject* m_Actor;
 
 
-    };
+	protected:
+		GameObject* GetActor() const { return m_Actor; };
 
+
+	};
 }
 
 

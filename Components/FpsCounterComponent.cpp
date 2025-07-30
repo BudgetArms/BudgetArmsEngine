@@ -10,23 +10,24 @@
 using namespace bae;
 
 FpsTextComponent::FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font, SDL_Color color) :
-    TextComponent(owner, "FPS: xxx", font)
+	TextComponent(owner, "FPS: xxx", font)
 {
-    SetColor(color);
+	SetColor(color);
 }
 
 
 void FpsTextComponent::Update()
 {
-    TextComponent::Update(); // update text if needed
+	TextComponent::Update(); // update text if needed
 
-    m_AccumulatedTime += GameTime::GetInstance().GetDeltaTime();
-    if (m_AccumulatedTime > 1 / m_NrUpdatesPerSecond)
-    {
-        m_AccumulatedTime = 0;
-        const int fps = static_cast<int>(GameTime::GetInstance().GetFPS());
-        SetText("FPS: " + std::to_string(fps));
-    }
+	m_AccumulatedTime += GameTime::GetInstance().GetDeltaTime();
+	if (m_AccumulatedTime > 1 / m_NrUpdatesPerSecond)
+	{
+		m_AccumulatedTime = 0;
+		const int fps = static_cast<int>(GameTime::GetInstance().GetFPS());
+		SetText("FPS: " + std::to_string(fps));
+	}
 
 }
+
 

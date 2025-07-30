@@ -10,43 +10,43 @@
 
 namespace bae
 {
-    class EventListener;
+	class EventListener;
 
-    class EventQueue final : public Singleton<EventQueue>
-    {
-    public:
+	class EventQueue final : public Singleton<EventQueue>
+	{
+	public:
 
-        void AddEvent(const Event& event);
+		void AddEvent(const Event& event);
 
-        void AddListener(EventListener* eventListener);
-        void RemoveListener(EventListener* eventListener);
+		void AddListener(EventListener* eventListener);
+		void RemoveListener(EventListener* eventListener);
 
-        void ProcessEvents();
-
-
-    private:
-        friend class Singleton<EventQueue>;
-        EventQueue() = default;
-        ~EventQueue() = default;
-
-        void ProcessEvent(Event& event);
-
-        bool IsEmpty() const { return (!m_bFull && m_Head == m_Tail); }
-        bool IsFull() const { return m_bFull; }
+		void ProcessEvents();
 
 
-        static constexpr size_t m_Capacity{ 64 };
-        std::array<std::optional<Event>, m_Capacity> m_Buffer{};
+	private:
+		friend class Singleton<EventQueue>;
+		EventQueue() = default;
+		~EventQueue() = default;
 
-        size_t m_Head{};
-        size_t m_Tail{};
-        bool m_bFull{};
+		void ProcessEvent(Event& event);
 
-        std::mutex m_Mutex{};
-        std::vector<EventListener*> m_Listeners{};
+		bool IsEmpty() const { return (!m_bFull && m_Head == m_Tail); }
+		bool IsFull() const { return m_bFull; }
 
 
-    };
+		static constexpr size_t m_Capacity{ 64 };
+		std::array<std::optional<Event>, m_Capacity> m_Buffer{};
 
+		size_t m_Head{};
+		size_t m_Tail{};
+		bool m_bFull{};
+
+		std::mutex m_Mutex{};
+		std::vector<EventListener*> m_Listeners{};
+
+
+	};
 }
+
 

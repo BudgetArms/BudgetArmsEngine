@@ -6,176 +6,172 @@ using namespace bae;
 
 
 TransformComponent::TransformComponent(GameObject& owner) :
-    Component(owner)
+	Component(owner)
 {
 }
 
 
 const glm::vec3& TransformComponent::GetWorldLocation()
 {
-    if (m_bLocationDirty)
-        UpdateWorldLocation();
+	if (m_bLocationDirty)
+		UpdateWorldLocation();
 
-    return m_WorldLocation;
+	return m_WorldLocation;
 }
 
 float TransformComponent::GetWorldRotation()
 {
-    if (m_bRotationDirty)
-        UpdateWorldRotation();
+	if (m_bRotationDirty)
+		UpdateWorldRotation();
 
-    return m_WorldRotation;
+	return m_WorldRotation;
 }
 
 const glm::vec2& TransformComponent::GetWorldScale()
 {
-    if (m_bScaleDirty)
-        UpdateWorldScale();
+	if (m_bScaleDirty)
+		UpdateWorldScale();
 
-    return m_WorldScale;
+	return m_WorldScale;
 }
-
 
 
 const glm::vec3& TransformComponent::GetLocalLocation() const
 {
-    return m_LocalLocation;
+	return m_LocalLocation;
 }
 
 float TransformComponent::GetLocalRotation() const
 {
-    return m_LocalRotation;
+	return m_LocalRotation;
 }
 
 const glm::vec2& TransformComponent::GetLocalScale() const
 {
-    return m_LocalScale;
+	return m_LocalScale;
 }
-
 
 
 void TransformComponent::SetWorldLocation(const glm::vec3& location)
 {
-    if (!m_Owner->GetParent())
-        m_LocalLocation = location;
-    else
-        m_LocalLocation = location - m_Owner->GetParent()->GetWorldLocation();
+	if (!m_Owner->GetParent())
+		m_LocalLocation = location;
+	else
+		m_LocalLocation = location - m_Owner->GetParent()->GetWorldLocation();
 
-    SetLocationDirty();
+	SetLocationDirty();
 }
 
 //void TransformComponent::SetWorldRotation(const glm::vec3& rotation)
 void TransformComponent::SetWorldRotation(float rotation)
 {
-    if (!m_Owner->GetParent())
-        m_LocalRotation = rotation;
-    else
-        m_LocalRotation = rotation - m_Owner->GetParent()->GetWorldRotation();
+	if (!m_Owner->GetParent())
+		m_LocalRotation = rotation;
+	else
+		m_LocalRotation = rotation - m_Owner->GetParent()->GetWorldRotation();
 
-    SetRotationDirty();
+	SetRotationDirty();
 }
 
 void TransformComponent::SetWorldScale(const glm::vec2& scale)
 {
-    if (!m_Owner->GetParent())
-        m_LocalScale = scale;
-    else
-        m_LocalScale = scale / m_Owner->GetParent()->GetWorldScale();
+	if (!m_Owner->GetParent())
+		m_LocalScale = scale;
+	else
+		m_LocalScale = scale / m_Owner->GetParent()->GetWorldScale();
 
-    SetScaleDirty();
+	SetScaleDirty();
 }
-
 
 
 void TransformComponent::SetLocalLocation(const glm::vec3& location)
 {
-    m_LocalLocation = location;
-    SetLocationDirty();
+	m_LocalLocation = location;
+	SetLocationDirty();
 }
 
 //void TransformComponent::SetLocalRotation(const glm::vec3& rotation)
 void TransformComponent::SetLocalRotation(float rotation)
 {
-    m_LocalRotation = rotation;
-    SetRotationDirty();
+	m_LocalRotation = rotation;
+	SetRotationDirty();
 }
 
 void TransformComponent::SetLocalScale(const glm::vec2& scale)
 {
-    m_LocalScale = scale;
-    SetScaleDirty();
+	m_LocalScale = scale;
+	SetScaleDirty();
 }
 
 
 void TransformComponent::AddLocation(const glm::vec3& addLocation)
 {
-    if (m_bLocationDirty)
-        UpdateWorldLocation();
+	if (m_bLocationDirty)
+		UpdateWorldLocation();
 
-    m_LocalLocation = m_LocalLocation + addLocation;
-    SetLocationDirty();
+	m_LocalLocation = m_LocalLocation + addLocation;
+	SetLocationDirty();
 }
 
 void TransformComponent::AddRotation(float addRotation)
 {
-    if (m_bRotationDirty)
-        UpdateWorldRotation();
+	if (m_bRotationDirty)
+		UpdateWorldRotation();
 
-    m_LocalRotation = m_LocalRotation + addRotation;
-    SetRotationDirty();
+	m_LocalRotation = m_LocalRotation + addRotation;
+	SetRotationDirty();
 }
 
 void TransformComponent::AddScale(const glm::vec2& addScale)
 {
-    if (m_bScaleDirty)
-        UpdateWorldScale();
+	if (m_bScaleDirty)
+		UpdateWorldScale();
 
-    m_LocalScale = m_LocalScale * addScale;
-    SetScaleDirty();
+	m_LocalScale = m_LocalScale * addScale;
+	SetScaleDirty();
 }
-
 
 
 void TransformComponent::UpdateWorldLocation()
 {
-    if (m_bLocationDirty)
-    {
-        if (!m_Owner->GetParent())
-            m_WorldLocation = m_LocalLocation;
-        else
-            m_WorldLocation = m_Owner->GetParent()->GetWorldLocation() + m_LocalLocation;
+	if (m_bLocationDirty)
+	{
+		if (!m_Owner->GetParent())
+			m_WorldLocation = m_LocalLocation;
+		else
+			m_WorldLocation = m_Owner->GetParent()->GetWorldLocation() + m_LocalLocation;
 
-    }
+	}
 
-    m_bLocationDirty = false;
+	m_bLocationDirty = false;
 }
 
 void TransformComponent::UpdateWorldRotation()
 {
-    if (m_bRotationDirty)
-    {
-        if (!m_Owner->GetParent())
-            m_WorldRotation = m_LocalRotation;
-        else
-            m_WorldRotation = m_Owner->GetParent()->GetWorldRotation() + m_LocalRotation;
+	if (m_bRotationDirty)
+	{
+		if (!m_Owner->GetParent())
+			m_WorldRotation = m_LocalRotation;
+		else
+			m_WorldRotation = m_Owner->GetParent()->GetWorldRotation() + m_LocalRotation;
 
-    }
+	}
 
-    m_bRotationDirty = false;
+	m_bRotationDirty = false;
 }
 
 void TransformComponent::UpdateWorldScale()
 {
-    if (m_bScaleDirty)
-    {
-        if (!m_Owner->GetParent())
-            m_WorldScale = m_LocalScale;
-        else
-            m_WorldScale = m_Owner->GetParent()->GetWorldScale() * m_LocalScale;
+	if (m_bScaleDirty)
+	{
+		if (!m_Owner->GetParent())
+			m_WorldScale = m_LocalScale;
+		else
+			m_WorldScale = m_Owner->GetParent()->GetWorldScale() * m_LocalScale;
 
-    }
+	}
 
-    m_bScaleDirty = false;
+	m_bScaleDirty = false;
 }
 
 
