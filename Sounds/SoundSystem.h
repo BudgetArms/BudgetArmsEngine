@@ -14,6 +14,7 @@ namespace bae
 		SoundSystem() = default;
 		virtual ~SoundSystem() = default;
 
+
 		virtual SoundID LoadSound(const std::string& path) = 0;
 
 		virtual ActiveSoundID Play(SoundID soundId, float volume) = 0;
@@ -35,7 +36,7 @@ namespace bae
 		virtual void SetVolume(ActiveSoundID activeSoundId, float volume) = 0;
 
 
-		// there is no PlayAllSounds bc that would be insane with 100+ sounds 
+		// there is no PlayAllSounds bc that would be insane with 100+ loaded sounds 
 		virtual void ResumeAllSounds() = 0;
 		virtual void PauseAllSounds() = 0;
 		virtual void StopAllSounds() = 0;

@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "Sounds/SoundSystem.h"
-#include "Sounds/NullSoundSystem.h"
 #include "Sounds/AudioQueue.h"
+#include "Sounds/NullSoundSystem.h"
+#include "Sounds/SoundSystem.h"
 
 
 namespace bae
@@ -12,17 +12,6 @@ namespace bae
 	class ServiceLocator final
 	{
 	public:
-		static SoundSystem& GetSoundSystem() { return *m_sSoundSystemInstance; }
-
-		static void RegisterSoundSystem(std::unique_ptr<SoundSystem>&& soundSystem)
-		{
-			if (!soundSystem)
-				m_sSoundSystemInstance = std::make_unique<NullSoundSystem>();
-			else
-				m_sSoundSystemInstance = std::move(soundSystem);
-		}
-
-
 		static IAudioQueue& GetAudioQueue() { return *m_sAudioQueueInstance; }
 
 		template<typename AudioClipType,
@@ -34,9 +23,21 @@ namespace bae
 		}
 
 
+
+		static SoundSystem& GetSoundSystem() { return *m_sSoundSystemInstance; }
+
+		static void RegisterSoundSystem(std::unique_ptr<SoundSystem>&& soundSystem)
+		{
+			if (!soundSystem)
+				m_sSoundSystemInstance = std::make_unique<NullSoundSystem>();
+			else
+				m_sSoundSystemInstance = std::move(soundSystem);
+		}
+
+
 	private:
-		static std::unique_ptr<SoundSystem> m_sSoundSystemInstance;
 		static std::unique_ptr<IAudioQueue> m_sAudioQueueInstance;
+		static std::unique_ptr<SoundSystem> m_sSoundSystemInstance;
 
 
 	};

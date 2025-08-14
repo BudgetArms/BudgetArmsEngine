@@ -10,6 +10,7 @@ namespace bae
 {
 	class Controller;
 	class Keyboard;
+	class Mouse;
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
@@ -33,6 +34,7 @@ namespace bae
 		void AddController(int controllerIndex);
 		Controller* GetController(int index);
 		Keyboard& GetKeyboard() const { return *m_Keyboard; };
+		Mouse& GetMouse() const { return *m_Mouse; };
 
 
 	private:
@@ -41,6 +43,7 @@ namespace bae
 
 		std::vector<std::unique_ptr<Controller>> m_Controllers;
 		std::unique_ptr<Keyboard> m_Keyboard;
+		std::unique_ptr<Mouse> m_Mouse;
 
 
 	};

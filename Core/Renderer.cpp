@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 
+#include <glm.hpp>
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_opengl3.h>
@@ -9,6 +10,11 @@
 #include "Renderer.h"
 #include "Managers/SceneManager.h"
 #include "Wrappers/Texture2D.h"
+
+#include "Core/Utils.h"
+
+
+namespace bu = bae::Utils;
 
 
 int GetOpenGLDriverIndex()
@@ -74,61 +80,103 @@ void bae::Renderer::Destroy()
 	}
 }
 
-void bae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, float angle, float scaleX, float scaleY) const
+void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const glm::vec2& position, float angle, const glm::vec2& scale) const
 {
 	SDL_Rect dst{};
-	dst.x = static_cast<int>(x);
-	dst.y = static_cast<int>(y);
+	dst.x = static_cast<int>(position.x);
+	dst.y = static_cast<int>(position.y);
 
 	SDL_QueryTexture(texture.GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
 
-	dst.w = static_cast<int>(scaleX * dst.w);
-	dst.h = static_cast<int>(scaleY * dst.h);
+	dst.w = static_cast<int>(std::abs(scale.x) * dst.w);
+	dst.h = static_cast<int>(std::abs(scale.y) * dst.h);
+
+	if (isCenteredAtPosition)
+	{
+		dst.x -= static_cast<int>(dst.w / 2.f);
+		dst.y -= static_cast<int>(dst.h / 2.f);
+	}
 
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
-	if (scaleX < 0.0f && scaleY < 0.0f)
+	if (scale.x < 0.0f && scale.y < 0.0f)
 		flip = (SDL_RendererFlip)(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
-	else if (scaleX < 0.0f)
+	else if (scale.y < 0.0f)
 		flip = SDL_FLIP_HORIZONTAL;
-	else if (scaleY < 0.0f)
+	else if (scale.y < 0.0f)
 		flip = SDL_FLIP_VERTICAL;
 
 
-	const SDL_Point center = { dst.w / 2,  dst.h / 2 };
-	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, &center, flip);
+	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, NULL, flip);
+
+
+	if (m_bRenderPosition)
+		bae::Utils::FillCircle(position, m_RenderPositionRadius, m_RenderPositionColor);
+
+	if (m_bRenderDstRect)
+		bae::Utils::DrawRect(dst, m_RenderDstRectColor);
+
 }
 
-void bae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
+void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const glm::vec2& position, const float width, const float height) const
 {
 	SDL_Rect dst{};
-	dst.x = static_cast<int>(x);
-	dst.y = static_cast<int>(y);
+	dst.x = static_cast<int>(position.x);
+	dst.y = static_cast<int>(position.y);
 	dst.w = static_cast<int>(width);
 	dst.h = static_cast<int>(height);
+
+	if (isCenteredAtPosition)
+	{
+		dst.x -= static_cast<int>(dst.w / 2.f);
+		dst.y -= static_cast<int>(dst.h / 2.f);
+	}
+
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+
+
+	if (m_bRenderPosition)
+		bae::Utils::FillCircle(position, m_RenderPositionRadius, m_RenderPositionColor);
+
+	if (m_bRenderDstRect)
+		bae::Utils::DrawRect(dst, m_RenderDstRectColor);
+
 }
 
 
-void bae::Renderer::RenderTexture(const Texture2D& texture, const SDL_Rect& src, const SDL_Rect& dst, float angle, float scaleX, float scaleY) const
+void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const SDL_Rect& src, const SDL_Rect& dst, float angle, const glm::vec2& scale) const
 {
+	isCenteredAtPosition;
 	SDL_Rect dstScaled = dst;
-	dstScaled.w *= static_cast<int>(scaleX);
-	dstScaled.h *= static_cast<int>(scaleY);
+	dstScaled.w = static_cast<int>(std::abs(scale.x) * dstScaled.w);
+	dstScaled.h = static_cast<int>(std::abs(scale.y) * dstScaled.h);
+
+	if (isCenteredAtPosition)
+	{
+		dstScaled.x -= static_cast<int>(dstScaled.w / 2.f);
+		dstScaled.y -= static_cast<int>(dstScaled.h / 2.f);
+	}
+
 
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
-	if (scaleX < 0.0f && scaleY < 0.0f)
+	if (scale.x < 0.0f && scale.y < 0.0f)
 		flip = (SDL_RendererFlip)(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
-	else if (scaleX < 0.0f)
+	else if (scale.x < 0.0f)
 		flip = SDL_FLIP_HORIZONTAL;
-	else if (scaleY < 0.0f)
+	else if (scale.y < 0.0f)
 		flip = SDL_FLIP_VERTICAL;
 
-	//const SDL_Point center = { dstScaled.w / 2,  dstScaled.h / 2 };
-	const SDL_Point center = { dst.w / 2,  dst.h / 2 };
-	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dstScaled, angle, &center, flip);
+	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dstScaled, angle, NULL, flip);
+
+
+	if (m_bRenderPosition)
+		bu::FillCircle({ dst.x, dst.y }, m_RenderPositionRadius, m_RenderPositionColor);
+
+	if (m_bRenderDstRect)
+		bu::DrawRect(dstScaled, m_RenderDstRectColor);
+
 }
 
 

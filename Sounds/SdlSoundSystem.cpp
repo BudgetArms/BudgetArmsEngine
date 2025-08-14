@@ -1,17 +1,28 @@
 ﻿#include "SdlSoundSystem.h"
 
+#if _DEBUG
+// ReSharper disable once CppUnusedIncludeDirective
+#if __has_include(<vld.h>)
+#include <vld.h>
+#endif
+#endif
+
+
 #include <iostream>
 #include <string>
 #include <filesystem>
 #include <unordered_map>
 #include <memory>
 
+#include <SDL.h>
 #include <SDL_mixer.h>
 
-#include "Sounds/AudioClip.h"
-#include "Wrappers/AudioChunk.h"
 #include "Core/HelperFunctions.h"
 #include "Core/ServiceLocator.h"
+#include "Sounds/AudioClip.h"
+#include "Sounds/NullAudioClip.h"
+#include "Wrappers/AudioChunk.h"
+
 
 
 using namespace bae;
@@ -58,6 +69,8 @@ public:
 
 
 private:
+	static const int m_NrChannels{ 12 };
+
 	std::unordered_map<std::string, SoundID> m_LoadedSoudIDs;
 	std::unordered_map<SoundID, std::unique_ptr<AudioChunk>> m_LoadedAudio;
 
@@ -194,7 +207,6 @@ AudioChunk* SdlSoundSystem::GetAudioChunk(SoundID soundId)
 
 SdlSoundSystem::Impl::Impl()
 {
-	std::cout << GetFunctionName() << '\n';
 
 	if (!Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG))
 	{
@@ -202,22 +214,41 @@ SdlSoundSystem::Impl::Impl()
 		throw std::runtime_error(std::string("Failed to Initialize Mixer: ") + SDL_GetError());
 	}
 
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+
+	// Disabled VLD, becauseof MMDevApi.dll leaking (only on my system for some reason)
+#if defined(_DEBUG) && __has_include(<vld.h>)
+	VLDDisable();
+#endif
+
+	int openAudioResult = Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+
+#if defined(_DEBUG) && __has_include(<vld.h>)
+	VLDEnable();
+#endif
+
+
+	if (openAudioResult < 0)
 	{
 		std::cout << "AudioChunk: Failed to OpenAudio \n";
 		throw std::runtime_error(std::string("Failed to OpenAudio: ") + SDL_GetError());
 	}
 
+	Mix_AllocateChannels(m_NrChannels);
+
 }
 
 SdlSoundSystem::Impl::~Impl()
 {
-	std::cout << GetFunctionName() << '\n';
+	bae::ServiceLocator::RegisterAudioQueue<bae::NullAudioClip>();
 
 	m_LoadedAudio.clear();
 
+	Mix_HaltChannel(-1);
 	Mix_CloseAudio();
 	Mix_Quit();
+
+	if (SDL_WasInit(SDL_INIT_AUDIO))
+		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 
 }
 
@@ -284,9 +315,7 @@ void SdlSoundSystem::Impl::Stop(ActiveSoundID activeSoundId)
 	SoundEventData data
 	{
 		.Type = SoundEventType::Stop,
-		//.SoundID = -1, // this is never mentioned, maybe I should make it a class and have specific initializers
 		.ActiveSoundID = activeSoundId,
-		//.Volume = 0,
 	};
 
 	ServiceLocator::GetAudioQueue().SendSoundEvent(data);

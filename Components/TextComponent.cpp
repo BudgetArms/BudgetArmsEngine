@@ -43,7 +43,7 @@ void TextComponent::Update()
 		}
 
 		SDL_FreeSurface(surf);
-		m_TextTexture = std::make_shared<Texture2D>(texture);
+		m_TextTexture = std::make_unique<Texture2D>(texture);
 
 		m_NeedsUpdate = false;
 	}
@@ -56,7 +56,7 @@ void TextComponent::Render() const
 		const glm::vec3& pos = m_Owner->GetWorldLocation();
 		const float& rotation = m_Owner->GetWorldRotation();
 		const glm::vec2& scale = m_Owner->GetWorldScale();
-		Renderer::GetInstance().RenderTexture(*m_TextTexture, pos.x, pos.y, rotation, scale.x, scale.y);
+		Renderer::GetInstance().RenderTexture(*m_TextTexture, m_bIsCenteredAtPosition, pos, rotation, scale);
 	}
 }
 

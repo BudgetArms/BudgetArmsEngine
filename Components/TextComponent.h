@@ -15,7 +15,7 @@ namespace bae
 	class TextComponent : public Component
 	{
 	public:
-		TextComponent(GameObject& owner, const std::string& text, std::shared_ptr<Font> font = nullptr, SDL_Color color = SDL_Color{ 0, 0, 0, 255 });
+		TextComponent(GameObject& owner, const std::string& text, std::shared_ptr<Font> font = nullptr, SDL_Color color = SDL_Color{ 255, 255, 255, 255 });
 		virtual ~TextComponent() = default;
 
 		TextComponent(const TextComponent& other) = delete;
@@ -37,6 +37,9 @@ namespace bae
 		void SetFont(std::shared_ptr<Font> font);
 
 
+		bool m_bIsCenteredAtPosition{ false };
+
+
 	private:
 		bool m_NeedsUpdate;
 		std::string m_Text;
@@ -45,7 +48,7 @@ namespace bae
 
 
 	protected:
-		std::shared_ptr<Texture2D> m_TextTexture;
+		std::unique_ptr<Texture2D> m_TextTexture;
 
 
 	};

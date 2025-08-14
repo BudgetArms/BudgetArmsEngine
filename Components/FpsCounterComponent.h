@@ -19,6 +19,7 @@ namespace bae
 		FpsTextComponent& operator=(FpsTextComponent&& other) = delete;
 
 		virtual void Update() override;
+		virtual void Render() const override;
 
 
 	private:

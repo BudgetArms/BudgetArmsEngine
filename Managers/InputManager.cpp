@@ -8,6 +8,7 @@
 
 #include "Wrappers/Controller.h"
 #include "Wrappers/Keyboard.h"
+#include "Wrappers/Mouse.h"
 
 #ifdef STEAMWORKS_ENABLED
 #include "Managers/SteamManager.h"
@@ -19,7 +20,8 @@ using namespace bae;
 
 InputManager::InputManager() :
 	m_Controllers{ },
-	m_Keyboard{ std::make_unique<Keyboard>() }
+	m_Keyboard{ std::make_unique<Keyboard>() },
+	m_Mouse{ std::make_unique<Mouse>() }
 {
 	m_Controllers.push_back(std::make_unique<Controller>(0));
 }
@@ -32,6 +34,7 @@ bool InputManager::ProcessInput()
 {
 	// uses SDL_PeekEvents, so not to consume events
 	m_Keyboard->ProcessInput();
+	m_Mouse->ProcessInput();
 
 	// process Keyboard
 	SDL_Event e;
@@ -51,9 +54,7 @@ bool InputManager::ProcessInput()
 	}
 
 	for (auto& controller : m_Controllers)
-	{
 		controller->ProcessInput();
-	}
 
 
 	return true;

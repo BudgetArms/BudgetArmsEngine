@@ -10,17 +10,14 @@ namespace bae
 	{
 	public:
 		explicit TextureComponent(GameObject& owner, const std::string& filename);
-		virtual ~TextureComponent() = default;
-
-		TextureComponent(const TextureComponent& other) = delete;
-		TextureComponent(TextureComponent&& other) = delete;
-		TextureComponent& operator=(const TextureComponent& other) = delete;
-		TextureComponent& operator=(TextureComponent&& other) = delete;
 
 
 		virtual void Render() const override;
 
 		void SetTexture(const std::string& filename);
+
+
+		bool m_bIsCenteredAtPosition{ false };
 
 
 	protected:

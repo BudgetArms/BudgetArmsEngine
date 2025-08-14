@@ -4,12 +4,15 @@
 #include <filesystem>
 #include <chrono>
 
+#include "Core/Utils.h"
+
+
 namespace bae
 {
 	class BudgetEngine final
 	{
 	public:
-		explicit BudgetEngine(const std::filesystem::path& dataPath);
+		explicit BudgetEngine(const bae::Utils::Window& window);
 		~BudgetEngine();
 
 		BudgetEngine(const BudgetEngine& other) = delete;

@@ -13,8 +13,6 @@
 
 namespace bae
 {
-	class AudioClip;
-
 	class IAudioQueue
 	{
 	public:
@@ -50,6 +48,7 @@ namespace bae
 
 		std::thread m_AudioThread;
 
+		static const int m_SoundEventBufferSize{ 15 };
 		const float m_ThreadSleepTimeMilliSec{ 100.f };
 		bool m_bAreAllSoundsMuted{ false };
 		bool m_bQuit{ false };
@@ -62,7 +61,7 @@ namespace bae
 
 template<typename AudioClipType>
 bae::AudioQueue<AudioClipType>::AudioQueue() :
-	m_SoundEventBuffer{ 10 }
+	m_SoundEventBuffer{ m_SoundEventBufferSize }
 {
 	std::cout << "Initialized AudioQueue\n";
 	m_AudioThread = std::thread(&AudioQueue::AudioThreadLoop, this);
@@ -102,10 +101,10 @@ const bae::AudioClip* bae::AudioQueue<AudioClipType>::GetAudioClip(ActiveSoundID
 template<typename AudioClipType>
 void bae::AudioQueue<AudioClipType>::AudioThreadLoop()
 {
-	SoundEventData eventData;
 
 	while (!m_bQuit)
 	{
+		SoundEventData eventData;
 		while (m_SoundEventBuffer.Pop(eventData))
 			ProcessSoundEvent(eventData);
 
@@ -135,7 +134,7 @@ void bae::AudioQueue<AudioClipType>::ProcessSoundEvent(const SoundEventData& eve
 			if (audioClip)
 				return;
 
-			auto uAudioClip = std::make_unique<AudioClipType>(eventData.ActiveSoundID, eventData.SoundID);
+			std::unique_ptr<AudioClip> uAudioClip = std::make_unique<AudioClipType>(eventData.ActiveSoundID, eventData.SoundID);
 
 			// if the channels are full it returns -1
 			if (!uAudioClip->Play())

@@ -37,19 +37,31 @@ add_library(${ENGINE_NAME} STATIC
 	"Core/Scene.cpp"                                "Core/Scene.h"
 	"Core/State.h"
 	"Core/Subject.h"
+	"Core/Text2D.cpp"								"Core/Text2D.h"
+	"Core/Utils.cpp"								"Core/Utils.h"
 
 	"Commands/Command.h"
 	"Commands/GameActorCommand.h"
-	"Commands/MoveCommand.h"
 
 	"Components/Component.h"
 	"Components/FpsCounterComponent.cpp"            "Components/FpsCounterComponent.h"
 	"Components/ImguiComponent.cpp"                 "Components/ImguiComponent.h"
-	"Components/SpriteComponent.h"
+	"Components/SpriteComponent.cpp"				"Components/SpriteComponent.h"
 	"Components/TextComponent.cpp"                  "Components/TextComponent.h"
 	"Components/TextureComponent.cpp"               "Components/TextureComponent.h"
 	"Components/TrashTheCacheComponent.cpp"         "Components/TrashTheCacheComponent.h"
 	"Components/TransformComponent.cpp"             "Components/TransformComponent.h"
+
+	"Graphs/ConnectionCostCalculator.h"
+	"Graphs/Graph.h"								"Graphs/Graph.cpp" 
+	"Graphs/GraphConnection.h" 
+	"Graphs/GraphEnums.h"  
+	"Graphs/GraphNode.h" 
+	"Graphs/GraphNodeFactory.h"
+	"Graphs/GridGraph.h"							"Graphs/GridGraph.cpp"
+	"Graphs/AStar.h"								"Graphs/AStar.cpp" 
+	"Graphs/HeuristicFunctions.h" 
+	"Graphs/Heuristic.h" 
 
 	"Managers/InputManager.cpp"                     "Managers/InputManager.h"
 	"Managers/ResourceManager.cpp"					"Managers/ResourceManager.h"
@@ -71,8 +83,11 @@ add_library(${ENGINE_NAME} STATIC
 	"Wrappers/Controller.cpp"						"Wrappers/Controller.h"
 	"Wrappers/Font.cpp"								"Wrappers/Font.h"
 	"Wrappers/Keyboard.cpp"							"Wrappers/Controller.h"
+	"Wrappers/Mouse.cpp"							"Wrappers/Mouse.h"
 	"Wrappers/Texture2D.cpp"						"Wrappers/Texture2D.h"
- )
+
+
+  )
  
 
 
@@ -93,6 +108,7 @@ target_compile_features(${ENGINE_NAME} PUBLIC cxx_std_20)
 
 
 include(FetchContent)
+
 # add glm
 FetchContent_Declare(
 	glm
@@ -114,6 +130,7 @@ endif()
 # since I get XInput straight from Window's api.
 if (WIN32)
 
+	# add imgui
 	FetchContent_Declare(
 		imgui
 		GIT_REPOSITORY https://github.com/ocornut/imgui.git
@@ -135,9 +152,9 @@ if (WIN32)
 		${imgui_SOURCE_DIR}/imstb_truetype.h  
 		${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
 		${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-	)
+	 "Wrappers/Mouse.h")
 
-
+	# add imgui_plot
 	FetchContent_Declare(
 		imgui_plot
 		GIT_REPOSITORY https://github.com/soulthreads/imgui-plot
@@ -231,7 +248,6 @@ if (WIN32)
 	# add SDL2_ttf
 	FetchContent_Declare(
 		SDL2_ttf
-		#URL https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.24.0-VC.zip
 		URL https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.22.0-VC.zip
 		DOWNLOAD_NO_PROGRESS ON
 		DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
@@ -278,6 +294,40 @@ if (WIN32)
 	endif()
 
 
+	# add SDL2-gfx
+	FetchContent_Declare(
+		sdl2_gfx
+		GIT_REPOSITORY https://github.com/giroletm/SDL2_gfx.git
+		GIT_TAG "master" 
+		GIT_SHALLOW TRUE
+		GIT_PROGRESS TRUE
+	)
+
+	FetchContent_MakeAvailable(sdl2_gfx) 
+
+
+	add_library(sdl2_gfx_lib STATIC
+	${sdl2_gfx_SOURCE_DIR}/SDL2_framerate.c
+	${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives.c
+	${sdl2_gfx_SOURCE_DIR}/SDL2_imageFilter.c
+	${sdl2_gfx_SOURCE_DIR}/SDL2_rotozoom.c
+	${sdl2_gfx_SOURCE_DIR}/SDL2_framerate.h
+	${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives.h
+	${sdl2_gfx_SOURCE_DIR}/SDL2_imageFilter.h
+	${sdl2_gfx_SOURCE_DIR}/SDL2_rotozoom.h
+	${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives_font.h
+ "Wrappers/Mouse.h")
+
+# Configure our SDL2_gfx library
+target_include_directories(sdl2_gfx_lib PUBLIC
+	${sdl2_gfx_SOURCE_DIR}
+	${SDL2_INCLUDE_DIR}
+)
+
+target_link_libraries(sdl2_gfx_lib PUBLIC
+	${SDL2_LIBRARIES}
+)
+
 
 
 	# include & link sdl to imgui
@@ -292,15 +342,27 @@ if (WIN32)
 	)
 
 
+	#[[
+
+	# include & link sdl to sdl2_gfx
+	target_include_directories(sdl2_gfx PUBLIC
+		${sdl2_gfx_SOURCE_DIR}
+		${SDL2_INCLUDE_DIR}
+	)
+
+
+	target_link_libraries(sdl2_gfx PUBLIC
+		${SDL2_LIBRARIES}	
+	)
+	]]
+
 	find_package(VLD CONFIG)
 
 	set(XINPUT_LIB XInput)
 
 
 
-
 	# set all include directories
-	#target_include_directories(${ENGINE_NAME} PRIVATE
 	target_include_directories(${ENGINE_NAME} PUBLIC
 		${VLD_INCLUDE_DIR}
 		${SDL2_INCLUDE_DIR} 
@@ -311,7 +373,10 @@ if (WIN32)
 		${imgui_SOURCE_DIR}
 		${imgui_SOURCE_DIR}/backends
 		${imgui_plot_SOURCE_DIR}
+
+		${sdl2_gfx_SOURCE_DIR}
 	)
+
 
 	# include steamworks 
 	if(STEAMWORKS_AVAILABLE)
@@ -337,6 +402,9 @@ if (WIN32)
 		${XINPUT_LIB}
 		imgui
 		imgui_plot
+
+		#sdl2_gfx
+		sdl2_gfx_lib
 	)
 
 	# Link Steamworks
@@ -374,7 +442,6 @@ elseif(NOT EMSCRIPTEN)
 	FetchContent_Declare(
 		SDL2_ttf
 		GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
-		#GIT_TAG release-2.24.0
 		GIT_TAG release-2.22.0
 		GIT_SHALLOW TRUE
 		GIT_PROGRESS TRUE
@@ -418,6 +485,7 @@ endif()
 target_include_directories(${ENGINE_NAME} PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${glm_SOURCE_DIR}
+	
 )
 
 

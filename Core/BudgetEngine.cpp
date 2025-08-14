@@ -1,4 +1,12 @@
-﻿#include <stdexcept>
+﻿#if _DEBUG
+// ReSharper disable once CppUnusedIncludeDirective
+#if __has_include(<vld.h>)
+#include <vld.h>
+#endif
+#endif
+
+
+#include <stdexcept>
 #include <sstream>
 #include <iostream>
 #include <chrono> 
@@ -47,28 +55,52 @@ void PrintSDLVersion();
 
 SDL_Window* g_window{};
 
-bae::BudgetEngine::BudgetEngine(const std::filesystem::path& dataPath)
+//TODO: Change the params so that you don't need to change the engine
+// to change the name / size of the window
+bae::BudgetEngine::BudgetEngine(const bae::Utils::Window& window)
 {
 	PrintSDLVersion();
 
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 
+
+	// Disabled VLD, becauseof MMDevApi.dll leaking (only on my system for some reason)
+#if defined(_DEBUG) && __has_include(<vld.h>)
+	VLDDisable();
+#endif
+
 	g_window = SDL_CreateWindow(
-		"BudgetArmsEngine",
+		window.title.c_str(),
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		640,
-		480,
+		window.width,
+		window.height,
 		SDL_WINDOW_OPENGL
 	);
+
+#if defined(_DEBUG) && __has_include(<vld.h>)
+	VLDEnable();
+#endif
 
 	if (g_window == nullptr)
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 
+
+	if (window.bIsVSyncOn)
+	{
+		if (SDL_GL_SetSwapInterval(1) < 0)
+		{
+			std::cerr << "BaseGame::Initialize( ), error when calling SDL_GL_SetSwapInterval: " << SDL_GetError() << std::endl;
+			return;
+		}
+	}
+	else
+		SDL_GL_SetSwapInterval(0);
+
+
 	Renderer::GetInstance().Init(g_window);
-	ResourceManager::GetInstance().Init(dataPath);
-	ServiceLocator::RegisterSoundSystem(nullptr);
+	ResourceManager::GetInstance().Init(window.resourceFolder);
 }
 
 bae::BudgetEngine::~BudgetEngine()

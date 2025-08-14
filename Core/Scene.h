@@ -30,6 +30,8 @@ namespace bae
 		void Remove(std::shared_ptr<GameObject> object);
 		void RemoveAll();
 
+		std::vector<std::shared_ptr<GameObject>> GetObjects() { return m_Objects; };
+
 
 		bool m_bIsEnabled{ true };
 

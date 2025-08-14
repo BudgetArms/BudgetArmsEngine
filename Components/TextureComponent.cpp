@@ -24,7 +24,7 @@ void TextureComponent::Render() const
 		const float rotation = m_Owner->GetWorldRotation();
 		const glm::vec2& scale = m_Owner->GetWorldScale();
 
-		Renderer::GetInstance().RenderTexture(*m_Texture, position.x, position.y, rotation, scale.x, scale.y);
+		Renderer::GetInstance().RenderTexture(*m_Texture, m_bIsCenteredAtPosition, position, rotation, scale);
 	}
 }
 
