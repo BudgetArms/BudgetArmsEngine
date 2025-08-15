@@ -53,7 +53,7 @@ void TextComponent::Render() const
 {
 	if (m_TextTexture)
 	{
-		const glm::vec3& pos = m_Owner->GetWorldLocation();
+		const glm::vec2& pos = m_Owner->GetWorldLocation();
 		const float& rotation = m_Owner->GetWorldRotation();
 		const glm::vec2& scale = m_Owner->GetWorldScale();
 		Renderer::GetInstance().RenderTexture(*m_TextTexture, m_bIsCenteredAtPosition, pos, rotation, scale);

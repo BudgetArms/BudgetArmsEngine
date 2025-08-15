@@ -40,7 +40,7 @@ void SpriteComponent::Render() const
 	// because they also need to be added to the scene
 
 	// so you need to add the children in advance
-	const glm::vec3& position = m_Owner->GetWorldLocation();
+	const glm::vec2& position = m_Owner->GetWorldLocation();
 
 
 	SDL_Rect dstRect{};

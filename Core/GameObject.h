@@ -50,23 +50,23 @@ namespace bae
 		constexpr bool IsMarkedForDeletion() const { return m_MarkedForDeletion; };
 
 
-		const glm::vec3& GetWorldLocation();
+		const glm::vec2& GetWorldLocation();
 		float GetWorldRotation();
 		const glm::vec2& GetWorldScale();
 
-		const glm::vec3& GetLocalLocation() const;
+		const glm::vec2& GetLocalLocation() const;
 		float GetLocalRotation() const;
 		const glm::vec2& GetLocalScale() const;
 
-		void SetWorldLocation(const glm::vec3& location);
+		void SetWorldLocation(const glm::vec2& location);
 		void SetWorldRotation(float rotation);
 		void SetWorldScale(const glm::vec2& scale);
 
-		void SetLocalLocation(const glm::vec3& location);
+		void SetLocalLocation(const glm::vec2& location);
 		void SetLocalRotation(float rotation);
 		void SetLocalScale(const glm::vec2& scale);
 
-		void AddLocation(const glm::vec3& location);
+		void AddLocation(const glm::vec2& location);
 		void AddRotation(float rotation);
 		void AddScale(const glm::vec2& scale);
 

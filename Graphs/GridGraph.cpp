@@ -14,7 +14,7 @@ namespace bu = bae::Utils;
 GridGraph::GridGraph(
 	const glm::vec2& position,
 	int columns, int rows, const glm::ivec2& cellSize, bool isDirectionalGraph, bool isConnectedDiagonally, float costStraight,
-	float costDiagonal, GraphNodeFactory* const pFactory, ConnectionCostCalculator* const pCostCalculator) :
+	float costDiagonal, GraphNodeFactory* const pFactory, std::unique_ptr<ConnectionCostCalculator> uCostCalculator) :
 
 	Graph(isDirectionalGraph, pFactory),
 	m_NrOfColumns{ columns },
@@ -24,14 +24,13 @@ GridGraph::GridGraph(
 	m_DefaultCostStraight{ costStraight },
 	m_DefaultCostDiagonal{ costDiagonal },
 	m_Position{ position },
-	m_pCostCalculator{ pCostCalculator }
+	m_uCostCalculator{ std::move(uCostCalculator) }
 {
 	InitializeGrid();
 }
 
 GridGraph::~GridGraph()
 {
-	SAFE_DELETE(m_pCostCalculator);
 }
 
 
@@ -66,10 +65,10 @@ void GridGraph::Render() const
 	{
 		for (GraphNode* pNode : m_pActiveNodes)
 		{
-			for (GraphConnection* con : GetConnectionsFromNode(pNode->GetId()))
+			for (const std::unique_ptr<GraphConnection>& uConnection : GetConnectionsFromNode(pNode->GetId()))
 			{
-				glm::vec2 startPos = GetNodePos(con->GetToNodeId());
-				glm::vec2 endPos = GetNodePos(con->GetFromNodeId());
+				glm::vec2 startPos = GetNodePos(uConnection->GetToNodeId());
+				glm::vec2 endPos = GetNodePos(uConnection->GetFromNodeId());
 
 				bu::DrawLine(startPos, endPos, 1, m_RenderColorConnections);
 			}
@@ -155,9 +154,8 @@ void GridGraph::AddConnectionsInDirections(int idx, int col, int row, const std:
 			int neighborIdx = neighborRow * m_NrOfColumns + neighborCol;
 			float connectionCost = CalculateConnectionCost(idx, neighborIdx);
 
-			if (!Graph::ConnectionExists(idx, neighborIdx)
-				&& connectionCost < 100000) //Extra check for different terrain types
-				AddConnection(new GraphConnection(idx, neighborIdx, connectionCost));
+			if (!Graph::ConnectionExists(idx, neighborIdx) && connectionCost < 100000) //Extra check for different terrain types
+				AddConnection(std::make_unique<GraphConnection>(idx, neighborIdx, connectionCost));
 		}
 	}
 
@@ -176,8 +174,9 @@ float GridGraph::CalculateConnectionCost(int fromIdx, int toIdx) const
 		cost = m_DefaultCostDiagonal;
 	}
 
-	if (m_pCostCalculator != nullptr)
-		cost *= m_pCostCalculator->CalculateConnectionCost(static_cast<const Graph*>(this), fromIdx, toIdx);
+	if (m_uCostCalculator != nullptr)
+		cost *= m_uCostCalculator->CalculateConnectionCost(static_cast<const Graph*>(this), fromIdx, toIdx);
+
 
 	return cost;
 }

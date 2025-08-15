@@ -1,6 +1,8 @@
-﻿#include <string>
+﻿#include "GameObject.h"
+
+#include <assert.h>
+#include <string>
 #include <iostream>
-#include "GameObject.h"
 
 #include "Wrappers/Texture2D.h"
 #include "Managers/ResourceManager.h"
@@ -233,7 +235,7 @@ void GameObject::ForceDestroy()
 #pragma region Tranform Functions
 
 
-const glm::vec3& GameObject::GetWorldLocation()
+const glm::vec2& GameObject::GetWorldLocation()
 {
 	return m_Transform->GetWorldLocation();
 }
@@ -249,7 +251,7 @@ const glm::vec2& GameObject::GetWorldScale()
 }
 
 
-const glm::vec3& GameObject::GetLocalLocation() const
+const glm::vec2& GameObject::GetLocalLocation() const
 {
 	return m_Transform->GetLocalLocation();
 }
@@ -265,7 +267,7 @@ const glm::vec2& GameObject::GetLocalScale() const
 }
 
 
-void GameObject::SetWorldLocation(const glm::vec3& location)
+void GameObject::SetWorldLocation(const glm::vec2& location)
 {
 	m_Transform->SetWorldLocation(location);
 }
@@ -281,7 +283,7 @@ void GameObject::SetWorldScale(const glm::vec2& scale)
 }
 
 
-void GameObject::SetLocalLocation(const glm::vec3& location)
+void GameObject::SetLocalLocation(const glm::vec2& location)
 {
 	m_Transform->SetLocalLocation(location);
 }
@@ -297,7 +299,7 @@ void GameObject::SetLocalScale(const glm::vec2& scale)
 }
 
 
-void GameObject::AddLocation(const glm::vec3& addLocation)
+void GameObject::AddLocation(const glm::vec2& addLocation)
 {
 	m_Transform->AddLocation(addLocation);
 }

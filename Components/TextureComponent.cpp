@@ -20,7 +20,7 @@ void TextureComponent::Render() const
 {
 	if (m_Texture)
 	{
-		const glm::vec3& position = m_Owner->GetWorldLocation();
+		const glm::vec2& position = m_Owner->GetWorldLocation();
 		const float rotation = m_Owner->GetWorldRotation();
 		const glm::vec2& scale = m_Owner->GetWorldScale();
 

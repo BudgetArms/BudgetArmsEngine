@@ -9,8 +9,6 @@
 
 namespace bae::Graphs
 {
-#define SAFE_DELETE(p) if (p) { delete (p); (p) = nullptr; }
-
 	class GraphConnection;
 	class Graph
 	{
@@ -29,23 +27,25 @@ namespace bae::Graphs
 		int GetAmountOfNodes() const { return m_AmountNodes; }
 
 		//Nodes
-		int AddNode(GraphNode* const pNode);
+		int AddNode(std::unique_ptr<GraphNode> pNode);
 		void RemoveNode(int nodeId);
 
 		bool IsNodeValid(int nodeId) const;
 		GraphNode* const GetNode(int nodeId) const;
+		std::unique_ptr<GraphNode> GetNodeRef(int nodeId);
 		const std::vector<GraphNode*>& GetAllNodes() const { return m_pActiveNodes; }
 
 
 		//Connections
-		void AddConnection(GraphConnection* const pConnection);
+		void AddConnection(std::unique_ptr<GraphConnection> const pConnection);
 		void RemoveConnection(int fromNodeId, int toNodeId);
-		void RemoveConnection(GraphConnection* const pConnection);
+		void RemoveConnection(std::unique_ptr<GraphConnection> pConnection);
 		void RemoveAllConnectionsWithNode(int nodeId);
 
 		GraphConnection* const GetConnection(int fromNodeId, int toNodeId) const;
-		const std::vector<GraphConnection*>& GetConnectionsFromNode(int nodeId) const;
-		const std::vector<GraphConnection*>& GetConnectionsFromNode(GraphNode* const pNode) const { return GetConnectionsFromNode(pNode->GetId()); }
+		std::unique_ptr<GraphConnection> GetConnectionRef(int fromNodeId, int toNodeId);
+		const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(int nodeId) const;
+		const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(GraphNode* const pNode) const { return GetConnectionsFromNode(pNode->GetId()); }
 
 		void SetConnectionCostsToDistances();
 
@@ -72,21 +72,21 @@ namespace bae::Graphs
 
 	protected:
 		virtual void OnGraphModified(bool nrOfNodesChanged, bool nrOfConnectionsChanged) { nrOfConnectionsChanged; nrOfNodesChanged; };
-		void AddNodeAtIndex(GraphNode* const pNode);
+		void AddNodeAtIndex(std::unique_ptr<GraphNode> uNode);
 
-		GraphNode* CreateNode(const glm::vec2& pos);
-		GraphNode* CloneNode(const GraphNode& other);
+		std::unique_ptr<GraphNode> CreateNode(const glm::vec2& pos);
+		std::unique_ptr<GraphNode> CloneNode(const GraphNode& other);
 
 
 		bool m_bIsDirectional;
 		int m_NextNodeId{ 0 };
 
 
-		std::vector<GraphNode*> m_pNodes;
-		std::vector<std::vector<GraphConnection*>> m_pConnections;
+		std::vector<std::unique_ptr<GraphNode>> m_uNodes;
+		std::vector<std::vector<std::unique_ptr<GraphConnection>>> m_uConnections;
 
 		std::vector<GraphNode*> m_pActiveNodes;
-		std::shared_ptr<GraphNodeFactory> m_pNodeFactory;
+		std::shared_ptr<GraphNodeFactory> m_sNodeFactory;
 
 
 	};

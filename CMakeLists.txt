@@ -170,9 +170,6 @@ if (WIN32)
 	# Link Imgui Plot to ImGui
 	target_link_libraries(imgui_plot PUBLIC imgui)
 
-	# Link xinput to project (windows only bc can't fetch xinput)
-	#target_link_libraries(${ENGINE_NAME} PUBLIC XInput)
-
 
 	if(STEAMWORKS_AVAILABLE AND EXISTS "${STEAMWORKS_SDK_PATH}")
 
@@ -307,27 +304,26 @@ if (WIN32)
 
 
 	add_library(sdl2_gfx_lib STATIC
-	${sdl2_gfx_SOURCE_DIR}/SDL2_framerate.c
-	${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives.c
-	${sdl2_gfx_SOURCE_DIR}/SDL2_imageFilter.c
-	${sdl2_gfx_SOURCE_DIR}/SDL2_rotozoom.c
-	${sdl2_gfx_SOURCE_DIR}/SDL2_framerate.h
-	${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives.h
-	${sdl2_gfx_SOURCE_DIR}/SDL2_imageFilter.h
-	${sdl2_gfx_SOURCE_DIR}/SDL2_rotozoom.h
-	${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives_font.h
- "Wrappers/Mouse.h")
+		${sdl2_gfx_SOURCE_DIR}/SDL2_framerate.c
+		${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives.c
+		${sdl2_gfx_SOURCE_DIR}/SDL2_imageFilter.c
+		${sdl2_gfx_SOURCE_DIR}/SDL2_rotozoom.c
+		${sdl2_gfx_SOURCE_DIR}/SDL2_framerate.h
+		${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives.h
+		${sdl2_gfx_SOURCE_DIR}/SDL2_imageFilter.h
+		${sdl2_gfx_SOURCE_DIR}/SDL2_rotozoom.h
+		${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives_font.h
+	)
 
-# Configure our SDL2_gfx library
-target_include_directories(sdl2_gfx_lib PUBLIC
-	${sdl2_gfx_SOURCE_DIR}
-	${SDL2_INCLUDE_DIR}
-)
+	# Configure our SDL2_gfx library
+	target_include_directories(sdl2_gfx_lib PUBLIC
+		${sdl2_gfx_SOURCE_DIR}
+		${SDL2_INCLUDE_DIR}
+	)
 
-target_link_libraries(sdl2_gfx_lib PUBLIC
-	${SDL2_LIBRARIES}
-)
-
+	target_link_libraries(sdl2_gfx_lib PUBLIC
+		${SDL2_LIBRARIES}
+	)
 
 
 	# include & link sdl to imgui
@@ -342,24 +338,9 @@ target_link_libraries(sdl2_gfx_lib PUBLIC
 	)
 
 
-	#[[
-
-	# include & link sdl to sdl2_gfx
-	target_include_directories(sdl2_gfx PUBLIC
-		${sdl2_gfx_SOURCE_DIR}
-		${SDL2_INCLUDE_DIR}
-	)
-
-
-	target_link_libraries(sdl2_gfx PUBLIC
-		${SDL2_LIBRARIES}	
-	)
-	]]
-
 	find_package(VLD CONFIG)
 
 	set(XINPUT_LIB XInput)
-
 
 
 	# set all include directories
@@ -403,7 +384,6 @@ target_link_libraries(sdl2_gfx_lib PUBLIC
 		imgui
 		imgui_plot
 
-		#sdl2_gfx
 		sdl2_gfx_lib
 	)
 

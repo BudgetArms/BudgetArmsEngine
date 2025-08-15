@@ -44,7 +44,7 @@ std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, GraphNode* c
 			break;
 
 
-		for (auto nextNodeConnection : m_pGraph->GetConnectionsFromNode(currentNodeRecord.pNode))
+		for (auto& nextNodeConnection : m_pGraph->GetConnectionsFromNode(currentNodeRecord.pNode))
 		{
 			auto pNextNode = m_pGraph->GetNode(nextNodeConnection->GetToNodeId());
 
@@ -92,7 +92,7 @@ std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, GraphNode* c
 			NodeRecord nextNodeRecord
 			{
 				.pNode = pNextNode,
-				.pConnection = nextNodeConnection,
+				.pConnection = nextNodeConnection.get(),
 				.costSoFar = nextNodeGCost,
 				.estimatedTotalCost = nextNodeGCost + GetHeuristicCost(pNextNode, pGoalNode),
 			};

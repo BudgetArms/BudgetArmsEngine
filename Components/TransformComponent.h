@@ -20,23 +20,23 @@ namespace bae
 		TransformComponent& operator=(TransformComponent&& other) = delete;
 
 
-		const glm::vec3& GetWorldLocation();
+		const glm::vec2& GetWorldLocation();
 		float GetWorldRotation();
 		const glm::vec2& GetWorldScale();
 
-		const glm::vec3& GetLocalLocation() const;
+		const glm::vec2& GetLocalLocation() const;
 		float GetLocalRotation() const;
 		const glm::vec2& GetLocalScale() const;
 
-		void SetWorldLocation(const glm::vec3& location);
+		void SetWorldLocation(const glm::vec2& location);
 		void SetWorldRotation(float rotation);
 		void SetWorldScale(const glm::vec2& scale);
 
-		void SetLocalLocation(const glm::vec3& location);
+		void SetLocalLocation(const glm::vec2& location);
 		void SetLocalRotation(float rotation);
 		void SetLocalScale(const glm::vec2& scale);
 
-		void AddLocation(const glm::vec3& addLocation);
+		void AddLocation(const glm::vec2& addLocation);
 		void AddRotation(float addRotation);
 		void AddScale(const glm::vec2& addScale);
 
@@ -53,11 +53,11 @@ namespace bae
 		void UpdateWorldScale();
 
 
-		glm::vec3 m_WorldLocation{};
+		glm::vec2 m_WorldLocation{};
 		glm::vec2 m_WorldScale{ 1, 1 };
 		float m_WorldRotation{};
 
-		glm::vec3 m_LocalLocation{};
+		glm::vec2 m_LocalLocation{};
 		glm::vec2 m_LocalScale{ 1, 1 };
 		float m_LocalRotation{};
 

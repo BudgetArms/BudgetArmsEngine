@@ -33,7 +33,7 @@ void FpsTextComponent::Update()
 
 void FpsTextComponent::Render() const
 {
-	const glm::vec3& pos = m_Owner->GetWorldLocation() - glm::vec3{ 2.f, 2.f, 0.f };
+	const glm::vec2& pos = m_Owner->GetWorldLocation() - glm::vec2{ 2.f, 2.f };
 	const float& rotation = m_Owner->GetWorldRotation();
 	const glm::vec2& scale = m_Owner->GetWorldScale();
 

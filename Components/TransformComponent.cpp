@@ -11,7 +11,7 @@ TransformComponent::TransformComponent(GameObject& owner) :
 }
 
 
-const glm::vec3& TransformComponent::GetWorldLocation()
+const glm::vec2& TransformComponent::GetWorldLocation()
 {
 	if (m_bLocationDirty)
 		UpdateWorldLocation();
@@ -36,7 +36,7 @@ const glm::vec2& TransformComponent::GetWorldScale()
 }
 
 
-const glm::vec3& TransformComponent::GetLocalLocation() const
+const glm::vec2& TransformComponent::GetLocalLocation() const
 {
 	return m_LocalLocation;
 }
@@ -52,7 +52,7 @@ const glm::vec2& TransformComponent::GetLocalScale() const
 }
 
 
-void TransformComponent::SetWorldLocation(const glm::vec3& location)
+void TransformComponent::SetWorldLocation(const glm::vec2& location)
 {
 	if (!m_Owner->GetParent())
 		m_LocalLocation = location;
@@ -62,7 +62,7 @@ void TransformComponent::SetWorldLocation(const glm::vec3& location)
 	SetLocationDirty();
 }
 
-//void TransformComponent::SetWorldRotation(const glm::vec3& rotation)
+//void TransformComponent::SetWorldRotation(const glm::vec2& rotation)
 void TransformComponent::SetWorldRotation(float rotation)
 {
 	if (!m_Owner->GetParent())
@@ -84,13 +84,13 @@ void TransformComponent::SetWorldScale(const glm::vec2& scale)
 }
 
 
-void TransformComponent::SetLocalLocation(const glm::vec3& location)
+void TransformComponent::SetLocalLocation(const glm::vec2& location)
 {
 	m_LocalLocation = location;
 	SetLocationDirty();
 }
 
-//void TransformComponent::SetLocalRotation(const glm::vec3& rotation)
+//void TransformComponent::SetLocalRotation(const glm::vec2& rotation)
 void TransformComponent::SetLocalRotation(float rotation)
 {
 	m_LocalRotation = rotation;
@@ -104,7 +104,7 @@ void TransformComponent::SetLocalScale(const glm::vec2& scale)
 }
 
 
-void TransformComponent::AddLocation(const glm::vec3& addLocation)
+void TransformComponent::AddLocation(const glm::vec2& addLocation)
 {
 	if (m_bLocationDirty)
 		UpdateWorldLocation();

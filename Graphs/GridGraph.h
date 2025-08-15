@@ -4,12 +4,13 @@
 
 #include "Core/Utils.h"
 #include "Graphs/Graph.h"
+#include "Graphs/ConnectionCostCalculator.h"
 
 
 namespace bae::Graphs
 {
 	class GraphNode;
-	class ConnectionCostCalculator;
+	//class ConnectionCostCalculator;
 
 	class GridGraph : public Graph
 	{
@@ -18,7 +19,7 @@ namespace bae::Graphs
 		GridGraph(
 			const glm::vec2& position,
 			int columns, int rows, const glm::ivec2& cellSize, bool isDirectionalGraph, bool isConnectedDiagonally, float costStraight = 1.f,
-			float costDiagonal = 1.5, GraphNodeFactory* const factory = nullptr, ConnectionCostCalculator* const pCostCalculator = nullptr
+			float costDiagonal = 1.5, GraphNodeFactory* const factory = nullptr, std::unique_ptr<ConnectionCostCalculator> uCostCalculator = nullptr
 		);
 		virtual ~GridGraph();
 
@@ -78,7 +79,7 @@ namespace bae::Graphs
 
 		glm::vec2 m_Position;
 
-		ConnectionCostCalculator* m_pCostCalculator;
+		std::unique_ptr<ConnectionCostCalculator> m_uCostCalculator;
 
 
 	};

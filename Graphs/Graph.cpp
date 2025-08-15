@@ -1,5 +1,7 @@
 ﻿#include "Graph.h"
 
+#include <algorithm>
+
 #include "Graphs/GraphNode.h"
 #include "Graphs/GraphConnection.h"
 
@@ -10,47 +12,48 @@ using namespace bae::Graphs;
 #pragma region Private
 
 
-Graph::Graph(bool isDirectional, GraphNodeFactory* const pNodeFactory)
-	:m_bIsDirectional{ isDirectional }
-	, m_NextNodeId{ 0 }
-	, m_pNodes{}
-	, m_pConnections{}
-	, m_pNodeFactory{ pNodeFactory }
+Graph::Graph(bool isDirectional, GraphNodeFactory* const pNodeFactory) :
+	m_bIsDirectional{ isDirectional },
+	m_NextNodeId{ 0 },
+	m_uNodes{},
+	m_uConnections{},
+	m_sNodeFactory{ pNodeFactory }
 {
 }
 
 // Copy constructor
-Graph::Graph(const Graph& other)
-	:m_pNodes{  }
-	, m_pConnections{ }
-	, m_AmountConnections{ other.m_AmountConnections }
-	, m_AmountNodes{ other.m_AmountNodes }
-	, m_NextNodeId{ other.m_NextNodeId }
-	, m_bIsDirectional{ other.m_bIsDirectional }
-	, m_pNodeFactory{ other.m_pNodeFactory }
+Graph::Graph(const Graph& other) :
+	m_uNodes{  },
+	m_uConnections{ },
+	m_AmountConnections{ other.m_AmountConnections },
+	m_AmountNodes{ other.m_AmountNodes },
+	m_NextNodeId{ other.m_NextNodeId },
+	m_bIsDirectional{ other.m_bIsDirectional },
+	m_sNodeFactory{ other.m_sNodeFactory }
 {
-	for (std::vector<GraphConnection*>& connectionList : m_pConnections)
-	{
-		for (GraphConnection* pConnection : connectionList)
-			SAFE_DELETE(pConnection);
-	}
+	m_uConnections.clear();
 
-	for (GraphNode* pNode : other.m_pNodes)
+	for (const std::unique_ptr<GraphNode>& uNode : other.m_uNodes)
 	{
-		if (pNode == nullptr)
-			m_pNodes.push_back(nullptr);
+		if (uNode == nullptr)
+			m_uNodes.push_back(nullptr);
 		else
-			m_pNodes.push_back(CloneNode(*pNode));
+			m_uNodes.push_back(CloneNode(*uNode));
 
 	}
 
-	for (const std::vector<GraphConnection*>& connectionList : other.m_pConnections)
+	for (const std::vector<std::unique_ptr<GraphConnection>>& connectionList : other.m_uConnections)
 	{
-		std::vector<GraphConnection*> newList;
-		for (const GraphConnection* pConnection : connectionList)
-			newList.push_back(new GraphConnection(*pConnection));
-		m_pConnections.push_back(newList);
+		//connectionList;
+
+		std::vector<std::unique_ptr<GraphConnection>> newList;
+
+		for (const std::unique_ptr<GraphConnection>& uConnection : connectionList)
+			newList.push_back(std::make_unique<GraphConnection>(*uConnection));
+
+		m_uConnections.push_back(std::move(newList));
 	}
+
 
 	UpdateNextNodeIndex();
 	UpdateActiveNodes();
@@ -64,21 +67,8 @@ Graph::~Graph()
 
 void Graph::Clear()
 {
-	for (GraphNode* pNode : m_pNodes)
-	{
-		SAFE_DELETE(pNode);
-	}
-
-	for (std::vector<GraphConnection*>& connections : m_pConnections)
-	{
-		for (GraphConnection* pConnection : connections)
-		{
-			SAFE_DELETE(pConnection);
-		}
-		connections.clear();
-	}
-	m_pConnections.clear();
-	m_pNodes.clear();
+	m_uConnections.clear();
+	m_uNodes.clear();
 	m_NextNodeId = 0;
 }
 
@@ -90,25 +80,26 @@ std::shared_ptr<Graph> Graph::Clone() const
 
 
 
-
 //== NODES == 
-int Graph::AddNode(GraphNode* const pNode)
+int Graph::AddNode(std::unique_ptr<GraphNode> pNode)
 {
 	pNode->SetId(m_NextNodeId);
-	const int size = static_cast<int>(m_pNodes.size());
+	const int size = static_cast<int>(m_uNodes.size());
 	if (size < m_NextNodeId + 1)
 	{
-		m_pNodes.resize(m_NextNodeId + 1);
-		m_pConnections.resize(m_NextNodeId + 1);
+		m_uNodes.resize(static_cast<size_t>(m_NextNodeId + 1));
+		m_uConnections.resize(static_cast<size_t>(m_NextNodeId + 1));
 	}
-	m_pNodes[pNode->GetId()] = pNode;
+
+	const int nodeId = pNode->GetId();
+	m_uNodes[nodeId] = std::move(pNode);
 
 	++m_AmountNodes;
 
 	UpdateNextNodeIndex();
 	UpdateActiveNodes();
 
-	return pNode->GetId();
+	return nodeId;
 }
 
 
@@ -117,36 +108,27 @@ void Graph::RemoveNode(int index)
 	if (!IsNodeValid(index))
 		return;
 
-	GraphNode* node = m_pNodes[index];
-	node->SetId(InvalidNodeID);
-	SAFE_DELETE(node);
-	m_pNodes[index] = nullptr;
-
+	m_uNodes[index]->SetId(InvalidNodeID);
+	m_uNodes[index].reset();
 	--m_AmountNodes;
 
-	bool hadConnections{ false };
 
-	//if the graph is not directed remove all connections leading to this pNode and then
-	//clear the connections leading from the pNode
 	if (!m_bIsDirectional)
 	{
 		//visit each neighbour and erase any connections leading to this pNode
-		for (auto currentConnection = m_pConnections[index].begin();
-			currentConnection != m_pConnections[index].end();
-			++currentConnection)
+		for (auto currentConnectionIt = m_uConnections[index].begin(); currentConnectionIt != m_uConnections[index].end();
+			++currentConnectionIt)
 		{
-			for (auto currentEdgeOnToNode = m_pConnections[(*currentConnection)->GetToNodeId()].begin();
-				currentEdgeOnToNode != m_pConnections[(*currentConnection)->GetToNodeId()].end();
+			for (auto currentEdgeOnToNode = m_uConnections[(*currentConnectionIt)->GetToNodeId()].begin();
+				currentEdgeOnToNode != m_uConnections[(*currentConnectionIt)->GetToNodeId()].end();
 				++currentEdgeOnToNode)
 			{
 				if ((*currentEdgeOnToNode)->GetToNodeId() == index)
 				{
-					hadConnections = true;
-
-					GraphConnection* conPtr = *currentEdgeOnToNode;
-					currentEdgeOnToNode = m_pConnections[(*currentConnection)->GetToNodeId()].erase(currentEdgeOnToNode);
+					std::unique_ptr<GraphConnection>& conPtr = *currentEdgeOnToNode;
+					currentEdgeOnToNode = m_uConnections[(*currentConnectionIt)->GetToNodeId()].erase(currentEdgeOnToNode);
 					--m_AmountConnections;
-					SAFE_DELETE(conPtr);
+					conPtr.reset();
 
 					break;
 				}
@@ -155,13 +137,13 @@ void Graph::RemoveNode(int index)
 	}
 
 	//finally, clear this pNode's connections
-	for (GraphConnection* pConnection : m_pConnections[index])
+	for (std::unique_ptr<GraphConnection>& pConnection : m_uConnections[index])
 	{
 		--m_AmountConnections;
-		hadConnections = true;
-		SAFE_DELETE(pConnection);
+		pConnection.reset();
 	}
-	m_pConnections[index].clear();
+
+	m_uConnections[index].clear();
 
 	UpdateNextNodeIndex();
 	UpdateActiveNodes();
@@ -170,7 +152,7 @@ void Graph::RemoveNode(int index)
 
 bool Graph::IsNodeValid(int index) const
 {
-	return (size_t)index < m_pNodes.size() && m_pNodes[index] != nullptr;
+	return (size_t)index < m_uNodes.size() && m_uNodes[index] != nullptr;
 }
 
 GraphNode* const Graph::GetNode(int index) const
@@ -178,7 +160,15 @@ GraphNode* const Graph::GetNode(int index) const
 	if (!IsNodeValid(index))
 		return nullptr;
 
-	return m_pNodes[index];
+	return m_uNodes[index].get();
+}
+
+std::unique_ptr<GraphNode> Graph::GetNodeRef(int index)
+{
+	if (!IsNodeValid(index))
+		return nullptr;
+
+	return std::move(m_uNodes[index]);
 }
 
 int Graph::GetNodeIdAtPosition(const glm::vec2& pos, float errorMargin) const
@@ -193,7 +183,7 @@ int Graph::GetNodeIdAtPosition(const glm::vec2& pos, float errorMargin) const
 GraphNode* const Graph::GetNodeAtPosition(const glm::vec2& position, float errorMargin) const
 {
 	const float nodeRadius = std::abs(m_DefaultNodeRadius * errorMargin);
-	auto foundIt = find_if(m_pActiveNodes.begin(), m_pActiveNodes.end(),
+	auto foundIt = std::ranges::find_if(m_pActiveNodes,
 		[position, nodeRadius, this](GraphNode* pNode)
 		{
 			return pNode->GetId() != InvalidNodeID && (pNode->GetPosition() - position).length() < nodeRadius;
@@ -211,125 +201,129 @@ glm::vec2 Graph::GetNodePos(int nodeId) const
 	if (pNode)
 		return pNode->GetPosition();
 
-	return { 0, 0 };
+	return glm::vec2{ 0, 0 };
 }
 
 
 //== CONNECTIONS ==
-void Graph::AddConnection(GraphConnection* const pConnection)
+void Graph::AddConnection(std::unique_ptr<GraphConnection> pConnection)
 {
 	assert(IsNodeValid(pConnection->GetFromNodeId()) && IsNodeValid(pConnection->GetToNodeId()) && "<Graph::AddConnection>: invalid node index");
 
-	m_pConnections[pConnection->GetFromNodeId()].push_back(pConnection);
+	const float cost = pConnection->GetCost();
+	const int fromNodeId = pConnection->GetFromNodeId();
+	const int toNodeId = pConnection->GetToNodeId();
+
+	m_uConnections[pConnection->GetFromNodeId()].push_back(std::move(pConnection));
 	++m_AmountConnections;
 
 	if (!m_bIsDirectional)
 	{
-		GraphConnection* oppositeConn = new GraphConnection();
-		oppositeConn->SetCost(pConnection->GetCost());
-		oppositeConn->SetFromNodeId(pConnection->GetToNodeId());
-		oppositeConn->SetToNodeId(pConnection->GetFromNodeId());
+		auto oppositeConn = std::make_unique<GraphConnection>();
+		oppositeConn->SetCost(cost);
+		oppositeConn->SetFromNodeId(toNodeId);
+		oppositeConn->SetToNodeId(fromNodeId);
 
-		m_pConnections[pConnection->GetToNodeId()].push_back(oppositeConn);
+		m_uConnections[toNodeId].push_back(std::move(oppositeConn));
 		++m_AmountConnections;
 	}
 }
 
-GraphConnection* const Graph::GetConnection(int from, int to) const
+GraphConnection* const Graph::GetConnection(int fromNodeId, int toNodeId) const
 {
-	assert(IsNodeValid(from) && "<Graph::GetConnection>: invalid 'from' node index");
-	assert(IsNodeValid(to) && "<Graph::GetConnection>: invalid 'to' node index");
-	for (auto c : m_pConnections[from])
-	{
-		if (c && c->GetToNodeId() == to)
-			return c;
-	}
+	assert(IsNodeValid(fromNodeId) && "<Graph::GetConnection>: invalid 'from' node index");
+	assert(IsNodeValid(toNodeId) && "<Graph::GetConnection>: invalid 'to' node index");
+
+	for (auto& connection : m_uConnections[fromNodeId])
+		if (connection && connection->GetToNodeId() == toNodeId)
+			return connection.get();
 
 	return nullptr;
 }
 
-void Graph::RemoveConnection(int from, int to)
+std::unique_ptr<GraphConnection> Graph::GetConnectionRef(int fromNodeId, int toNodeId)
 {
-	assert(IsNodeValid(from) && IsNodeValid(to));
+	assert(IsNodeValid(fromNodeId) && "<Graph::GetConnectionRef>: invalid 'from' node index");
+	assert(IsNodeValid(toNodeId) && "<Graph::GetConnectionRef>: invalid 'to' node index");
 
-	GraphConnection* conFromTo = GetConnection(from, to);
-	GraphConnection* conToFrom = GetConnection(to, from);
+	for (auto& connection : m_uConnections[fromNodeId])
+		if (connection && connection->GetToNodeId() == toNodeId)
+			return std::move(connection);
+
+	return nullptr;
+}
+
+void Graph::RemoveConnection(int fromNodeId, int toNodeId)
+{
+	assert(IsNodeValid(fromNodeId) && IsNodeValid(toNodeId));
+
+	std::unique_ptr<GraphConnection> conFromTo = GetConnectionRef(fromNodeId, toNodeId);
+	std::unique_ptr<GraphConnection> conToFrom = GetConnectionRef(toNodeId, fromNodeId);
+
 
 	if (!m_bIsDirectional)
 	{
-		for (auto curEdge = m_pConnections[to].begin();
-			curEdge != m_pConnections[to].end();
-			++curEdge)
+		for (auto curEdgeIt = m_uConnections[toNodeId].begin(); curEdgeIt != m_uConnections[toNodeId].end(); ++curEdgeIt)
 		{
-			if ((*curEdge)->GetToNodeId() == from)
+			if ((*curEdgeIt)->GetToNodeId() == fromNodeId)
 			{
-				curEdge = m_pConnections[to].erase(curEdge);
+				curEdgeIt = m_uConnections[toNodeId].erase(curEdgeIt);
 				--m_AmountConnections;
 				break;
 			}
 		}
 	}
 
-	for (auto curEdge = m_pConnections[from].begin();
-		curEdge != m_pConnections[from].end();
-		++curEdge)
+	for (auto curEdgeIt = m_uConnections[fromNodeId].begin(); curEdgeIt != m_uConnections[fromNodeId].end(); ++curEdgeIt)
 	{
-		if ((*curEdge)->GetToNodeId() == to)
+		if ((*curEdgeIt)->GetToNodeId() == toNodeId)
 		{
-			curEdge = m_pConnections[from].erase(curEdge);
+			curEdgeIt = m_uConnections[fromNodeId].erase(curEdgeIt);
 			--m_AmountConnections;
 			break;
 		}
 	}
 
-	SAFE_DELETE(conFromTo);
-	SAFE_DELETE(conToFrom);
+	conFromTo.reset();
+	conToFrom.reset();
 
 	OnGraphModified(false, true);
 }
 
-void Graph::RemoveConnection(GraphConnection* const pConnection)
+void Graph::RemoveConnection(std::unique_ptr<GraphConnection> uConnection)
 {
-	RemoveConnection(pConnection->GetFromNodeId(), pConnection->GetToNodeId());
+	RemoveConnection(uConnection->GetFromNodeId(), uConnection->GetToNodeId());
 }
 
 void Graph::RemoveAllConnectionsWithNode(int nodeId)
 {
-	for (auto c : m_pConnections[nodeId])
-		delete c;
-	m_pConnections[nodeId].clear();
+	m_uConnections[nodeId].clear();
 
 	// remove and delete connections from other nodes to this pNode
-	auto isConnectionToThisNode = [nodeId](GraphConnection* const pCon) { return pCon->GetToNodeId() == nodeId; };
-	for (std::vector<GraphConnection*>& c : m_pConnections)
-	{
-		std::vector<GraphConnection*>::iterator foundIt{};
-		while ((foundIt = std::find_if(c.begin(), c.end(), isConnectionToThisNode)) != c.end())
-		{
-			delete* foundIt;
-			c.erase(foundIt);
-		}
-	}
+	auto isConnectionToThisNode = [nodeId](const std::unique_ptr<GraphConnection>& pCon) { return pCon->GetToNodeId() == nodeId; };
+
+	for (std::vector<std::unique_ptr<GraphConnection>>& connection : m_uConnections)
+		std::erase_if(connection, isConnectionToThisNode);
 
 	OnGraphModified(false, true);
 }
 
-const std::vector<GraphConnection*>& Graph::GetConnectionsFromNode(int nodeId) const
+const std::vector<std::unique_ptr<GraphConnection>>& Graph::GetConnectionsFromNode(int nodeId) const
 {
 	assert(IsNodeValid(nodeId));
-	return m_pConnections[nodeId];
+	return m_uConnections[nodeId];
 }
 
 
 void Graph::SetConnectionCostsToDistances()
 {
-	for (const std::vector<GraphConnection*>& connections : m_pConnections)
+	for (const std::vector<std::unique_ptr<GraphConnection>>& connections : m_uConnections)
 	{
-		for (GraphConnection* const pConnection : connections)
+		for (const std::unique_ptr<GraphConnection>& uConnection : connections)
 		{
-			glm::vec2 fromPos = GetNode(pConnection->GetFromNodeId())->GetPosition();
-			glm::vec2 toPos = GetNode(pConnection->GetToNodeId())->GetPosition();
-			pConnection->SetCost(glm::distance(fromPos, toPos));
+			glm::vec2 fromPos = GetNode(uConnection->GetFromNodeId())->GetPosition();
+			glm::vec2 toPos = GetNode(uConnection->GetToNodeId())->GetPosition();
+			uConnection->SetCost(glm::distance(fromPos, toPos));
 		}
 	}
 }
@@ -351,6 +345,7 @@ void Graph::UpdateNextNodeIndex()
 			m_NextNodeId = idx;
 			return;
 		}
+
 		++idx;
 	}
 }
@@ -358,12 +353,11 @@ void Graph::UpdateNextNodeIndex()
 void Graph::UpdateActiveNodes()
 {
 	m_pActiveNodes.clear();
-	for (auto& n : m_pNodes)
+	for (auto& uNode : m_uNodes)
 	{
-		if (n != nullptr)
-		{
-			m_pActiveNodes.push_back(n);
-		}
+		if (uNode != nullptr)
+			m_pActiveNodes.push_back(uNode.get());
+
 	}
 }
 
@@ -374,15 +368,16 @@ void Graph::UpdateActiveNodes()
 #pragma region Protected
 
 
-void Graph::AddNodeAtIndex(GraphNode* const pNode)
+void Graph::AddNodeAtIndex(std::unique_ptr<GraphNode> uNode)
 {
-	pNode->SetId(m_NextNodeId);
-	if (m_pNodes.size() < (size_t)m_NextNodeId + 1)
+	uNode->SetId(m_NextNodeId);
+	if (m_uNodes.size() < static_cast<size_t>(m_NextNodeId + 1))
 	{
-		m_pNodes.resize(m_NextNodeId + 1);
-		m_pConnections.resize(m_NextNodeId + 1);
+		m_uNodes.resize(static_cast<size_t>(m_NextNodeId + 1));
+		m_uConnections.resize(static_cast<size_t>(m_NextNodeId + 1));
 	}
-	m_pNodes[pNode->GetId()] = pNode;
+
+	m_uNodes[uNode->GetId()] = std::move(uNode);
 
 	++m_AmountNodes;
 
@@ -390,21 +385,21 @@ void Graph::AddNodeAtIndex(GraphNode* const pNode)
 	UpdateActiveNodes();
 }
 
-GraphNode* Graph::CreateNode(const glm::vec2& pos)
+std::unique_ptr<GraphNode> Graph::CreateNode(const glm::vec2& pos)
 {
-	if (m_pNodeFactory)
-		m_pNodeFactory->CreateNode(pos);
+	if (m_sNodeFactory)
+		m_sNodeFactory->CreateNode(pos);
 
-	return new GraphNode(pos);
+	return std::make_unique<GraphNode>(pos);
 }
 
 
-GraphNode* Graph::CloneNode(const GraphNode& other)
+std::unique_ptr<GraphNode> Graph::CloneNode(const GraphNode& other)
 {
-	if (m_pNodeFactory)
-		m_pNodeFactory->CloneNode(other);
+	if (m_sNodeFactory)
+		m_sNodeFactory->CloneNode(other);
 
-	return new GraphNode(other);
+	return std::make_unique<GraphNode>(other);
 }
 
 
