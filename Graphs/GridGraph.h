@@ -37,6 +37,8 @@ namespace bae::Graphs
 		int GetColumns() const { return m_NrOfColumns; }
 		glm::ivec2 GetCellSize() const { return m_CellSize; }
 
+		glm::vec2 GetPosition(int col, int row) const;
+
 		int GetNodeId(int col, int row) const { return row * m_NrOfColumns + col; }
 
 		// Function overloading
@@ -63,7 +65,6 @@ namespace bae::Graphs
 		void AddConnectionsInDirections(int idx, int col, int row, const std::vector<glm::vec2>& directions);
 
 		virtual float CalculateConnectionCost(int fromIdx, int toIdx) const;
-		glm::vec2 CalculatePosition(int col, int row) const;
 
 
 		int m_NrOfColumns;

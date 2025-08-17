@@ -164,10 +164,10 @@ void LogSDLVersion(const std::string& message, const SDL_version& v)
 {
 #if WIN32
 	std::stringstream ss;
-	ss << message << (int)v.major << "." << (int)v.minor << "." << (int)v.patch << "\n";
+	ss << message << static_cast<int>(v.major) << "." << static_cast<int>(v.minor) << "." << static_cast<int>(v.patch) << "\n";
 	OutputDebugString(ss.str().c_str());
 #else
-	std::cout << message << (int)v.major << "." << (int)v.minor << "." << (int)v.patch << "\n";
+	std::cout << message << static_cast<int>(v.major) << "." << static_cast<int>(v.minor) << "." << static_cast<int>(v.patch) << "\n";
 #endif
 }
 

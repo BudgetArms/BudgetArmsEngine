@@ -27,10 +27,10 @@ namespace bae
 		void RenderGUI();
 
 		void Add(std::shared_ptr<GameObject> object);
-		void Remove(std::shared_ptr<GameObject> object);
 		void RemoveAll();
 
-		std::vector<std::shared_ptr<GameObject>> GetObjects() { return m_Objects; };
+		std::string GetName() const { return m_Name; }
+		std::vector<std::shared_ptr<GameObject>>& GetObjects() { return m_Objects; };
 
 
 		bool m_bIsEnabled{ true };
@@ -40,12 +40,12 @@ namespace bae
 		friend Scene& SceneManager::CreateScene(const std::string& name);
 
 		explicit Scene(const std::string& name);
+		void Remove(std::shared_ptr<GameObject> object);
 
 
 		std::string m_Name;
 		std::vector<std::shared_ptr<GameObject>> m_Objects{};
-
-		static unsigned int m_IdCounter;
+		std::vector<std::shared_ptr<GameObject>> m_ObjectsPendingAdd{};
 
 
 	};

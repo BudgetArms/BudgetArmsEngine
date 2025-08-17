@@ -96,6 +96,20 @@ void GridGraph::AddConnectionsToAdjacentCells(int idx)
 	OnGraphModified(false, true);
 }
 
+
+glm::vec2 GridGraph::GetPosition(int col, int row) const
+{
+	const glm::vec2 cellCenterOffset = { m_CellSize.x * .5f, m_CellSize.y * .5f };
+	const glm::vec2 cellPosition = glm::vec2
+	{
+		static_cast<float>(col) * m_CellSize.x,
+		static_cast<float>(row) * m_CellSize.y
+	};
+
+	return m_Position + cellPosition + cellCenterOffset;
+}
+
+
 int GridGraph::GetNodeIdAtPosition(const glm::vec2& pos) const
 {
 	const int idx = InvalidNodeID;
@@ -120,7 +134,7 @@ GraphNode* const GridGraph::GetNodeAtPosition(const glm::vec2& pos) const
 glm::vec2 GridGraph::GetNodePos(int nodeId) const
 {
 	auto [row, col] = GetRowAndColumn(nodeId);
-	return CalculatePosition(col, row);
+	return GetPosition(col, row);
 }
 
 void GridGraph::InitializeGrid()
@@ -180,17 +194,4 @@ float GridGraph::CalculateConnectionCost(int fromIdx, int toIdx) const
 
 	return cost;
 }
-
-glm::vec2 GridGraph::CalculatePosition(int col, int row) const
-{
-	const glm::vec2 cellCenterOffset = { m_CellSize.x * .5f, m_CellSize.y * .5f };
-	const glm::vec2 cellPosition = glm::vec2
-	{
-		static_cast<float>(col) * m_CellSize.x,
-		static_cast<float>(row) * m_CellSize.y
-	};
-
-	return m_Position + cellPosition + cellCenterOffset;
-}
-
 

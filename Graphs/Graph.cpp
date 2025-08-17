@@ -152,7 +152,7 @@ void Graph::RemoveNode(int index)
 
 bool Graph::IsNodeValid(int index) const
 {
-	return (size_t)index < m_uNodes.size() && m_uNodes[index] != nullptr;
+	return static_cast<size_t>(index) < m_uNodes.size() && m_uNodes[index] != nullptr;
 }
 
 GraphNode* const Graph::GetNode(int index) const

@@ -7,7 +7,6 @@
 
 using namespace bae;
 
-unsigned int Scene::m_IdCounter = 0;
 
 Scene::Scene(const std::string& name) :
 	m_Name(name)
@@ -20,20 +19,12 @@ Scene::~Scene()
 		object->Destroy();
 };
 
-void Scene::Add(std::shared_ptr<GameObject> object)
-{
-	m_Objects.emplace_back(std::move(object));
-}
 
-void Scene::Remove(std::shared_ptr<GameObject> object)
+void Scene::Update()
 {
-	// since C++ 20
-	std::erase(m_Objects, object);
-}
+	for (auto& object : m_Objects)
+		object->Update();
 
-void Scene::RemoveAll()
-{
-	m_Objects.clear();
 }
 
 void Scene::FixedUpdate()
@@ -52,12 +43,12 @@ void bae::Scene::LateUpdate()
 		if (object->IsMarkedForDeletion())
 			Remove(object);
 
-}
+	for (auto& object : m_ObjectsPendingAdd)
+		m_Objects.emplace_back(std::move(object));
 
-void Scene::Update()
-{
-	for (auto& object : m_Objects)
-		object->Update();
+	if (!m_ObjectsPendingAdd.empty())
+		m_ObjectsPendingAdd.clear();
+
 
 }
 
@@ -73,6 +64,25 @@ void Scene::RenderGUI()
 	for (const auto& object : m_Objects)
 		object->RenderGUI();
 
+}
+
+
+void Scene::Add(std::shared_ptr<GameObject> uObject)
+{
+	m_ObjectsPendingAdd.emplace_back(std::move(uObject));
+}
+
+void Scene::RemoveAll()
+{
+	for (auto& uObject : m_Objects)
+		if (uObject)
+			uObject->Destroy();
+}
+
+
+void Scene::Remove(std::shared_ptr<GameObject> uObject)
+{
+	std::erase(m_Objects, uObject);
 }
 
 

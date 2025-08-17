@@ -55,6 +55,7 @@ void GameObject::Update()
 	for (auto& component : m_Components)
 		component->Update();
 
+
 }
 
 void GameObject::FixedUpdate()

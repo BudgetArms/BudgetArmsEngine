@@ -130,47 +130,6 @@ endif()
 # since I get XInput straight from Window's api.
 if (WIN32)
 
-	# add imgui
-	FetchContent_Declare(
-		imgui
-		GIT_REPOSITORY https://github.com/ocornut/imgui.git
-		GIT_TAG "docking" 
-	)
-
-	FetchContent_MakeAvailable(imgui)
-
-	add_library(imgui STATIC
-		${imgui_SOURCE_DIR}/imconfig.h
-		${imgui_SOURCE_DIR}/imgui.cpp
-		${imgui_SOURCE_DIR}/imgui.h
-		${imgui_SOURCE_DIR}/imgui_demo.cpp
-		${imgui_SOURCE_DIR}/imgui_draw.cpp
-		${imgui_SOURCE_DIR}/imgui_internal.h
-		${imgui_SOURCE_DIR}/imgui_tables.cpp  
-		${imgui_SOURCE_DIR}/imgui_widgets.cpp  
-		${imgui_SOURCE_DIR}/imstb_rectpack.h  
-		${imgui_SOURCE_DIR}/imstb_truetype.h  
-		${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
-		${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-	 "Wrappers/Mouse.h")
-
-	# add imgui_plot
-	FetchContent_Declare(
-		imgui_plot
-		GIT_REPOSITORY https://github.com/soulthreads/imgui-plot
-		GIT_TAG "master"
-	)
-
-	FetchContent_MakeAvailable(imgui_plot)
-
-	target_include_directories(imgui_plot PUBLIC
-	  ${imgui_plot_SOURCE_DIR}/include/imgui_plot
-	)
-
-	# Link Imgui Plot to ImGui
-	target_link_libraries(imgui_plot PUBLIC imgui)
-
-
 	if(STEAMWORKS_AVAILABLE AND EXISTS "${STEAMWORKS_SDK_PATH}")
 
 		set(STEAMWORKS_INCLUDE_DIR "${STEAMWORKS_SDK_PATH}/public/steam")
@@ -218,6 +177,7 @@ if (WIN32)
 
 	endif()
 
+
 	# add SDL2_image
 	FetchContent_Declare(
 		SDL2_image
@@ -242,6 +202,7 @@ if (WIN32)
 
 	endif()
 
+
 	# add SDL2_ttf
 	FetchContent_Declare(
 		SDL2_ttf
@@ -265,6 +226,7 @@ if (WIN32)
 	endif()
 
 	endif() 
+
 
 	# add SDL2_mixer
 	FetchContent_Declare(
@@ -291,6 +253,26 @@ if (WIN32)
 	endif()
 
 
+	# add imgui
+	FetchContent_Declare(
+		imgui
+		GIT_REPOSITORY https://github.com/ocornut/imgui.git
+		GIT_TAG "docking" 
+	)
+
+	FetchContent_MakeAvailable(imgui)
+
+
+	# add imgui_plot
+	FetchContent_Declare(
+		imgui_plot
+		GIT_REPOSITORY https://github.com/soulthreads/imgui-plot
+		GIT_TAG "master"
+	)
+
+	FetchContent_MakeAvailable(imgui_plot)
+
+
 	# add SDL2-gfx
 	FetchContent_Declare(
 		sdl2_gfx
@@ -302,6 +284,33 @@ if (WIN32)
 
 	FetchContent_MakeAvailable(sdl2_gfx) 
 
+	# add Nlohmann json
+	FetchContent_Declare(
+		json 
+		URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+		DOWNLOAD_NO_PROGRESS ON
+		DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
+	)
+
+	FetchContent_MakeAvailable(json)
+
+
+	# add libraries
+
+	add_library(imgui STATIC
+		${imgui_SOURCE_DIR}/imconfig.h
+		${imgui_SOURCE_DIR}/imgui.cpp
+		${imgui_SOURCE_DIR}/imgui.h
+		${imgui_SOURCE_DIR}/imgui_demo.cpp
+		${imgui_SOURCE_DIR}/imgui_draw.cpp
+		${imgui_SOURCE_DIR}/imgui_internal.h
+		${imgui_SOURCE_DIR}/imgui_tables.cpp  
+		${imgui_SOURCE_DIR}/imgui_widgets.cpp  
+		${imgui_SOURCE_DIR}/imstb_rectpack.h  
+		${imgui_SOURCE_DIR}/imstb_truetype.h  
+		${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
+		${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+	)
 
 	add_library(sdl2_gfx_lib STATIC
 		${sdl2_gfx_SOURCE_DIR}/SDL2_framerate.c
@@ -315,7 +324,18 @@ if (WIN32)
 		${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives_font.h
 	)
 
-	# Configure our SDL2_gfx library
+	
+	 
+	target_include_directories(imgui_plot PUBLIC
+		${imgui_plot_SOURCE_DIR}/include/imgui_plot
+	)
+
+	# Link Imgui Plot to ImGui
+	target_link_libraries(imgui_plot PUBLIC imgui)
+
+
+
+	# include & link sdl to sdl2_gfx
 	target_include_directories(sdl2_gfx_lib PUBLIC
 		${sdl2_gfx_SOURCE_DIR}
 		${SDL2_INCLUDE_DIR}
@@ -336,6 +356,7 @@ if (WIN32)
 	target_link_libraries(imgui PUBLIC
 		${SDL2_LIBRARIES}
 	)
+
 
 
 	find_package(VLD CONFIG)
@@ -381,10 +402,11 @@ if (WIN32)
 
 		${VLD_LIBRARY}
 		${XINPUT_LIB}
+
 		imgui
 		imgui_plot
-
 		sdl2_gfx_lib
+		nlohmann_json::nlohmann_json
 	)
 
 	# Link Steamworks
@@ -399,6 +421,7 @@ if (WIN32)
 
 elseif(NOT EMSCRIPTEN)
 
+	# add SDL2
 	FetchContent_Declare(
 		SDL2
 		GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
@@ -408,6 +431,7 @@ elseif(NOT EMSCRIPTEN)
 	)
 	FetchContent_MakeAvailable(SDL2)
 	
+	# add SDL2_image
 	FetchContent_Declare(
 		SDL2_image
 		GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
@@ -419,6 +443,8 @@ elseif(NOT EMSCRIPTEN)
 	set(SDL2IMAGE_INSTALL OFF)
 	FetchContent_MakeAvailable(SDL2_image)
 	
+
+	# add SDL2_ttf
 	FetchContent_Declare(
 		SDL2_ttf
 		GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
@@ -431,6 +457,7 @@ elseif(NOT EMSCRIPTEN)
 	FetchContent_MakeAvailable(SDL2_ttf) 
 	
 
+	# add SDL2_mixer
 	FetchContent_Declare(
 		SDL2_mixer
 		GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
@@ -441,7 +468,10 @@ elseif(NOT EMSCRIPTEN)
 	
 	set(SDL2MIXER_INSTALL OFF)
 	FetchContent_MakeAvailable(SDL2_mixer)
+
 	
+	# 
+
 	target_include_directories(${ENGINE_NAME} PUBLIC 
 		${sdl2_SOURCE_DIR}/include
 		${sdl2_image_SOURCE_DIR}/include
@@ -457,17 +487,16 @@ elseif(NOT EMSCRIPTEN)
 		SDL2_mixer::SDL2_mixer
 	)
 
+
+
 endif()
 
 
-
-# errors:
+# after all the files are loaded, link glm to them
 target_include_directories(${ENGINE_NAME} PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${glm_SOURCE_DIR}
-	
 )
-
 
 
 # compile at max warning level + treat warnings as errors
