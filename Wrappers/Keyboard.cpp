@@ -13,6 +13,7 @@ class Keyboard::Impl
 {
 public:
 	void ProcessInput();
+	void ClearCommands();
 
 	void AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState);
 
@@ -47,6 +48,11 @@ Keyboard::~Keyboard()
 void Keyboard::ProcessInput()
 {
 	m_Pimpl->ProcessInput();
+}
+
+void Keyboard::ClearCommands()
+{
+	m_Pimpl->ClearCommands();
 }
 
 void Keyboard::AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)
@@ -137,6 +143,10 @@ void Keyboard::Impl::ProcessInput()
 
 }
 
+void Keyboard::Impl::ClearCommands()
+{
+	m_KeyboardCommands.clear();
+}
 
 void Keyboard::Impl::AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)
 {

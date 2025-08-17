@@ -30,11 +30,13 @@ namespace bae
 
 
 		bool ProcessInput();
+		void ClearCommands();
 
 		void AddController(int controllerIndex);
 		Controller* GetController(int index);
 		Keyboard& GetKeyboard() const { return *m_Keyboard; };
 		Mouse& GetMouse() const { return *m_Mouse; };
+
 
 
 	private:

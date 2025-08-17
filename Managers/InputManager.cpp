@@ -60,6 +60,19 @@ bool InputManager::ProcessInput()
 	return true;
 }
 
+void InputManager::ClearCommands()
+{
+	for (auto& controller : m_Controllers)
+		controller->ClearCommands();
+
+	if (m_Keyboard)
+		m_Keyboard->ClearCommands();
+
+	if (m_Mouse)
+		m_Mouse->ClearCommands();
+
+}
+
 
 void InputManager::AddController(int controllerIndex)
 {

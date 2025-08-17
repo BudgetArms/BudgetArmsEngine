@@ -23,6 +23,8 @@ namespace bae
 
 
 		void ProcessInput();
+		void ClearCommands();
+
 		void AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState);
 
 		bool IsButtonUp(unsigned int button) const;

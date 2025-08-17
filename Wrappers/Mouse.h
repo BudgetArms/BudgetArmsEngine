@@ -22,6 +22,8 @@ namespace bae
 
 
 		void ProcessInput();
+		void ClearCommands();
+
 		void AddMouseCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState);
 
 		bool IsButtonUp(unsigned int button) const;

@@ -14,6 +14,7 @@ class Mouse::Impl
 {
 public:
 	void ProcessInput();
+	void ClearCommands();
 
 	void AddMouseCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState);
 
@@ -47,6 +48,11 @@ Mouse::~Mouse()
 void Mouse::ProcessInput()
 {
 	m_Pimpl->ProcessInput();
+}
+
+void Mouse::ClearCommands()
+{
+	m_Pimpl->ClearCommands();
 }
 
 void Mouse::AddMouseCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)
@@ -128,6 +134,10 @@ void Mouse::Impl::ProcessInput()
 
 }
 
+void Mouse::Impl::ClearCommands()
+{
+	m_MouseCommands.clear();
+}
 
 void Mouse::Impl::AddMouseCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)
 {

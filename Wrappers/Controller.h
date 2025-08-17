@@ -25,7 +25,10 @@ namespace bae
 
 
 		void ProcessInput();
+		void ClearCommands();
+
 		void AddControllerCommands(std::unique_ptr<Command>, unsigned int button, InputManager::ButtonState activationState);
+
 
 
 		bool IsButtonPressed(unsigned int button) const;

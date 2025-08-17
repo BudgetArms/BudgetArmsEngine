@@ -8,6 +8,7 @@ class Controller::Impl
 {
 public:
 	void ProcessInput(int controllerIndex);
+	void ClearCommands();
 
 	void AddControllerCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState);
 
@@ -42,6 +43,11 @@ Controller::~Controller()
 void Controller::ProcessInput()
 {
 	m_Pimpl->ProcessInput(m_ControllerIndex);
+}
+
+void Controller::ClearCommands()
+{
+	m_Pimpl->ClearCommands();
 }
 
 void Controller::AddControllerCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)
@@ -96,6 +102,11 @@ void Controller::Impl::ProcessInput(int controllerIndex)
 			} break;
 		}
 	}
+}
+
+void Controller::Impl::ClearCommands()
+{
+	m_ControllerCommands.clear();
 }
 
 void Controller::Impl::AddControllerCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)

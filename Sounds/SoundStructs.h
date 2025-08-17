@@ -39,7 +39,7 @@ namespace bae
 
 	struct SoundEventData
 	{
-		SoundEventType Type;
+		SoundEventType Type{};
 		SoundID SoundID{ -1 };
 		ActiveSoundID ActiveSoundID{ -1 };
 		float Volume{ 1 };
