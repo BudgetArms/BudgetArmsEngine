@@ -39,9 +39,13 @@ void bae::Scene::LateUpdate()
 	for (auto& object : m_Objects)
 		object->LateUpdate();
 
-	for (auto& object : m_Objects)
-		if (object->IsMarkedForDeletion())
-			Remove(object);
+	m_Objects.erase(
+		std::remove_if(m_Objects.begin(), m_Objects.end(),
+			[](const std::shared_ptr<bae::GameObject>& uObject)
+			{
+				return uObject->IsMarkedForDeletion();
+			}),
+		m_Objects.end());
 
 	for (auto& object : m_ObjectsPendingAdd)
 		m_Objects.emplace_back(std::move(object));
