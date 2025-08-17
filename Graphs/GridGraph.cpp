@@ -137,6 +137,14 @@ glm::vec2 GridGraph::GetNodePos(int nodeId) const
 	return GetPosition(col, row);
 }
 
+glm::vec2 GridGraph::GetRowAndColumn(const glm::vec2& pos)
+{
+	int c = static_cast<int>((pos.x - m_Position.x) / m_CellSize.x);
+	int r = static_cast<int>((pos.y - m_Position.y) / m_CellSize.y);
+
+	return glm::ivec2{ r, c };
+}
+
 void GridGraph::InitializeGrid()
 {
 	// Create all nodes

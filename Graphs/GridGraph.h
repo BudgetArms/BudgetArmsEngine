@@ -38,6 +38,7 @@ namespace bae::Graphs
 		glm::ivec2 GetCellSize() const { return m_CellSize; }
 
 		glm::vec2 GetPosition(int col, int row) const;
+		glm::vec2 GetOffsetPosition() const { return m_Position; }
 
 		int GetNodeId(int col, int row) const { return row * m_NrOfColumns + col; }
 
@@ -50,6 +51,7 @@ namespace bae::Graphs
 
 		glm::vec2 GetNodePos(int nodeId) const override;
 		std::pair<int, int> GetRowAndColumn(int idx) const { return { idx / m_NrOfColumns, idx % m_NrOfColumns }; }
+		glm::vec2 GetRowAndColumn(const glm::vec2& pos);
 
 
 		bool m_bRenderNodes{ false };
