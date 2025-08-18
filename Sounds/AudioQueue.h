@@ -6,6 +6,7 @@
 #include <ranges>
 #include <unordered_map>
 
+#include "Core/HelperFunctions.h"
 #include "Core/RingBuffer.h"
 #include "Sounds/AudioClip.h"
 #include "Sounds/SoundStructs.h"
@@ -133,6 +134,12 @@ void bae::AudioQueue<AudioClipType>::ProcessSoundEvent(const SoundEventData& eve
 			// SoundClip already loaded, it shouldn't be loaded, bc Play shouldn't have an ActiveSoundID
 			if (audioClip)
 				return;
+
+			if (eventData.SoundID.ID == -1)
+			{
+				std::cout << GetFunctionName() << " Play: Invalid SoundID Given" << '\n';
+				return;
+			}
 
 			std::unique_ptr<AudioClip> uAudioClip = std::make_unique<AudioClipType>(eventData.ActiveSoundID, eventData.SoundID);
 
