@@ -24,7 +24,7 @@ namespace bae
 		SDL_Rect GetCurrentSpriteRect() const;
 
 		SDL_Rect GetSrcRect() const { return m_SrcRect; };
-		SDL_Rect SetSrcRect(const SDL_Rect& srcRect) { m_SrcRect = srcRect; };
+		void SetSrcRect(const SDL_Rect& srcRect) { m_SrcRect = srcRect; };
 
 		void PreviousSprite();
 		void NextSprite();
