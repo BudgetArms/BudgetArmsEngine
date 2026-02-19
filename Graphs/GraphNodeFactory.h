@@ -8,7 +8,7 @@
 namespace bae::Graphs
 {
 	template<typename T_GraphNode>
-	concept graphnodetype = requires(T_GraphNode node, const glm::vec2 & pos)
+	concept GraphNodeType = requires(T_GraphNode node, const glm::vec2 & pos)
 	{
 		{ T_GraphNode(pos) } -> std::derived_from<GraphNode>;
 	};
@@ -26,15 +26,15 @@ namespace bae::Graphs
 
 	};
 
-	template<graphnodetype T_GraphNode>
+	template<GraphNodeType T_GraphNode>
 	class GraphNodeFactoryTemplate : public GraphNodeFactory
 	{
 	public:
 		GraphNodeFactoryTemplate() = default;
-		virtual ~GraphNodeFactoryTemplate() = default;
+        ~GraphNodeFactoryTemplate() override = default;
 
 		GraphNode* const CreateNode(const glm::vec2& pos) const  override { return new T_GraphNode(pos); }
-		GraphNode* const CloneNode(const GraphNode& other) const  override { return  new T_GraphNode((const T_GraphNode&)other); }
+		GraphNode* const CloneNode(const GraphNode& other) const  override { return  new T_GraphNode(static_cast<const T_GraphNode &>(other)); }
 
 
 	};

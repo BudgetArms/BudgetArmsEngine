@@ -3,10 +3,7 @@
 
 namespace bae::Graphs
 {
-	enum
-	{
-		InvalidNodeID = -1
-	};
+	constexpr int InvalidNodeID = -1;
 }
 
 

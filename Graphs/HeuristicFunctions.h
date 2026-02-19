@@ -7,8 +7,6 @@
 // Dependencies: math.h and algorithm
 /*=============================================================================*/
 
-
-#include <cmath>
 #include <algorithm>
 
 
@@ -19,19 +17,19 @@ namespace bae::Graphs::HeuristicFunctions
 	//Manhattan distance
 	static float Manhattan(float x, float y)
 	{
-		return float(x + y);
+		return static_cast<float>(x + y);
 	}
 
 	//Euclidean distance
 	static float Euclidean(float x, float y)
 	{
-		return float(std::sqrtf(x * x + y * y));
+		return static_cast<float>(std::sqrtf(x * x + y * y));
 	}
 
 	//Sqrt Euclidean distance
 	static float SqEuclidean(float x, float y)
 	{
-		return float(x * x + y * y);
+		return static_cast<float>(x * x + y * y);
 	}
 
 	//Octile distance
@@ -39,7 +37,7 @@ namespace bae::Graphs::HeuristicFunctions
 	{
 		//const float f = 0.414213562373095048801f; // == sqrt(2) - 1;
 		const float f = std::sqrtf(2) - 1; // std::sqrt is constexpr in C++26
-		return float((x < y) ? f * x + y : f * y + x);
+		return static_cast<float>((x < y) ? f * x + y : f * y + x);
 	}
 
 	//Chebyshev distance
@@ -47,6 +45,7 @@ namespace bae::Graphs::HeuristicFunctions
 	{
 		return std::max(x, y);
 	}
+
 #pragma warning(pop)
 
 

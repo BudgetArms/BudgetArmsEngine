@@ -4,6 +4,7 @@
 #include <optional>
 #include <vector>
 #include <array>
+
 #include "Singletons/Singleton.h"
 #include "Core/Event.h"
 
@@ -27,7 +28,7 @@ namespace bae
 	private:
 		friend class Singleton<EventQueue>;
 		EventQueue() = default;
-		~EventQueue() = default;
+		~EventQueue() override = default;
 
 		void ProcessEvent(Event& event);
 

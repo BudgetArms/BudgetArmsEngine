@@ -1,7 +1,5 @@
 ﻿#pragma once
-#include <cstdint>
 
-#include "Core/GameObject.h"
 #include "Core/EventTypes.h"
 
 
@@ -18,5 +16,4 @@ namespace bae
 
 	};
 }
-
 

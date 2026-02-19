@@ -10,7 +10,7 @@ namespace bae
 	{
 	public:
 		explicit TrashTheCacheComponent(GameObject& owner, bool isExercise2);
-		~TrashTheCacheComponent() = default;
+		~TrashTheCacheComponent() override = default;
 
 		TrashTheCacheComponent(const TrashTheCacheComponent& other) = delete;
 		TrashTheCacheComponent(TrashTheCacheComponent&& other) = delete;
@@ -18,7 +18,7 @@ namespace bae
 		TrashTheCacheComponent& operator=(TrashTheCacheComponent&& other) = delete;
 
 
-		virtual void RenderGUI() override;
+		void RenderGUI() override;
 
 
 	private:

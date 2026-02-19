@@ -13,7 +13,7 @@ namespace bae::Graphs
 	class AStar
 	{
 	public:
-		AStar(Graph* const pGraph, bae::Graphs::Heuristic hFunction);
+		AStar(Graph* pGraph, bae::Graphs::Heuristic hFunction);
 
 		// stores the optimal connection to a node and its total costs related to the start and end node of the path
 		struct NodeRecord final
@@ -37,11 +37,11 @@ namespace bae::Graphs
 			};
 		};
 
-		std::vector<GraphNode*> FindPath(GraphNode* const pStartNode, GraphNode* const pDestinationNode);
+		std::vector<GraphNode*> FindPath(GraphNode* const pStartNode, const GraphNode* const pDestinationNode) const;
 
 
 	private:
-		float GetHeuristicCost(GraphNode* const pStartNode, GraphNode* const pEndNode) const;
+		float GetHeuristicCost(const GraphNode* const pStartNode, const GraphNode* const pEndNode) const;
 
 
 		Graph* m_pGraph;

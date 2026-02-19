@@ -1,7 +1,5 @@
 ﻿#include "TextureComponent.h"
 
-#include <SDL.h>
-
 #include "Core/GameObject.h"
 #include "Managers/ResourceManager.h"
 #include "Core/Renderer.h"

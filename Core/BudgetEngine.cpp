@@ -1,5 +1,4 @@
 ﻿#if _DEBUG
-// ReSharper disable once CppUnusedIncludeDirective
 #if __has_include(<vld.h>)
 #include <vld.h>
 #endif
@@ -46,17 +45,13 @@
 #include "emscripten.h"
 #endif
 
-#include "Core/GameObject.h"
-#include "Components/Component.h"
-
 
 void LogSDLVersion(const std::string& message, const SDL_version& v);
 void PrintSDLVersion();
 
 SDL_Window* g_window{};
 
-//TODO: Change the params so that you don't need to change the engine
-// to change the name / size of the window
+
 bae::BudgetEngine::BudgetEngine(const bae::Utils::Window& window)
 {
 	PrintSDLVersion();
@@ -65,7 +60,7 @@ bae::BudgetEngine::BudgetEngine(const bae::Utils::Window& window)
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 
 
-	// Disabled VLD, becauseof MMDevApi.dll leaking (only on my system for some reason)
+	// Disabled VLD, because MMDevApi.dll leaking (only on my system for some reason)
 #if defined(_DEBUG) && __has_include(<vld.h>)
 	VLDDisable();
 #endif
@@ -129,7 +124,7 @@ void bae::BudgetEngine::RunOneFrame()
 {
 	// Get current time & calculate delta time
 	GameTime::GetInstance().Update();
-	m_AccumlatedTime += GameTime::GetInstance().GetDeltaTime();
+	m_AccumulatedTime += GameTime::GetInstance().GetDeltaTime();
 
 	m_Quit = !InputManager::GetInstance().ProcessInput();
 
@@ -138,14 +133,14 @@ void bae::BudgetEngine::RunOneFrame()
 #endif
 
 	// This FixedUpdate system exist for physics and networking
-	// eg. if a player runs into a wall, and the game lags for a second,
-	// only one updat would be done, resulting into him teleporting through the wall 
+	// e.g. if a player runs into a wall, and the game lags for a second,
+	// only one update would be done, resulting into him teleporting through the wall
 	// while here you just do many small updates, that will result in him not teleporting (as much).
 	// and for networking, with the syncing of player movement/position & desync, etc. 
-	while (m_AccumlatedTime >= GameTime::GetInstance().GetFixedTimeStep())
+	while (m_AccumulatedTime >= GameTime::GetInstance().GetFixedTimeStep())
 	{
 		SceneManager::GetInstance().FixedUpdate();
-		m_AccumlatedTime -= GameTime::GetInstance().GetFixedTimeStep();
+		m_AccumulatedTime -= GameTime::GetInstance().GetFixedTimeStep();
 	}
 
 	SceneManager::GetInstance().Update();
@@ -153,9 +148,7 @@ void bae::BudgetEngine::RunOneFrame()
 	Renderer::GetInstance().Render();
 	EventQueue::GetInstance().ProcessEvents();
 
-	//std::cout << "FPS: " << static_cast<int>(GameTime::GetInstance().GetFPS()) << '\n';
 	std::this_thread::sleep_for(std::chrono::duration<float>(GameTime::GetInstance().GetSleepTime()));
-
 }
 
 

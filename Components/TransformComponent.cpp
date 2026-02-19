@@ -2,6 +2,7 @@
 
 #include "Core/GameObject.h"
 
+
 using namespace bae;
 
 
@@ -90,7 +91,6 @@ void TransformComponent::SetLocalLocation(const glm::vec2& location)
 	SetLocationDirty();
 }
 
-//void TransformComponent::SetLocalRotation(const glm::vec2& rotation)
 void TransformComponent::SetLocalRotation(float rotation)
 {
 	m_LocalRotation = rotation;

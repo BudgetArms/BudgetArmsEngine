@@ -3,53 +3,55 @@
 
 #include <algorithm>
 
-#include "Components/Component.h"
 
 using namespace bae;
 
 
-Scene::Scene(const std::string& name) :
-	m_Name(name)
-{
-}
-
 Scene::~Scene()
 {
-	for (auto& object : m_Objects)
-		object->Destroy();
+    for (auto& object : m_Objects)
+        object->Destroy();
+}
+
+Scene::Scene(const std::string& name) :
+    m_Name(name)
+{
 };
 
 
 void Scene::Update()
 {
-	for (auto& object : m_Objects)
-		object->Update();
+	for (auto sObject : m_Objects)
+	    if (sObject)
+		    sObject->Update();
 
 }
 
 void Scene::FixedUpdate()
 {
-	for (auto& object : m_Objects)
-		object->FixedUpdate();
+    for (auto sObject : m_Objects)
+	    if (sObject)
+		    sObject->FixedUpdate();
 
 }
 
 void bae::Scene::LateUpdate()
 {
-	for (auto& object : m_Objects)
-		object->LateUpdate();
+     for (auto sObject : m_Objects)
+	    if (sObject)
+		    sObject->LateUpdate();
 
-	m_Objects.erase(
-		std::remove_if(m_Objects.begin(), m_Objects.end(),
-			[](const std::shared_ptr<bae::GameObject>& uObject)
-			{
-				return uObject->IsMarkedForDeletion();
-			}),
-		m_Objects.end());
+	std::erase_if(m_Objects,
+	    [](const std::shared_ptr<bae::GameObject>& uObject)
+	    {
+	        return uObject->IsMarkedForDeletion();
+	    });
 
-	for (auto& object : m_ObjectsPendingAdd)
-		m_Objects.emplace_back(std::move(object));
+    for (auto sObject : m_ObjectsPendingAdd)
+	    if (sObject)
+	        m_Objects.emplace_back(std::move(sObject));
 
+    // Clear for safety
 	if (!m_ObjectsPendingAdd.empty())
 		m_ObjectsPendingAdd.clear();
 
@@ -58,35 +60,37 @@ void bae::Scene::LateUpdate()
 
 void Scene::Render() const
 {
-	for (const auto& object : m_Objects)
-		object->Render();
+    for (auto sObject : m_Objects)
+	    if (sObject)
+	        sObject->Render();
 
 }
 
 void Scene::RenderGUI()
 {
-	for (const auto& object : m_Objects)
-		object->RenderGUI();
+    for (auto sObject : m_Objects)
+	    if (sObject)
+	        sObject->RenderGUI();
 
 }
 
 
-void Scene::Add(std::shared_ptr<GameObject> uObject)
+void Scene::Add(std::shared_ptr<GameObject> sObject)
 {
-	m_ObjectsPendingAdd.emplace_back(std::move(uObject));
+	m_ObjectsPendingAdd.emplace_back(std::move(sObject));
 }
 
 void Scene::RemoveAll()
 {
-	for (auto& uObject : m_Objects)
-		if (uObject)
-			uObject->Destroy();
+	for (auto& sObject : m_Objects)
+		if (sObject)
+			sObject->Destroy();
 }
 
 
-void Scene::Remove(std::shared_ptr<GameObject> uObject)
+void Scene::Remove(std::shared_ptr<GameObject> sObject)
 {
-	std::erase(m_Objects, uObject);
+	std::erase(m_Objects, sObject);
 }
 
 

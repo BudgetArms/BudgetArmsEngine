@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <functional>
-
 #include "Components/Component.h"
 
 
@@ -11,8 +9,10 @@ namespace bae
 	class ImguiComponent : public Component
 	{
 	public:
-		explicit ImguiComponent(GameObject& owner);
-		virtual ~ImguiComponent() = default;
+		explicit ImguiComponent(GameObject& owner) :
+	        Component(owner)
+	    {};
+        ~ImguiComponent() override = default;
 
 		ImguiComponent(const ImguiComponent& other) = delete;
 		ImguiComponent(ImguiComponent&& other) = delete;
@@ -20,10 +20,9 @@ namespace bae
 		ImguiComponent& operator=(ImguiComponent&& other) = delete;
 
 
-		virtual void RenderGUI() = 0;
+        void RenderGUI() override = 0;
 
 
 	};
 }
-
 

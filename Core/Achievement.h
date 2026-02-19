@@ -2,7 +2,6 @@
 
 #include <functional> 
 
-#include "Core/Observer.h"
 #include "Core/Subject.h"
 
 

@@ -359,6 +359,7 @@ if (WIN32)
 
 
 
+
 	find_package(VLD CONFIG)
 
 	set(XINPUT_LIB XInput)
@@ -379,6 +380,10 @@ if (WIN32)
 		${sdl2_gfx_SOURCE_DIR}
 	)
 
+    target_compile_definitions(${ENGINE_NAME} PRIVATE
+	    $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+	    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+    )
 
 	# include steamworks 
 	if(STEAMWORKS_AVAILABLE)

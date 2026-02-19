@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include <glm.hpp>
 #include <iostream>
 
@@ -12,7 +13,7 @@ namespace bae
 	{
 	public:
 		explicit TransformComponent(GameObject& owner);
-		virtual ~TransformComponent() = default;
+        ~TransformComponent() override = default;
 
 		TransformComponent(const TransformComponent& other) = delete;
 		TransformComponent(TransformComponent&& other) = delete;

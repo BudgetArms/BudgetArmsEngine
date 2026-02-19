@@ -7,11 +7,11 @@
 
 #include <SDL_mixer.h>
 
-#include "Core/ServiceLocator.h"
-#include "Wrappers/AudioChunk.h"
-#include "Sounds/SoundSystem.h"
-
 #include "Core/HelperFunctions.h"
+#include "Core/ServiceLocator.h"
+#include "Sounds/SoundSystem.h"
+#include "Wrappers/AudioChunk.h"
+
 
 
 using namespace bae;
@@ -20,7 +20,6 @@ using namespace bae;
 class SdlAudioClip::Impl
 {
 public:
-	Impl();
 	Impl(ActiveSoundID activeSoundId, SoundID soundId);
 	~Impl();
 
@@ -215,7 +214,6 @@ bool SdlAudioClip::Impl::Play()
 
 void SdlAudioClip::Impl::Stop()
 {
-
 	if (IsPlaying())
 	{
 		if (m_Channel == -1)

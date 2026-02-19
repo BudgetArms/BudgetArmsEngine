@@ -24,7 +24,7 @@ namespace bae
 		virtual void Render() const {};
 		virtual void RenderGUI() {};
 
-		virtual GameObject* GetOwner() { return m_Owner; };
+		[[nodiscard]] virtual GameObject* GetOwner() { return m_Owner; };
 
 
 	protected:
@@ -33,5 +33,4 @@ namespace bae
 
 	};
 }
-
 

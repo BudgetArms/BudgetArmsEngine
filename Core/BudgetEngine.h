@@ -1,7 +1,6 @@
 ﻿#pragma once
-#include <string>
+
 #include <functional>
-#include <filesystem>
 #include <chrono>
 
 #include "Core/Utils.h"
@@ -28,7 +27,7 @@ namespace bae
 		std::chrono::steady_clock::time_point m_LastTime;
 		const float m_FixedTimeStep{ 1.f / 60 };
 		const float m_MaxFrames{ 2000 };
-		float m_AccumlatedTime{ 0.f }; // m_Lag was too vague/confusing 
+		float m_AccumulatedTime{ 0.f };
 
 
 	private:

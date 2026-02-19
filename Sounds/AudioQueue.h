@@ -26,14 +26,14 @@ namespace bae
 	template<typename AudioClipType>
 	class AudioQueue : public IAudioQueue
 	{
-		static_assert(std::is_base_of<bae::AudioClip, AudioClipType>::value, "AudioClipType must derive from AudioClip");
+		static_assert(std::is_base_of_v<bae::AudioClip, AudioClipType>, "AudioClipType must derive from AudioClip");
 
 
 	public:
 		AudioQueue();
-		virtual ~AudioQueue();
+        ~AudioQueue() override;
 
-		virtual void SendSoundEvent(const SoundEventData& soundEvent) override;
+		void SendSoundEvent(const SoundEventData& soundEvent) override;
 		const AudioClip* GetAudioClip(ActiveSoundID activeSoundId) override;
 
 
@@ -49,7 +49,7 @@ namespace bae
 
 		std::thread m_AudioThread;
 
-		static const int m_SoundEventBufferSize{ 15 };
+		static constexpr int m_SoundEventBufferSize{ 15 };
 		const float m_ThreadSleepTimeMilliSec{ 100.f };
 		bool m_bAreAllSoundsMuted{ false };
 		bool m_bQuit{ false };
@@ -76,8 +76,8 @@ bae::AudioQueue<AudioClipType>::~AudioQueue()
 	if (m_AudioThread.joinable())
 		m_AudioThread.join();
 
-	for (auto& [id, sound] : m_ActiveAudio)
-		sound->Stop();
+	for (auto& [activeSoundId, uAudioClip] : m_ActiveAudio)
+		uAudioClip->Stop();
 
 	m_ActiveAudio.clear();
 }
@@ -288,10 +288,9 @@ void bae::AudioQueue<AudioClipType>::ProcessSoundEvent(const SoundEventData& eve
 template<typename AudioClipType>
 void bae::AudioQueue<AudioClipType>::CleanUpFinishedSounds()
 {
-
-	for (auto& activeAudio : m_ActiveAudio)
-		if (!activeAudio.second->IsPlaying())
-			std::cout << "AudioQueueLogger::CleanUp SoundID: " << activeAudio.first.ID << '\n';
+	for (const auto&[activeSoundID, uAudioClip] : m_ActiveAudio)
+		if (!uAudioClip->IsPlaying())
+			std::cout << "AudioQueueLogger::CleanUp SoundID: " << activeSoundID.ID << '\n';
 
 	std::erase_if(m_ActiveAudio,
 		[](auto& activeAudio)

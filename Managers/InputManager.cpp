@@ -1,8 +1,6 @@
 ﻿#include <SDL.h>
 #include "InputManager.h"
 
-#include <iostream>
-
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 
@@ -19,7 +17,6 @@ using namespace bae;
 
 
 InputManager::InputManager() :
-	m_Controllers{ },
 	m_Keyboard{ std::make_unique<Keyboard>() },
 	m_Mouse{ std::make_unique<Mouse>() }
 {
@@ -60,7 +57,7 @@ bool InputManager::ProcessInput()
 	return true;
 }
 
-void InputManager::ClearCommands()
+void InputManager::ClearCommands() const
 {
 	for (auto& controller : m_Controllers)
 		controller->ClearCommands();
@@ -79,7 +76,7 @@ void InputManager::AddController(int controllerIndex)
 	m_Controllers.emplace_back(std::make_unique<Controller>(controllerIndex));
 }
 
-Controller* InputManager::GetController(int index)
+Controller* InputManager::GetController(int index) const
 {
 	if (m_Controllers.empty())
 		return nullptr;

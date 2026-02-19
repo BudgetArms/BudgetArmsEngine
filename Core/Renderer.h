@@ -24,10 +24,10 @@ namespace bae
 		void RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const glm::vec2& position, float width, float height) const;
 		void RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const SDL_Rect& src, const SDL_Rect& dst, float angle = 0.f, const glm::vec2& scale = { 1.f, 1.f }) const;
 
-		SDL_Renderer* GetSDLRenderer() const { return m_Renderer; }
-		SDL_Window* GetSDLWindow() const { return m_Window; }
+		[[nodiscard]] SDL_Renderer* GetSDLRenderer() const { return m_Renderer; }
+		[[nodiscard]] SDL_Window* GetSDLWindow() const { return m_Window; }
 
-		const SDL_Color& GetBackgroundColor() const { return m_ClearColor; }
+		[[nodiscard]] const SDL_Color& GetBackgroundColor() const { return m_ClearColor; }
 		void SetBackgroundColor(const SDL_Color& color) { m_ClearColor = color; }
 
 

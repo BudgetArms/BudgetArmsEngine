@@ -14,7 +14,7 @@ namespace bae
 			EventQueue::GetInstance().AddListener(this);
 		}
 
-		~EventListener() = default;
+        virtual ~EventListener() = default;
 
 
 		virtual void HandleEvent(Event* event) = 0;

@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <atomic>
 #include <string>
 #include <vector>
 #include <mutex>
@@ -13,11 +12,11 @@ namespace bae
 	class RingBuffer
 	{
 	public:
-		RingBuffer(int capacity);
+        explicit RingBuffer(int capacity);
 
 		bool Push(const T& item);
 		bool Pop(T& item);
-		bool Resize(int size);
+		// bool Resize(int size);
 
 		bool IsEmpty() const;
 		bool IsFull() const;

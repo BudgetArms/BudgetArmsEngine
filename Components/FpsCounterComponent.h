@@ -11,15 +11,15 @@ namespace bae
 	{
 	public:
 		explicit FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font = nullptr, SDL_Color color = SDL_Color{ 0, 0, 0, 255 });
-		virtual ~FpsTextComponent() = default;
+        ~FpsTextComponent() override = default;
 
 		FpsTextComponent(const FpsTextComponent& other) = delete;
 		FpsTextComponent(FpsTextComponent&& other) = delete;
 		FpsTextComponent& operator=(const FpsTextComponent& other) = delete;
 		FpsTextComponent& operator=(FpsTextComponent&& other) = delete;
 
-		virtual void Update() override;
-		virtual void Render() const override;
+		void Update() override;
+		void Render() const override;
 
 
 	private:
@@ -30,5 +30,4 @@ namespace bae
 
 	};
 }
-
 

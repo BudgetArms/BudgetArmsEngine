@@ -1,9 +1,11 @@
 ﻿#pragma once
+
 #include <iostream>
 #include <string>
 #include <memory>
 #include <vector>
 #include <algorithm>
+
 #include <glm.hpp>
 
 
@@ -18,7 +20,7 @@ namespace bae
 	public:
 
 		explicit GameObject(const std::string& name);
-		virtual ~GameObject();
+		~GameObject();
 
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
@@ -26,11 +28,11 @@ namespace bae
 		GameObject& operator=(GameObject&& other) = delete;
 
 
-		virtual void Update();
-		virtual void FixedUpdate();
-		virtual void LateUpdate();
-		virtual void Render() const;
-		virtual void RenderGUI();
+		void Update();
+		void FixedUpdate();
+		void LateUpdate();
+		void Render() const;
+		void RenderGUI();
 
 
 		// Mark for destruction
@@ -75,7 +77,10 @@ namespace bae
 		constexpr void SetScaleDirty();
 
 
-		std::vector<std::unique_ptr<bae::Component>>& GetComponents();
+		std::vector<std::unique_ptr<bae::Component>>& GetComponents()
+		{
+		    return m_Components;
+		}
 
 
 		template<typename ComponentType, typename... Args, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
@@ -160,7 +165,7 @@ namespace bae
 
 
 	protected:
-		void SetName(std::string newName);
+		void SetName(const std::string& newName);
 
 		TransformComponent* m_Transform{ };
 

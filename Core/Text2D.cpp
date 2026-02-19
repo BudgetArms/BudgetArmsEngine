@@ -2,8 +2,8 @@
 
 #include <SDL_ttf.h>
 
-#include "Managers/ResourceManager.h"
 #include "Core/Renderer.h"
+#include "Managers/ResourceManager.h"
 
 
 using namespace bae;
@@ -11,11 +11,8 @@ using namespace bae;
 
 Text2D::Text2D(const std::string& text, std::shared_ptr<Font> font, const SDL_Color& color) :
 	m_bIsCenteredAtPosition{ false },
-	m_Position{},
 	m_Rotation{},
 	m_Scale{ 1.f, 1.f },
-	m_uFont{},
-	m_uTextTexture{},
 	m_bNeedsUpdate{ true },
 	m_Text{ text },
 	m_Color{ color }
@@ -89,7 +86,7 @@ void Text2D::SetColor(const SDL_Color& color)
 
 void Text2D::SetFont(std::shared_ptr<Font> font)
 {
-	m_uFont = font;
+	m_uFont = std::move(font);
 	m_bNeedsUpdate = true;
 }
 

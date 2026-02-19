@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include <vector>
 #include <string>
 #include <memory>
@@ -37,9 +38,9 @@ namespace bae
 
 
 	private:
-		friend Scene& SceneManager::CreateScene(const std::string& name);
-
 		explicit Scene(const std::string& name);
+
+		friend Scene& SceneManager::CreateScene(const std::string& name);
 		void Remove(std::shared_ptr<GameObject> object);
 
 
@@ -50,5 +51,4 @@ namespace bae
 
 	};
 }
-
 

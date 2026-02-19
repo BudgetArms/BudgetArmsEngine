@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "Sounds/NullSoundSystem.h"
 #include "Core/HelperFunctions.h"
+#include "Sounds/NullSoundSystem.h"
 
 
 using namespace bae;

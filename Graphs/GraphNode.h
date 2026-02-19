@@ -11,7 +11,7 @@ namespace bae::Graphs
 	class GraphNode
 	{
 	public:
-		GraphNode(const glm::vec2& pos = {}) :
+        explicit GraphNode(const glm::vec2& pos) :
 			m_Position{ pos },
 			m_Id{ InvalidNodeID }
 		{
@@ -29,7 +29,7 @@ namespace bae::Graphs
 		glm::vec2 GetPosition() const { return m_Position; }
 		void SetPosition(const glm::vec2& pos) { m_Position = pos; }
 
-		int m_RenderRadius{ 10 };
+		const int m_RenderRadius{ 10 };
 		bae::Utils::Color m_RenderColor{ bae::Utils::Color::Gray, 0.5f };
 
 

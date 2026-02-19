@@ -1,7 +1,6 @@
 ﻿#include "TrashTheCacheComponent.h"
 
 #include <chrono>
-#include <ranges>
 #include <vector>
 #include <imgui.h>
 #include <imgui_plot.h>
@@ -52,7 +51,7 @@ void TrashTheCacheComponent::RenderGUI()
 {
 	if (m_bIsExercise2)
 	{
-		ImGui::Begin("Exercize 1");
+		ImGui::Begin("Exercise 1");
 		ImGui::InputInt("samples", &m_NrSamples, 10);
 
 		if (ImGui::Button("Trash the cache"))
@@ -83,7 +82,7 @@ void TrashTheCacheComponent::RenderGUI()
 	}
 	else
 	{
-		ImGui::Begin("Exercize 3");
+		ImGui::Begin("Exercise 3");
 		ImGui::InputInt("samples", &m_NrSamples, 100);
 
 		if (ImGui::Button("Trash the cache with GameObject3D"))
@@ -136,7 +135,7 @@ void TrashTheCacheComponent::RenderGUI()
 
 		if (!m_TimingsExercise2.empty() && !m_TimingsExercise2Alt.empty())
 		{
-			ImGui::Text("Combinded:");
+			ImGui::Text("Combined:");
 			const float max2{ static_cast<float>(*std::ranges::max_element(m_TimingsExercise2)) };
 			const float max2Alt{ static_cast<float>(*std::ranges::max_element(m_TimingsExercise2Alt)) };
 			const float max{ std::max(max2, max2Alt) };

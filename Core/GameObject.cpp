@@ -4,14 +4,12 @@
 #include <string>
 #include <iostream>
 
-#include "Wrappers/Texture2D.h"
-#include "Managers/ResourceManager.h"
 #include "Core/Renderer.h"
-
 
 #include "Components/TransformComponent.h"
 #include "Components/Component.h"
 
+#include "Wrappers/Texture2D.h"
 
 
 // BudgetArmsEngine
@@ -47,58 +45,63 @@ GameObject::~GameObject()
 
 void GameObject::Update()
 {
-	// Every game object should be in the scene, so no need update the children
-	// from gameobject, you learn every day; apply that knowledge
-	//for (auto& child : m_Children)
-		//child->Update();
+	for (const auto pChild : m_Children)
+	    if (pChild)
+		    pChild->Update();
 
-	for (auto& component : m_Components)
-		component->Update();
-
+	for (const auto& component : m_Components)
+	    if (component)
+		    component->Update();
 
 }
 
 void GameObject::FixedUpdate()
 {
 	// The Physics/Networking gets done, by the Components and/or the future GameObjects
-	for (auto& child : m_Children)
-		child->FixedUpdate();
+	for (const auto pChild : m_Children)
+	    if (pChild)
+		    pChild->FixedUpdate();
 
-	for (auto& component : m_Components)
-		component->FixedUpdate();
+	for (const auto& component : m_Components)
+	    if (component)
+		    component->FixedUpdate();
 
 }
 
 void GameObject::LateUpdate()
 {
-	for (auto& component : m_Components)
-		component->LateUpdate();
+	for (const auto& component : m_Components)
+	    if (component)
+		    component->LateUpdate();
 }
 
 void GameObject::Render() const
 {
-	for (auto& component : m_Components)
-		component->Render();
+	for (const auto& component : m_Components)
+	    if (component)
+		    component->Render();
 }
 
 void GameObject::RenderGUI()
 {
-	for (auto& component : m_Components)
-		component->RenderGUI();
+	for (const auto& component : m_Components)
+	    if (component)
+		    component->RenderGUI();
 }
 
 void GameObject::Destroy()
 {
 	m_MarkedForDeletion = true;
 
-	for (auto& child : m_Children)
-		child->Destroy();
+	for (const auto pChild : m_Children)
+	    if (pChild)
+		    pChild->Destroy();
 
 }
 
 
 // this is for serialization, just as for all inputs
-void GameObject::SetName(std::string newName)
+void GameObject::SetName(const std::string& newName)
 {
 	m_Name = newName;
 }
@@ -124,8 +127,8 @@ void GameObject::SetParent(GameObject* newParent, bool keepLocation = true)
 	}
 	else
 	{
-		// if keeplocation, localpos with adjust to newParent's worldlocation
-		// else, localPos (eg {100, 0, 0}, will also be {100, 0, 0} compared to newTarget 
+		// if keep location, local position with adjust to newParent's world location
+		// else, localPos, e.g. {100, 0, 0}, will also be {100, 0, 0} compared to newTarget
 		// We could also have an option to reset LocalPos always to {0, 0, 0}, but why?
 		if (keepLocation)
 			SetLocalLocation(GetWorldLocation() - newParent->GetWorldLocation());
@@ -139,7 +142,7 @@ void GameObject::SetParent(GameObject* newParent, bool keepLocation = true)
 
 	m_Parent = newParent;
 
-	if (m_Parent != nullptr)
+	if (m_Parent)
 		m_Parent->AttachChild(this);
 
 }
@@ -216,13 +219,13 @@ bool GameObject::IsChild(const GameObject* child) const
 void GameObject::ForceDestroy()
 {
 	// Go DFS (Deep First Search)
-	for (auto& child : m_Children)
-		child->ForceDestroy();
+	for (const auto pChild : m_Children)
+	    if (pChild)
+		    pChild->ForceDestroy();
 
-	for (auto& child : m_Children)
-		if (child)
+	for (const auto pChild : m_Children)
+		if (pChild)
 			std::cout << "child should be dead?\n";
-
 
 	m_Children.clear();
 	m_MarkedForDeletion = true;

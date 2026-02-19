@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include <string>
 #include <memory>
 
@@ -16,7 +17,7 @@ namespace bae
 	{
 	public:
 		TextComponent(GameObject& owner, const std::string& text, std::shared_ptr<Font> font = nullptr, SDL_Color color = SDL_Color{ 255, 255, 255, 255 });
-		virtual ~TextComponent() = default;
+        ~TextComponent() override = default;
 
 		TextComponent(const TextComponent& other) = delete;
 		TextComponent(TextComponent&& other) = delete;
@@ -24,8 +25,8 @@ namespace bae
 		TextComponent& operator=(TextComponent&& other) = delete;
 
 
-		virtual void Update() override;
-		virtual void Render() const override;
+		void Update() override;
+		void Render() const override;
 
 		std::string GetText();
 		void SetText(const std::string& text);

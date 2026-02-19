@@ -1,5 +1,4 @@
 ﻿#include "FpsCounterComponent.h"
-#include <iostream>
 
 #include "Wrappers/Font.h"
 #include "Components/TextComponent.h"
@@ -11,7 +10,7 @@
 using namespace bae;
 
 FpsTextComponent::FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font, SDL_Color color) :
-	TextComponent(owner, "FPS: xxx", font)
+	TextComponent(owner, "FPS: xxx", std::move(font))
 {
 	SetColor(color);
 }
@@ -37,14 +36,14 @@ void FpsTextComponent::Render() const
 	const float& rotation = m_Owner->GetWorldRotation();
 	const glm::vec2& scale = m_Owner->GetWorldScale();
 
-	const int width{ 75 };
-	const int height{ 20 };
+	constexpr int width{ 75 };
+	constexpr int height{ 20 };
 
 	const int newWidthHalf = static_cast<int>(width * std::abs(scale.x) / 2.f);
 	const int newHeightHalf = static_cast<int>(height * std::abs(scale.y) / 2.f);
 
-	const int centerX = static_cast<int>(pos.x + newWidthHalf);
-	const int centerY = static_cast<int>(pos.y + newHeightHalf);
+	const int centerX = static_cast<int>(pos.x) + newWidthHalf;
+	const int centerY = static_cast<int>(pos.y) + newHeightHalf;
 
 
 	float finalAngle = rotation;
@@ -54,9 +53,9 @@ void FpsTextComponent::Render() const
 		finalAngle = -finalAngle;
 
 
-	float angleRad = finalAngle * static_cast<float>(M_PI) / 180.f;
-	float cosA = cosf(angleRad);
-	float sinA = sinf(angleRad);
+	const float angleRad = finalAngle * static_cast<float>(M_PI) / 180.f;
+	const float cosA = cosf(angleRad);
+	const float sinA = sinf(angleRad);
 
 	std::vector<glm::vec2> points =
 	{

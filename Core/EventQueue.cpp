@@ -3,6 +3,7 @@
 #include <iostream>
 #include <ranges>
 #include <algorithm>
+
 #include "Core/EventListener.h"
 
 
@@ -63,10 +64,9 @@ void EventQueue::ProcessEvents()
 
 void EventQueue::ProcessEvent(Event& event)
 {
-	for (auto listener : m_Listeners)
+	for (EventListener* listener : m_Listeners)
 		if (listener)
 			listener->HandleEvent(&event);
 
 }
-
 

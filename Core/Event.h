@@ -5,7 +5,7 @@
 // can't be struct bc then string should be const 
 // then copy/move assignment is not possible.
 // ---
-// or use smartpointers for this, but that seems like a waste of memory/performance hit
+// or use smart-pointers for this, but that seems like a waste of memory/performance hit
 namespace bae
 {
 	class Event

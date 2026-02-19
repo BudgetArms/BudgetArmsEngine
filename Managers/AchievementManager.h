@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <iostream>
 #include <memory>
 
 #include "Core/Achievement.h"
@@ -15,7 +14,7 @@ namespace bae
 	class AchievementManager final : public Singleton<AchievementManager>, public Observer
 	{
 	public:
-		~AchievementManager() = default;
+		~AchievementManager() override = default;
 
 		AchievementManager(const AchievementManager& other) = delete;
 		AchievementManager(AchievementManager&& other) = delete;
@@ -30,10 +29,10 @@ namespace bae
 
 		virtual void Notify(EventType event, Subject* subject) override
 		{
-			for (auto& achievement : m_Achievements)
-				achievement->TryUnlock(event, subject);
+			for (const auto& achievement : m_Achievements)
+			    if (achievement)
+				    achievement->TryUnlock(event, subject);
 
-			return;
 		}
 
 

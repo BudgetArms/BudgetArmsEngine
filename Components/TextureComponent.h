@@ -12,7 +12,7 @@ namespace bae
 		explicit TextureComponent(GameObject& owner, const std::string& filename);
 
 
-		virtual void Render() const override;
+		void Render() const override;
 
 		void SetTexture(const std::string& filename);
 

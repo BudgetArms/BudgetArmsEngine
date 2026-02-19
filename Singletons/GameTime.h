@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <iostream>
+
 #include <chrono>
 
 #include "Singleton.h"
@@ -25,7 +25,7 @@ namespace bae
 		};
 
 		float GetDeltaTime() const { return m_DeltaTime; };
-		float GetFixedTimeStep() const { return m_FixedTimeStep; };
+        static float GetFixedTimeStep() { return m_FixedTimeStep; };
 
 		float GetFPS() const { return 1 / m_DeltaTime; };
 		float GetSleepTime() const
@@ -40,7 +40,7 @@ namespace bae
 	private:
 		friend class Singleton<GameTime>;
 		GameTime() = default;
-		~GameTime() = default;
+		~GameTime() override = default;
 
 		static constexpr int m_MaxFPS{ 240 }; //360
 		static constexpr float m_FixedTimeStep{ 1 / 60.f };

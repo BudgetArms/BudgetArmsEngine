@@ -13,26 +13,26 @@ namespace bae
 		{
 		};
 
-		virtual bool Play() override { return true; };
-		virtual void Stop() override {};
+		bool Play() override { return true; };
+		void Stop() override {};
 
-		virtual void Resume() override {};
-		virtual void Pause() override {};
+		void Resume() override {};
+		void Pause() override {};
 
-		virtual void Mute() override {};
-		virtual void UnMute() override {};
+		void Mute() override {};
+		void UnMute() override {};
 
-		virtual bool IsPlaying() const override { return false; };
+		bool IsPlaying() const override { return false; };
 
-		virtual bool IsPaused() const override { return false; };
-		virtual bool IsMuted() const override { return false; };
+	    bool IsPaused() const override { return false; };
+		bool IsMuted() const override { return false; };
 
-		virtual float GetVolume() const override { return 0.f; };
-		virtual void SetVolume(float) override {};
+		float GetVolume() const override { return 0.f; };
+		void SetVolume(float) override {};
 
-		virtual SoundID GetSoundId() override { return SoundID(-1); };
-		virtual ActiveSoundID GetActiveSoundId() override { return ActiveSoundID(-1); };
-		virtual int GetChannel() override { return -1; };
+		SoundID GetSoundId() override { return SoundID(-1); };
+		ActiveSoundID GetActiveSoundId() override { return ActiveSoundID(-1); };
+		int GetChannel() override { return -1; };
 
 
 	};

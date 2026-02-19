@@ -8,7 +8,7 @@ namespace bae::Graphs
 	class GraphConnection
 	{
 	public:
-		GraphConnection(int fromId = InvalidNodeID, int toIndex = InvalidNodeID, float cost = 1.f) :
+        explicit GraphConnection(int fromId = InvalidNodeID, int toIndex = InvalidNodeID, float cost = 1.f) :
 			m_FromId{ fromId },
 			m_ToId{ toIndex },
 			m_Cost{ cost }
@@ -26,7 +26,10 @@ namespace bae::Graphs
 		float GetCost() const { return m_Cost; }
 		void SetCost(float newCost) { m_Cost = newCost; }
 
-		bool IsValid() const { return (m_FromId != InvalidNodeID && m_ToId != InvalidNodeID); }
+		bool IsValid() const
+		{
+		    return (m_FromId != InvalidNodeID && m_ToId != InvalidNodeID);
+		}
 
 
 		bool operator==(const GraphConnection& rhs) const = default;

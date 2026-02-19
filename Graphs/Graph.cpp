@@ -1,7 +1,9 @@
 ﻿#include "Graph.h"
 
 #include <algorithm>
+#include <iostream>
 
+#include "Core/HelperFunctions.h"
 #include "Graphs/GraphNode.h"
 #include "Graphs/GraphConnection.h"
 
@@ -75,7 +77,8 @@ void Graph::Clear()
 
 std::shared_ptr<Graph> Graph::Clone() const
 {
-	return std::shared_ptr<Graph>(new Graph(*this));
+	return std::make_shared<Graph>(*this);
+	// return std::shared_ptr<Graph>(new Graph(*this));
 }
 
 
@@ -115,18 +118,18 @@ void Graph::RemoveNode(int index)
 
 	if (!m_bIsDirectional)
 	{
-		//visit each neighbour and erase any connections leading to this pNode
+		//visit each neighbor and erase any connections leading to this pNode
 		for (auto currentConnectionIt = m_uConnections[index].begin(); currentConnectionIt != m_uConnections[index].end();
 			++currentConnectionIt)
 		{
-			for (auto currentEdgeOnToNode = m_uConnections[(*currentConnectionIt)->GetToNodeId()].begin();
-				currentEdgeOnToNode != m_uConnections[(*currentConnectionIt)->GetToNodeId()].end();
-				++currentEdgeOnToNode)
+			for (auto currentEdgeOnToNodeIt = m_uConnections[(*currentConnectionIt)->GetToNodeId()].begin();
+				currentEdgeOnToNodeIt != m_uConnections[(*currentConnectionIt)->GetToNodeId()].end();
+				++currentEdgeOnToNodeIt)
 			{
-				if ((*currentEdgeOnToNode)->GetToNodeId() == index)
+				if ((*currentEdgeOnToNodeIt)->GetToNodeId() == index)
 				{
-					std::unique_ptr<GraphConnection>& conPtr = *currentEdgeOnToNode;
-					currentEdgeOnToNode = m_uConnections[(*currentConnectionIt)->GetToNodeId()].erase(currentEdgeOnToNode);
+					std::unique_ptr<GraphConnection>& conPtr = *currentEdgeOnToNodeIt;
+					currentEdgeOnToNodeIt = m_uConnections[(*currentConnectionIt)->GetToNodeId()].erase(currentEdgeOnToNodeIt);
 					--m_AmountConnections;
 					conPtr.reset();
 
@@ -183,8 +186,8 @@ int Graph::GetNodeIdAtPosition(const glm::vec2& pos, float errorMargin) const
 GraphNode* const Graph::GetNodeAtPosition(const glm::vec2& position, float errorMargin) const
 {
 	const float nodeRadius = std::abs(m_DefaultNodeRadius * errorMargin);
-	auto foundIt = std::ranges::find_if(m_pActiveNodes,
-		[position, nodeRadius, this](GraphNode* pNode)
+	const auto foundIt = std::ranges::find_if(m_pActiveNodes,
+		[position, nodeRadius](const GraphNode* pNode)
 		{
 			return pNode->GetId() != InvalidNodeID && (pNode->GetPosition() - position).length() < nodeRadius;
 		});
@@ -368,6 +371,12 @@ void Graph::UpdateActiveNodes()
 #pragma region Protected
 
 
+void Graph::OnGraphModified(bool nrOfNodesChanged, bool nrOfConnectionsChanged)
+{
+    nrOfConnectionsChanged;
+    nrOfNodesChanged;
+}
+
 void Graph::AddNodeAtIndex(std::unique_ptr<GraphNode> uNode)
 {
 	uNode->SetId(m_NextNodeId);
@@ -388,7 +397,14 @@ void Graph::AddNodeAtIndex(std::unique_ptr<GraphNode> uNode)
 std::unique_ptr<GraphNode> Graph::CreateNode(const glm::vec2& pos)
 {
 	if (m_sNodeFactory)
-		m_sNodeFactory->CreateNode(pos);
+	{
+		const GraphNode* pNode = m_sNodeFactory->CreateNode(pos);
+        if (!pNode)
+        {
+            std::cout << GetFunctionName() << " Node failed to create" << '\n';
+        }
+
+	}
 
 	return std::make_unique<GraphNode>(pos);
 }
@@ -397,7 +413,14 @@ std::unique_ptr<GraphNode> Graph::CreateNode(const glm::vec2& pos)
 std::unique_ptr<GraphNode> Graph::CloneNode(const GraphNode& other)
 {
 	if (m_sNodeFactory)
-		m_sNodeFactory->CloneNode(other);
+	{
+    	const GraphNode* pNode = m_sNodeFactory->CloneNode(other);
+        if (!pNode)
+        {
+            std::cout << GetFunctionName() << " Node failed to clone" << '\n';
+        }
+	}
+
 
 	return std::make_unique<GraphNode>(other);
 }

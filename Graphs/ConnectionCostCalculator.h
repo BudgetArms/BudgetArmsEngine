@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include "Graphs/Graph.h"
-#include "Graphs/GraphConnection.h"
 #include "Graphs/GraphNode.h"
 
 
@@ -19,5 +17,4 @@ namespace bae::Graphs
 
 	};
 }
-
 

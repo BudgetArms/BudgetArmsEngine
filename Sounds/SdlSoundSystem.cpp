@@ -69,9 +69,9 @@ public:
 
 
 private:
-	static const int m_NrChannels{ 12 };
+	static constexpr int m_NrChannels{ 12 };
 
-	std::unordered_map<std::string, SoundID> m_LoadedSoudIDs;
+	std::unordered_map<std::string, SoundID> m_LoadedSoundIDs;
 	std::unordered_map<SoundID, std::unique_ptr<AudioChunk>> m_LoadedAudio;
 
 
@@ -215,12 +215,12 @@ SdlSoundSystem::Impl::Impl()
 	}
 
 
-	// Disabled VLD, becauseof MMDevApi.dll leaking (only on my system for some reason)
+	// Disabled VLD, because MMDevApi.dll leaking (only on my system for some reason)
 #if defined(_DEBUG) && __has_include(<vld.h>)
 	VLDDisable();
 #endif
 
-	int openAudioResult = Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+	const int openAudioResult = Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 
 #if defined(_DEBUG) && __has_include(<vld.h>)
 	VLDEnable();
@@ -262,14 +262,14 @@ SoundID SdlSoundSystem::Impl::LoadSound(const std::string& path)
 	}
 
 	// if already loaded
-	if (auto it = m_LoadedSoudIDs.find(path); it != m_LoadedSoudIDs.end())
+	if (const auto it = m_LoadedSoundIDs.find(path); it != m_LoadedSoundIDs.end())
 		return it->second;
 
 	// Set before inserting so the soundId starts from 0, and not from 1
 	SoundID soundId{ .ID = static_cast<int>(m_LoadedAudio.size()) };
 
 	// load audio chunk
-	m_LoadedSoudIDs.insert(std::pair(path, soundId));
+	m_LoadedSoundIDs.insert(std::pair(path, soundId));
 	m_LoadedAudio.insert(std::pair(soundId, std::make_unique<AudioChunk>(path)));
 
 	return soundId;
@@ -290,7 +290,7 @@ ActiveSoundID SdlSoundSystem::Impl::Play(SoundID soundId, float volume)
 		return ActiveSoundID(-1);
 
 	// this also gives an error if not in the correct initialization order :D
-	SoundEventData data
+	const SoundEventData data
 	{
 		.Type = SoundEventType::Play,
 		.SoundID = soundId,
@@ -312,7 +312,7 @@ void SdlSoundSystem::Impl::Stop(ActiveSoundID activeSoundId)
 	}
 
 
-	SoundEventData data
+	const SoundEventData data
 	{
 		.Type = SoundEventType::Stop,
 		.ActiveSoundID = activeSoundId,
@@ -331,7 +331,7 @@ void SdlSoundSystem::Impl::Resume(ActiveSoundID activeSoundId)
 	}
 
 
-	SoundEventData data
+	const SoundEventData data
 	{
 		.Type = SoundEventType::Resume,
 		.ActiveSoundID = activeSoundId,
@@ -349,7 +349,7 @@ void SdlSoundSystem::Impl::Pause(ActiveSoundID activeSoundId)
 	}
 
 
-	SoundEventData data
+	const SoundEventData data
 	{
 		.Type = SoundEventType::Pause,
 		.ActiveSoundID = activeSoundId,
@@ -368,7 +368,7 @@ void SdlSoundSystem::Impl::Mute(ActiveSoundID activeSoundId)
 	}
 
 
-	SoundEventData data
+	const SoundEventData data
 	{
 		.Type = SoundEventType::Mute,
 		.ActiveSoundID = activeSoundId,
@@ -386,7 +386,7 @@ void SdlSoundSystem::Impl::UnMute(ActiveSoundID activeSoundId)
 	}
 
 
-	SoundEventData data
+	const SoundEventData data
 	{
 		.Type = SoundEventType::UnMute,
 		.ActiveSoundID = activeSoundId,
@@ -398,7 +398,7 @@ void SdlSoundSystem::Impl::UnMute(ActiveSoundID activeSoundId)
 
 bool SdlSoundSystem::Impl::IsLoaded(SoundID soundId)
 {
-	if (m_LoadedAudio.find(soundId) == m_LoadedAudio.end())
+	if (!m_LoadedAudio.contains(soundId))
 		return false;
 
 	return true;
@@ -406,16 +406,16 @@ bool SdlSoundSystem::Impl::IsLoaded(SoundID soundId)
 
 bool SdlSoundSystem::Impl::IsPlaying(ActiveSoundID activeSoundId)
 {
-	// this is special bc we are sending request and you can't immediately get a response back
+	// this is special bc we are sending request, and you can't immediately get a response back
 	// OR
-	// we don't use the audioqueue's thread and get the m_ActiveSound's or something like that, ...
+	// we don't use the audio queue's thread and get the m_ActiveSound's or something like that, ...
 	if (m_LoadedAudio.empty())
 	{
 		std::cout << "Trying To " << GetFunctionName() << " but no sound is loaded" << '\n';
 		return false;
 	}
 
-	auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
+	const auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
 	if (!pAudioClip)
 		return false;
 
@@ -480,8 +480,7 @@ void SdlSoundSystem::Impl::SetVolume(ActiveSoundID activeSoundId, float volume)
 		return;
 	}
 
-
-	SoundEventData data
+	const SoundEventData data
 	{
 		.Type = SoundEventType::SetVolume,
 		.ActiveSoundID = activeSoundId,
@@ -500,8 +499,7 @@ void SdlSoundSystem::Impl::ResumeAllSounds()
 		return;
 	}
 
-
-	SoundEventData data
+    constexpr SoundEventData data
 	{
 		.Type = SoundEventType::ResumeAll,
 	};
@@ -518,7 +516,7 @@ void SdlSoundSystem::Impl::PauseAllSounds()
 	}
 
 
-	SoundEventData data
+	constexpr SoundEventData data
 	{
 		.Type = SoundEventType::PauseAll,
 	};
@@ -535,7 +533,7 @@ void SdlSoundSystem::Impl::StopAllSounds()
 	}
 
 
-	SoundEventData data
+	constexpr SoundEventData data
 	{
 		.Type = SoundEventType::StopAll,
 	};
@@ -552,7 +550,7 @@ void SdlSoundSystem::Impl::MuteAllSounds()
 	}
 
 
-	SoundEventData data
+	constexpr SoundEventData data
 	{
 		.Type = SoundEventType::MuteAll,
 	};
@@ -569,7 +567,7 @@ void SdlSoundSystem::Impl::UnMuteAllSounds()
 	}
 
 
-	SoundEventData data
+	constexpr SoundEventData data
 	{
 		.Type = SoundEventType::UnMuteAll,
 	};
@@ -586,7 +584,7 @@ void SdlSoundSystem::Impl::SetVolumeAllSounds(float volume)
 	}
 
 
-	SoundEventData data
+	const SoundEventData data
 	{
 		.Type = SoundEventType::SetVolumeAll,
 		.Volume = volume
@@ -597,7 +595,7 @@ void SdlSoundSystem::Impl::SetVolumeAllSounds(float volume)
 
 AudioChunk* SdlSoundSystem::Impl::GetChunk(SoundID soundId)
 {
-	auto it = m_LoadedAudio.find(soundId);
+	const auto it = m_LoadedAudio.find(soundId);
 	if (it == m_LoadedAudio.end())
 	{
 		std::cout << "Trying To " << GetFunctionName() << " but there are no sounds to UnMute" << '\n';
@@ -609,5 +607,4 @@ AudioChunk* SdlSoundSystem::Impl::GetChunk(SoundID soundId)
 
 
 #pragma endregion
-
 

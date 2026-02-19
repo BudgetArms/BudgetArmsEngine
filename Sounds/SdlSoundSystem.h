@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include <memory>
-#include <iostream>
+
 #include "Sounds/SoundSystem.h"
 
 
@@ -11,42 +11,42 @@ namespace bae
 	{
 	public:
 		SdlSoundSystem();
-		virtual ~SdlSoundSystem();
+        ~SdlSoundSystem() override;
 
-		virtual SoundID LoadSound(const std::string& path) override;
+		SoundID LoadSound(const std::string& path) override;
 
-		virtual ActiveSoundID Play(SoundID soundId, float volume) override;
-		virtual void Stop(ActiveSoundID activeSoundId) override;
+		ActiveSoundID Play(SoundID soundId, float volume) override;
+		void Stop(ActiveSoundID activeSoundId) override;
 
-		virtual void Resume(ActiveSoundID activeSoundId) override;
-		virtual void Pause(ActiveSoundID activeSoundId) override;
+		void Resume(ActiveSoundID activeSoundId) override;
+		void Pause(ActiveSoundID activeSoundId) override;
 
-		virtual void Mute(ActiveSoundID activeSoundId) override;
-		virtual void UnMute(ActiveSoundID activeSoundId) override;
+		void Mute(ActiveSoundID activeSoundId) override;
+		void UnMute(ActiveSoundID activeSoundId) override;
 
-		virtual bool IsLoaded(SoundID soundId) override;
-		virtual bool IsPlaying(ActiveSoundID activeSoundId) override;
+		bool IsLoaded(SoundID soundId) override;
+		bool IsPlaying(ActiveSoundID activeSoundId) override;
 
-		virtual bool IsPaused(ActiveSoundID activeSoundId) override;
-		virtual bool IsMuted(ActiveSoundID activeSoundId) override;
+		bool IsPaused(ActiveSoundID activeSoundId) override;
+		bool IsMuted(ActiveSoundID activeSoundId) override;
 
-		virtual float GetVolume(ActiveSoundID activeSoundId) override;
-		virtual void SetVolume(ActiveSoundID activeSoundId, float volume) override;
+		float GetVolume(ActiveSoundID activeSoundId) override;
+		void SetVolume(ActiveSoundID activeSoundId, float volume) override;
 
 
-		virtual void ResumeAllSounds() override;
-		virtual void PauseAllSounds() override;
-		virtual void StopAllSounds() override;
-		virtual void MuteAllSounds() override;
-		virtual void UnMuteAllSounds() override;
+		void ResumeAllSounds() override;
+		void PauseAllSounds() override;
+		void StopAllSounds() override;
+		void MuteAllSounds() override;
+		void UnMuteAllSounds() override;
 
-		virtual void SetVolumeAllSounds(float volume) override;
+		void SetVolumeAllSounds(float volume) override;
 
-		virtual AudioChunk* GetAudioChunk(SoundID soundId) override;
+		AudioChunk* GetAudioChunk(SoundID soundId) override;
 
 
 	private:
-		// Pimple implmentation
+		// Pimple implementation
 		class Impl;
 		std::unique_ptr<Impl> m_Pimpl{ std::make_unique<Impl>() };
 

@@ -18,7 +18,7 @@ namespace bae
 	class SteamManager final : public Singleton<SteamManager>
 	{
 	public:
-		~SteamManager() = default;
+		~SteamManager() override = default;
 
 		SteamManager(const SteamManager& other) = delete;
 		SteamManager(SteamManager&& other) = delete;

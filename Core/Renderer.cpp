@@ -101,14 +101,14 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPos
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	if (scale.x < 0.0f && scale.y < 0.0f)
-		flip = (SDL_RendererFlip)(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
+		flip = static_cast<SDL_RendererFlip>(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
 	else if (scale.y < 0.0f)
 		flip = SDL_FLIP_HORIZONTAL;
 	else if (scale.y < 0.0f)
 		flip = SDL_FLIP_VERTICAL;
 
 
-	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, NULL, flip);
+	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, nullptr, flip);
 
 
 	if (m_bRenderPosition)
@@ -147,7 +147,6 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPos
 
 void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const SDL_Rect& src, const SDL_Rect& dst, float angle, const glm::vec2& scale) const
 {
-	isCenteredAtPosition;
 	SDL_Rect dstScaled = dst;
 	dstScaled.w = static_cast<int>(std::abs(scale.x) * dstScaled.w);
 	dstScaled.h = static_cast<int>(std::abs(scale.y) * dstScaled.h);
@@ -162,13 +161,13 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPos
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 
 	if (scale.x < 0.0f && scale.y < 0.0f)
-		flip = (SDL_RendererFlip)(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
+		flip = static_cast<SDL_RendererFlip>(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
 	else if (scale.x < 0.0f)
 		flip = SDL_FLIP_HORIZONTAL;
 	else if (scale.y < 0.0f)
 		flip = SDL_FLIP_VERTICAL;
 
-	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dstScaled, angle, NULL, flip);
+	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dstScaled, angle, nullptr, flip);
 
 
 	if (m_bRenderPosition)

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include <string>
 #include <memory>
+
 #include "Sounds/AudioClip.h"
 
 
@@ -10,31 +10,31 @@ namespace bae
 	class SdlAudioClip final : public AudioClip
 	{
 	public:
-		SdlAudioClip(ActiveSoundID activeId, SoundID soudId);
-		virtual ~SdlAudioClip(); // empty, needed for Pimpl
+		SdlAudioClip(ActiveSoundID activeId, SoundID soundId);
+        ~SdlAudioClip() override; // empty, needed for Pimpl
 
-		virtual bool Play() override;
-		virtual void Stop() override;
+		bool Play() override;
+	    void Stop() override;
 
-		virtual void Resume() override;
-		virtual void Pause() override;
+		void Resume() override;
+		void Pause() override;
 
-		virtual void Mute() override;
-		virtual void UnMute() override;
-
-
-		virtual bool IsPlaying() const override;
-
-		virtual bool IsPaused() const override;
-		virtual bool IsMuted() const override;
+		void Mute() override;
+		void UnMute() override;
 
 
-		virtual float GetVolume() const override;
-		virtual void SetVolume(float volume) override;
+		bool IsPlaying() const override;
 
-		virtual SoundID GetSoundId() override;
-		virtual ActiveSoundID GetActiveSoundId() override;
-		virtual int GetChannel() override;
+		bool IsPaused() const override;
+		bool IsMuted() const override;
+
+
+		float GetVolume() const override;
+		void SetVolume(float volume) override;
+
+		SoundID GetSoundId() override;
+		ActiveSoundID GetActiveSoundId() override;
+		int GetChannel() override;
 
 
 	private:

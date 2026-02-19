@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <memory>
-#include <string.h>
 
 #include <SDL.h>
 
@@ -14,7 +13,7 @@ namespace bae
 	class Text2D
 	{
 	public:
-		Text2D(const std::string& text, std::shared_ptr<Font> font = nullptr, const SDL_Color& color = SDL_Color{ 255, 255, 255, 255 });
+        explicit Text2D(const std::string& text, std::shared_ptr<Font> font = nullptr, const SDL_Color& color = SDL_Color{ 255, 255, 255, 255 });
 		virtual ~Text2D() = default;
 
 		Text2D(const Text2D& other) = delete;

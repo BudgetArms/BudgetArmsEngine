@@ -13,7 +13,7 @@ namespace bae::Graphs
 	class Graph
 	{
 	public:
-		Graph(bool isDirectional, GraphNodeFactory* const pFactory = nullptr);
+        explicit Graph(bool isDirectional, GraphNodeFactory* const pFactory = nullptr);
 		Graph(const Graph& other);
 		virtual ~Graph();
 
@@ -45,7 +45,7 @@ namespace bae::Graphs
 		GraphConnection* const GetConnection(int fromNodeId, int toNodeId) const;
 		std::unique_ptr<GraphConnection> GetConnectionRef(int fromNodeId, int toNodeId);
 		const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(int nodeId) const;
-		const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(GraphNode* const pNode) const { return GetConnectionsFromNode(pNode->GetId()); }
+		const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(const GraphNode* const pNode) const { return GetConnectionsFromNode(pNode->GetId()); }
 
 		void SetConnectionCostsToDistances();
 
@@ -71,7 +71,7 @@ namespace bae::Graphs
 
 
 	protected:
-		virtual void OnGraphModified(bool nrOfNodesChanged, bool nrOfConnectionsChanged) { nrOfConnectionsChanged; nrOfNodesChanged; };
+		virtual void OnGraphModified(bool nrOfNodesChanged, bool nrOfConnectionsChanged);
 		void AddNodeAtIndex(std::unique_ptr<GraphNode> uNode);
 
 		std::unique_ptr<GraphNode> CreateNode(const glm::vec2& pos);

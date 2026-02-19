@@ -13,7 +13,7 @@ namespace bae
 			m_Actor{ &actor }
 		{
 		}
-		virtual ~GameActorCommand() = default;
+		~GameActorCommand() override = default;
 
 		GameActorCommand(const GameActorCommand& other) = delete;
 		GameActorCommand(GameActorCommand&& other) = delete;
@@ -21,7 +21,7 @@ namespace bae
 		GameActorCommand& operator=(GameActorCommand&& other) = delete;
 
 
-		virtual void Execute() = 0;
+        void Execute() override = 0;
 
 
 	private:
@@ -29,7 +29,7 @@ namespace bae
 
 
 	protected:
-		GameObject* GetActor() const { return m_Actor; };
+		[[nodiscard]] GameObject* GetActor() const { return m_Actor; };
 
 
 	};

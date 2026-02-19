@@ -10,19 +10,19 @@
 using namespace bae::Graphs;
 
 
-AStar::AStar(Graph* const pGraph, bae::Graphs::Heuristic hFunction)
+AStar::AStar(Graph* pGraph, bae::Graphs::Heuristic hFunction)
 	: m_pGraph(pGraph)
 	, m_HeuristicFunction(hFunction)
 {
 }
 
 
-std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, GraphNode* const pGoalNode)
+std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, const GraphNode* const pDestinationNode) const
 {
 	std::vector<GraphNode*> path{};
 	std::list<NodeRecord> openList;   // nodes that need to be checked, not a queue anymore bc cost
 	std::list<NodeRecord> closedList; // nodes that are already checked
-	NodeRecord currentNodeRecord{};   // node that will be checked nextto be evaluated node
+	NodeRecord currentNodeRecord{};   // node that will be checked next-to be evaluated node
 
 
 	openList.emplace_back(
@@ -30,7 +30,7 @@ std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, GraphNode* c
 		{
 			.pNode = pStartNode,
 			.pConnection = nullptr,
-			.estimatedTotalCost = GetHeuristicCost(pStartNode,pGoalNode)
+			.estimatedTotalCost = GetHeuristicCost(pStartNode,pDestinationNode)
 		});
 
 
@@ -40,7 +40,7 @@ std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, GraphNode* c
 		auto currentNodeRecordIt = std::min_element(openList.begin(), openList.end());
 		currentNodeRecord = *currentNodeRecordIt;
 
-		if (currentNodeRecord.pNode == pGoalNode)
+		if (currentNodeRecord.pNode == pDestinationNode)
 			break;
 
 
@@ -50,9 +50,9 @@ std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, GraphNode* c
 
 			float nextNodeGCost = currentNodeRecord.costSoFar + nextNodeConnection->GetCost();
 
-			// Check if the next node is already checked (eg. In closedList)
+			// Check if the next node is already checked (e.g. In closedList)
 			auto closedNodeRecordIt = std::ranges::find_if(closedList,
-				[&pNextNode](NodeRecord& checkedRecord)
+				[&pNextNode](const NodeRecord& checkedRecord)
 				{
 					return checkedRecord.pNode == pNextNode;
 				});
@@ -71,7 +71,7 @@ std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, GraphNode* c
 
 			// same for closedNode, but now for the nodes that we are going to check next
 			auto openNodeRecordIt = std::ranges::find_if(openList,
-				[&pNextNode](NodeRecord& openListRecord)
+				[&pNextNode](const NodeRecord& openListRecord)
 				{
 					return openListRecord.pNode == pNextNode;
 				});
@@ -94,7 +94,7 @@ std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, GraphNode* c
 				.pNode = pNextNode,
 				.pConnection = nextNodeConnection.get(),
 				.costSoFar = nextNodeGCost,
-				.estimatedTotalCost = nextNodeGCost + GetHeuristicCost(pNextNode, pGoalNode),
+				.estimatedTotalCost = nextNodeGCost + GetHeuristicCost(pNextNode, pDestinationNode),
 			};
 
 
@@ -110,7 +110,7 @@ std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, GraphNode* c
 
 
 	// Backtracking
-	if (currentNodeRecord.pNode != pGoalNode)
+	if (currentNodeRecord.pNode != pDestinationNode)
 		return path;
 
 
@@ -125,7 +125,7 @@ std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, GraphNode* c
 			break;
 
 		auto previousNodeRecordIt = std::ranges::find_if(closedList,
-			[&previousNode](NodeRecord& closedNodeRecord)
+			[&previousNode](const NodeRecord& closedNodeRecord)
 			{
 				return closedNodeRecord.pNode == previousNode;
 			});
@@ -142,9 +142,9 @@ std::vector<GraphNode*>AStar::FindPath(GraphNode* const pStartNode, GraphNode* c
 	return path;
 }
 
-float AStar::GetHeuristicCost(GraphNode* const pStartNode, GraphNode* const pEndNode) const
+float AStar::GetHeuristicCost(const GraphNode* const pStartNode, const GraphNode* const pEndNode) const
 {
-	glm::vec2 toDestination = m_pGraph->GetNodePos(pEndNode->GetId()) - m_pGraph->GetNodePos(pStartNode->GetId());
+	const glm::vec2 toDestination = m_pGraph->GetNodePos(pEndNode->GetId()) - m_pGraph->GetNodePos(pStartNode->GetId());
 	return m_HeuristicFunction(abs(toDestination.x), abs(toDestination.y));
 }
 

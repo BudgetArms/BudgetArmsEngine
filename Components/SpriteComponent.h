@@ -10,7 +10,7 @@ namespace bae
 	class SpriteComponent : public TextureComponent
 	{
 	public:
-		// we should use a settings's struct to initialize the variables first, to make it more organized 
+		// we should use a setting's struct to initialize the variables first, to make it more organized
 		explicit SpriteComponent(GameObject& owner, const std::string& filename, const SDL_Rect& srcRect,
 			int nrColumns, int nrSprites, const glm::ivec2& srcOffset = {});
 

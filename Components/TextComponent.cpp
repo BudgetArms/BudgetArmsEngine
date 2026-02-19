@@ -93,7 +93,7 @@ void TextComponent::SetColor(const SDL_Color& color)
 
 void TextComponent::SetFont(std::shared_ptr<Font> font)
 {
-	m_Font = font;
+	m_Font = std::move(font);
 	m_NeedsUpdate = true;
 }
 

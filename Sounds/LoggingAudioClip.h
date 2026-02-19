@@ -2,10 +2,9 @@
 
 #include <memory>
 #include <iostream>
-#include <algorithm>
 
-#include "Sounds/AudioClip.h"
 #include "Core/HelperFunctions.h"
+#include "Sounds/AudioClip.h"
 
 
 namespace bae
@@ -26,8 +25,8 @@ namespace bae
 			m_RealAudioClip = std::make_unique<RealAudioClipType>(activeSoundId, soundId);
 		};
 
-		virtual ~LoggingAudioClip()
-		{
+        ~LoggingAudioClip() override
+        {
 			std::cout << GetFunctionName() << '\n';
 		};
 
@@ -126,5 +125,4 @@ namespace bae
 
 	};
 }
-
 

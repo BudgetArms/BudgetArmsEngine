@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <string>
-
 #include "Sounds/SoundSystem.h"
 
 
@@ -13,7 +11,7 @@ namespace bae
 		AudioClip(ActiveSoundID, SoundID) {};
 		virtual ~AudioClip() = default;
 
-		// return indicates sucess creation
+		// return indicates success creation
 		virtual bool Play() = 0;
 		virtual void Stop() = 0;
 

@@ -1,7 +1,6 @@
 ﻿#include "Utils.h"
 
 #include <algorithm>
-#include <cmath>
 
 #include <SDL_rect.h>
 #include <SDL_render.h>
@@ -196,7 +195,8 @@ void bu::DrawPolygon(const std::vector<glm::vec2>& points, const Color& color)
 
 void bu::FillPolygon(const std::vector<glm::vec2>& points, const Color& color)
 {
-	auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+    color;
+	SDL_Renderer* pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
 	if (!pSdlRenderer)
 		return;
 
@@ -212,9 +212,9 @@ void bu::FillPolygon(const std::vector<glm::vec2>& points, const Color& color)
 		posY.push_back(static_cast<Sint16>(point.y));
 	}
 
-	color;
-	//GFX_filledPolygonRGBA(pSdlRenderer, posX.data(), posY.data(), static_cast<int>(points.size()),
-		//FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
+    // GFX_filledPolygonRGBA causes memory leaks, somehow
+	// GFX_filledPolygonRGBA(pSdlRenderer, posX.data(), posY.data(), static_cast<int>(points.size()),
+		// FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 
 }
 

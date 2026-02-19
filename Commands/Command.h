@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "Core/GameObject.h"
 
 
 namespace bae
@@ -7,7 +6,7 @@ namespace bae
 	class Command
 	{
 	public:
-		explicit Command() {};
+		explicit Command() = default;
 		virtual ~Command() = default;
 
 		Command(const Command& other) = delete;

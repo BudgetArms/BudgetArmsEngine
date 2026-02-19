@@ -1,9 +1,9 @@
 ﻿#pragma once
+
 #include "Singletons/Singleton.h"
 
 #include <vector>
 #include <memory>
-#include <iostream>
 
 
 namespace bae
@@ -21,7 +21,7 @@ namespace bae
 			Pressed
 		};
 
-		~InputManager(); // empty, because forward declaration :D
+		~InputManager() override; // empty, because forward declaration :D
 
 		InputManager(const InputManager& other) = delete;
 		InputManager(InputManager&& other) = delete;
@@ -30,10 +30,10 @@ namespace bae
 
 
 		bool ProcessInput();
-		void ClearCommands();
+		void ClearCommands() const;
 
 		void AddController(int controllerIndex);
-		Controller* GetController(int index);
+		Controller* GetController(int index) const;
 		Keyboard& GetKeyboard() const { return *m_Keyboard; };
 		Mouse& GetMouse() const { return *m_Mouse; };
 

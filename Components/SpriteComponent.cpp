@@ -1,7 +1,5 @@
 ﻿#include "SpriteComponent.h"
 
-#include <SDL.h>
-
 #include "Core/GameObject.h"
 #include "Managers/ResourceManager.h"
 #include "Core/Renderer.h"
@@ -13,10 +11,9 @@ using namespace bae;
 SpriteComponent::SpriteComponent(GameObject& owner, const std::string& filename, const SDL_Rect& fullSrcRect,
 	int nrColumns, int nrSprites, const glm::ivec2& srcOffset) :
 	TextureComponent(owner, filename),
+	m_SrcOffset{ srcOffset },
 	m_SrcRect{ fullSrcRect },
 	m_DstRect{},
-	m_Index{},
-	m_SrcOffset{ srcOffset },
 	m_NrSprites{ nrSprites },
 	m_NrColumns{ nrColumns },
 	m_NrRows{ static_cast<int>(std::ceil(static_cast<float>(nrSprites) / nrColumns)) }
@@ -35,7 +32,7 @@ void SpriteComponent::Render() const
 	if (!m_Texture)
 		return;
 
-	// bad idea, if you want to have a player with several spriteComponents, this wont work
+	// bad idea, if you want to have a player with several spriteComponents, this will not work
 	// or wait, you could use GameObject's Children, but you can't Attach Children in the Component itself
 	// because they also need to be added to the scene
 

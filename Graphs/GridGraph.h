@@ -10,7 +10,12 @@
 namespace bae::Graphs
 {
 	class GraphNode;
-	//class ConnectionCostCalculator;
+
+    struct GridPosition
+    {
+        int Column;
+        int Row;
+    };
 
 	class GridGraph : public Graph
 	{
@@ -18,18 +23,19 @@ namespace bae::Graphs
 
 		GridGraph(
 			const glm::vec2& position,
-			int columns, int rows, const glm::ivec2& cellSize, bool isDirectionalGraph, bool isConnectedDiagonally, float costStraight = 1.f,
+			int nrColumns, int nrRows, const glm::ivec2& cellSize, bool isDirectionalGraph, bool isConnectedDiagonally, float costStraight = 1.f,
 			float costDiagonal = 1.5, GraphNodeFactory* const factory = nullptr, std::unique_ptr<ConnectionCostCalculator> uCostCalculator = nullptr
 		);
-		virtual ~GridGraph();
+
+        ~GridGraph() override {};
 
 
 		virtual void Render() const;
 
 
-		bool IsWithinBounds(int col, int row) const;
+		bool IsWithinBounds(GridPosition position) const;
 
-		void AddConnectionsToAdjacentCells(int col, int row) { AddConnectionsToAdjacentCells(GetNodeId(col, row)); }
+		void AddConnectionsToAdjacentCells(GridPosition position);
 		void AddConnectionsToAdjacentCells(int idx);
 
 
@@ -37,21 +43,20 @@ namespace bae::Graphs
 		int GetColumns() const { return m_NrOfColumns; }
 		glm::ivec2 GetCellSize() const { return m_CellSize; }
 
-		glm::vec2 GetPosition(int col, int row) const;
+		glm::vec2 GetPosition(GridPosition position) const;
 		glm::vec2 GetOffsetPosition() const { return m_Position; }
 
-		int GetNodeId(int col, int row) const { return row * m_NrOfColumns + col; }
+		int GetNodeId(GridPosition position) const;
 
 		// Function overloading
 		using Graph::GetNode;
-		GraphNode* GetNode(int col, int row) const { return Graph::GetNode(GetNodeId(col, row)); }
+		GraphNode* GetNode(GridPosition position) const;
 
 		int GetNodeIdAtPosition(const glm::vec2& pos) const override;
 		GraphNode* const GetNodeAtPosition(const glm::vec2& pos) const override;
 
 		glm::vec2 GetNodePos(int nodeId) const override;
-		std::pair<int, int> GetRowAndColumn(int idx) const { return { idx / m_NrOfColumns, idx % m_NrOfColumns }; }
-		glm::vec2 GetRowAndColumn(const glm::vec2& pos);
+		GridPosition GetGridPosition(int idx) const;
 
 
 		bool m_bRenderNodes{ false };
@@ -64,7 +69,7 @@ namespace bae::Graphs
 
 	private:
 		void InitializeGrid();
-		void AddConnectionsInDirections(int idx, int col, int row, const std::vector<glm::vec2>& directions);
+		void AddConnectionsInDirections(int idx, GridPosition position, const std::vector<glm::vec2>& directions);
 
 		virtual float CalculateConnectionCost(int fromIdx, int toIdx) const;
 
@@ -80,6 +85,7 @@ namespace bae::Graphs
 		const std::vector<glm::vec2> m_StraightDirections = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
 		const std::vector<glm::vec2> m_DiagonalDirections = { { 1, 1 }, { -1, 1 }, { -1, -1 }, { 1, -1 } };
 
+	    const float m_MaximumConnectionCost{ 100000.f };
 		glm::vec2 m_Position;
 
 		std::unique_ptr<ConnectionCostCalculator> m_uCostCalculator;
