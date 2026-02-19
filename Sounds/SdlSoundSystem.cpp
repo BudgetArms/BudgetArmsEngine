@@ -278,15 +278,14 @@ SoundID SdlSoundSystem::Impl::LoadSound(const std::string& path)
 
 ActiveSoundID SdlSoundSystem::Impl::Play(SoundID soundId, float volume)
 {
-	auto it = m_LoadedAudio.find(soundId);
+	const auto it = m_LoadedAudio.find(soundId);
 	if (it == m_LoadedAudio.end())
 	{
 		std::cout << "Trying To " << GetFunctionName() << " Sound that doesn't Exist, soundId: " << soundId.ID << '\n';
 		return ActiveSoundID();
 	}
 
-	auto& audioChunk = it->second;
-	if (!audioChunk)
+    if (const auto& audioChunk = it->second; !audioChunk)
 		return ActiveSoundID(-1);
 
 	// this also gives an error if not in the correct initialization order :D
@@ -432,7 +431,7 @@ bool SdlSoundSystem::Impl::IsPaused(ActiveSoundID activeSoundId)
 	}
 
 
-	auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
+	const auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
 	if (!pAudioClip)
 		return false;
 
@@ -448,7 +447,7 @@ bool SdlSoundSystem::Impl::IsMuted(ActiveSoundID activeSoundId)
 	}
 
 
-	auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
+	const auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
 	if (!pAudioClip)
 		return false;
 
@@ -465,7 +464,7 @@ float SdlSoundSystem::Impl::GetVolume(ActiveSoundID activeSoundId)
 	}
 
 
-	auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
+	const auto pAudioClip = ServiceLocator::GetAudioQueue().GetAudioClip(activeSoundId);
 	if (!pAudioClip)
 		return -1.f;
 

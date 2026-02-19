@@ -125,7 +125,7 @@ endif()
 
 
 # when I have time, I want to remove the fetching of the precompiled binary files
-# since then it's code-wise less hard on the eyes and more intuative, 
+# since then it's code-wise less hard on the eyes and more intuitive,
 # and then it's also cross-platform. But then I will need another type of input manager
 # since I get XInput straight from Window's api.
 if (WIN32)
@@ -296,7 +296,6 @@ if (WIN32)
 
 
 	# add libraries
-
 	add_library(imgui STATIC
 		${imgui_SOURCE_DIR}/imconfig.h
 		${imgui_SOURCE_DIR}/imgui.cpp
