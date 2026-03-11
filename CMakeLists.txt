@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.26)
+﻿cmake_minimum_required(VERSION 4.0.0)
 project(BudgetEngine)
 
 message("\nBudgetArmsEngine CMake")
@@ -85,505 +85,456 @@ add_library(${ENGINE_NAME} STATIC
 	"Wrappers/Keyboard.cpp"							"Wrappers/Controller.h"
 	"Wrappers/Mouse.cpp"							"Wrappers/Mouse.h"
 	"Wrappers/Texture2D.cpp"						"Wrappers/Texture2D.h"
-
-
-  )
+)
  
 
 
-if(STEAMWORKS_AVAILABLE)
+# Add Steamworks
+if(ENABLE_STEAMWORKS)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake/steam")
+    find_package(Steamworks QUIET)
+    if(NOT Steamworks_FOUND)
+        message("\n")
+        message(WARNING "Steamworks package NOT found")
+        set(STEAMWORKS_AVAILABLE FALSE)
 
-	target_sources(${ENGINE_NAME} PRIVATE
+    else()
+        message("\n")
+        message("Steamworks package Found")
+        set(STEAMWORKS_AVAILABLE TRUE)
+
+    endif()
+endif()
+
+
+if(STEAMWORKS_AVAILABLE)
+    target_sources(${ENGINE_NAME} PRIVATE
 		"Core/Achievement.h"                "Core/Achievement.cpp"
 		"Managers/AchievementManager.h"
 		"Managers/SteamManager.h"           "Managers/SteamManager.cpp"
 	)
-
 endif()
 
 
  # enable c++20 features
 target_compile_features(${ENGINE_NAME} PUBLIC cxx_std_20)
 
+# Compile at max warning level + treat warnings as errors
+if(MSVC)
+    target_compile_options(${ENGINE_NAME} PRIVATE /W4 /WX)
+else()
+    target_compile_options(${ENGINE_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
+
+
+if(STEAMWORKS_AVAILABLE)
+    target_compile_definitions(${ENGINE_NAME} PRIVATE
+        "STEAMWORKS_ENABLED"
+    )
+endif()
+
 
 
 include(FetchContent)
 
-# add glm
-FetchContent_Declare(
-	glm
-	URL https://github.com/g-truc/glm/releases/download/1.0.1/glm-1.0.1-light.zip
-	DOWNLOAD_NO_PROGRESS ON
-	DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
-)
 
-FetchContent_GetProperties(glm)
+# Add glm
+find_package(glm CONFIG QUIET)
+if(glm_FOUND)
+    message("\n")
+    message("glm package found")
+else()
+    message("\n")
+    message("glm package NOT found, using FetchContent to get it")
 
-if(NOT glm_POPULATED)
-	FetchContent_MakeAvailable(glm)
+    FetchContent_Declare(
+        glm
+        URL https://github.com/g-truc/glm/releases/download/1.0.3/glm-1.0.3.zip
+        DOWNLOAD_NO_PROGRESS ON
+        DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
+    )
+    FetchContent_MakeAvailable(glm)
+
 endif()
 
 
-# when I have time, I want to remove the fetching of the precompiled binary files
-# since then it's code-wise less hard on the eyes and more intuitive,
-# and then it's also cross-platform. But then I will need another type of input manager
-# since I get XInput straight from Window's api.
-if (WIN32)
+# Add SDL3
+find_package(SDL3 3.4 CONFIG QUIET)
+if(SDL3_FOUND)
+    message("\n")
+    message("SDL3 package found")
+else()
+    message("\n")
+    message("SDL3 package NOT found, using FetchContent to get it")
 
-	if(STEAMWORKS_AVAILABLE AND EXISTS "${STEAMWORKS_SDK_PATH}")
+    if (WIN32)
+        FetchContent_Declare(
+            SDL3
+            URL https://www.libsdl.org/release/SDL3-devel-3.4.0-VC.zip
+            DOWNLOAD_NO_PROGRESS ON
+            DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
+        )
+        FetchContent_MakeAvailable(SDL3)
 
-		set(STEAMWORKS_INCLUDE_DIR "${STEAMWORKS_SDK_PATH}/public/steam")
+        list(PREPEND CMAKE_PREFIX_PATH "${sdl3_SOURCE_DIR}")
+        find_package(SDL3 CONFIG REQUIRED)
 
-		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-			set(STEAMWORKS_LIBRARY "${STEAMWORKS_SDK_PATH}/redistributable_bin/win64/steam_api64.lib")
-			set(STEAMWORKS_LIBRARY_DLL "${STEAMWORKS_SDK_PATH}/redistributable_bin/win64/steam_api64.dll")
-		else()
-			set(STEAMWORKS_LIBRARY "${STEAMWORKS_SDK_PATH}/redistributable_bin/steam_api.lib")
-			set(STEAMWORKS_LIBRARY_DLL "${STEAMWORKS_SDK_PATH}/redistributable_bin/steam_api.dll")
-		endif()
+    else()
+        FetchContent_Declare(
+            SDL3
+            GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+            GIT_TAG release-3.4.0
+            GIT_SHALLOW TRUE
+            GIT_PROGRESS TRUE
+        )
+        FetchContent_MakeAvailable(SDL3)
 
-		if(EXISTS "${STEAMWORKS_LIBRARY}")
-			message(STATUS "Steamworks library found: ${STEAMWORKS_LIBRARY}")
-		else()
-			message(WARNING "Steamworks library not found: ${STEAMWORKS_LIBRARY}")
-			set(STEAMWORKS_AVAILABLE FALSE)
-		endif()
-
-	endif()
-
-
-
-	# add SDL2
-	FetchContent_Declare(
-		SDL2
-		URL https://www.libsdl.org/release/SDL2-devel-2.32.8-VC.zip 
-		DOWNLOAD_NO_PROGRESS ON
-		DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads 
-	)
-
-	FetchContent_GetProperties(SDL2)
-
-	if(NOT SDL2_POPULATED)
-		FetchContent_MakeAvailable(SDL2)
-		set(SDL2_INCLUDE_DIR ${sdl2_SOURCE_DIR}/include)
-
-	if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-		set(SDL2_LIBRARIES "${sdl2_SOURCE_DIR}/lib/x64/SDL2.lib;${sdl2_SOURCE_DIR}/lib/x64/SDL2main.lib")
-		set(SDL2_LIBRARY_DLL "${sdl2_SOURCE_DIR}/lib/x64/SDL2.dll")
-	else()
-		set(SDL2_LIBRARIES "${sdl2_SOURCE_DIR}/lib/x86/SDL2.lib;${sdl2_SOURCE_DIR}/lib/x86/SDL2main.lib")
-		set(SDL2_LIBRARY_DLL "${sdl2_SOURCE_DIR}/lib/x86/SDL2.dll")
-	endif()
-
-	endif()
+    endif()
+endif()
 
 
-	# add SDL2_image
-	FetchContent_Declare(
-		SDL2_image
-		URL https://www.libsdl.org/projects/SDL_image/release/SDL2_image-devel-2.8.8-VC.zip 
-		DOWNLOAD_NO_PROGRESS ON
-		DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
-	)
+# Add SDL3_ttf
+find_package(SDL3_ttf 3.2.2 CONFIG QUIET)
+if(SDL3_ttf_FOUND)
+    message("\n")
+    message("SDL3_ttf package found")
+else()
+    message("\n")
+    message("SDL3_ttf package NOT found, using FetchContent to get it")
 
-	FetchContent_GetProperties(SDL2_image)
+    if (WIN32)
+        FetchContent_Declare(
+            SDL3_ttf
+            URL https://www.libsdl.org/projects/SDL_ttf/release/SDL3_ttf-devel-3.2.2-VC.zip
+            DOWNLOAD_NO_PROGRESS ON
+            DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
+        )
+        FetchContent_MakeAvailable(SDL3_ttf)
 
-	if(NOT SDL2_image_POPULATED)
-		FetchContent_MakeAvailable(SDL2_image)
-		set(SDL2_IMAGE_INCLUDE_DIR ${sdl2_image_SOURCE_DIR}/include)
+        list(PREPEND CMAKE_PREFIX_PATH "${sdl3_ttf_SOURCE_DIR}")
+        find_package(SDL3_ttf CONFIG REQUIRED)
 
-	if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-		set(SDL2_IMAGE_LIBRARIES "${sdl2_image_SOURCE_DIR}/lib/x64/SDL2_image.lib")
-		set(SDL2_IMAGE_LIBRARY_DLL "${sdl2_image_SOURCE_DIR}/lib/x64/SDL2_image.dll")
-	else()
-		set(SDL2_IMAGE_LIBRARIES "${sdl2_image_SOURCE_DIR}/lib/x86/SDL2_image.lib")
-		set(SDL2_IMAGE_LIBRARY_DLL "${sdl2_image_SOURCE_DIR}/lib/x86/SDL2_image.dll")
-	endif()
+    else()
 
-	endif()
+        FetchContent_Declare(
+            SDL3_ttf
+            GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
+            GIT_TAG release-3.2.2
+            GIT_SHALLOW TRUE
+            GIT_PROGRESS TRUE
+        )
 
+        set(SDL3TTF_INSTALL OFF)
+        if(EMSCRIPTEN)
+            list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/emscripten")
+            set(SDL3TTF_USE_SYSTEM_FREETYPE ON)
+            set(SDL3TTF_VENDORED OFF)
+            set(SDLTTF_PLUTOSVG OFF)
+            add_compile_options(-sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1)
+            add_link_options(-sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1)
+        endif()
 
-	# add SDL2_ttf
-	FetchContent_Declare(
-		SDL2_ttf
-		URL https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.22.0-VC.zip
-		DOWNLOAD_NO_PROGRESS ON
-		DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
-	)
+        FetchContent_MakeAvailable(SDL3_ttf)
 
-	FetchContent_GetProperties(SDL2_ttf)
-
-	if(NOT sdl2_ttf_POPULATED)
-		FetchContent_MakeAvailable(SDL2_ttf)
-		set(SDL2_TTF_INCLUDE_DIR ${sdl2_ttf_SOURCE_DIR}/include)
-
-	if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-		set(SDL2_TTF_LIBRARIES ${sdl2_ttf_SOURCE_DIR}/lib/x64/SDL2_ttf.lib)
-		set(SDL2_TTF_LIBRARY_DLL "${sdl2_ttf_SOURCE_DIR}/lib/x64/SDL2_ttf.dll")
-	else()
-		set(SDL2_TTF_LIBRARIES ${sdl2_ttf_SOURCE_DIR}/lib/x86/SDL2_ttf.lib)
-		set(SDL2_TTF_LIBRARY_DLL "${sdl2_ttf_SOURCE_DIR}/lib/x86/SDL2_ttf.dll")
-	endif()
-
-	endif() 
+    endif()
+endif()
 
 
-	# add SDL2_mixer
-	FetchContent_Declare(
-		SDL2_mixer
-		URL https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-devel-2.8.1-VC.zip
-		DOWNLOAD_NO_PROGRESS ON
-		DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
-	)
+# Add SDL3_mixer
+find_package(SDL3_mixer CONFIG QUIET)
+if(SDL3_mixer_FOUND)
+    message("\n")
+    message("SDL3_mixer package found")
+else()
+    message("\n")
+    message("SDL3_mixer package NOT found, using FetchContent to get it")
 
-	FetchContent_GetProperties(SDL2_mixer)
+    if(WIN32)
+        FetchContent_Declare(
+            SDL3_mixer
+            URL https://www.libsdl.org/projects/SDL_mixer/release/SDL3_mixer-devel-3.1.2-VC.zip
+            DOWNLOAD_NO_PROGRESS ON
+            DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
+        )
+        FetchContent_MakeAvailable(SDL3_mixer)
 
-	if(NOT sdl2_mixer_POPULATED)
-		FetchContent_MakeAvailable(SDL2_mixer)
-		set(SDL2_MIXER_INCLUDE_DIR ${sdl2_mixer_SOURCE_DIR}/include)
+        list(PREPEND CMAKE_PREFIX_PATH "${sdl3_mixer_SOURCE_DIR}")
+        find_package(SDL3_mixer CONFIG REQUIRED)
 
-	if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-		set(SDL2_MIXER_LIBRARIES ${sdl2_mixer_SOURCE_DIR}/lib/x64/SDL2_mixer.lib)
-		set(SDL2_MIXER_LIBRARY_DLL "${sdl2_mixer_SOURCE_DIR}/lib/x64/SDL2_mixer.dll")
-	else()
-		set(SDL2_MIXER_LIBRARIES ${sdl2_mixer_SOURCE_DIR}/lib/x86/SDL2_mixer.lib)
-		set(SDL2_MIXER_LIBRARY_DLL "${sdl2_mixer_SOURCE_DIR}/lib/x86/SDL2_mixer.dll")
-	endif()
+    else()
+        FetchContent_Declare(
+            SDL3_mixer
+            GIT_REPOSITORY "https://github.com/libsdl-org/SDL_mixer.git"
+            GIT_TAG "prerelease-3.1.2"
+            GIT_SHALLOW TRUE
+            GIT_PROGRESS TRUE
+        )
 
-	endif()
+        FetchContent_MakeAvailable(SDL3_mixer)
 
-
-	# add imgui
-	FetchContent_Declare(
-		imgui
-		GIT_REPOSITORY https://github.com/ocornut/imgui.git
-		GIT_TAG "docking" 
-	)
-
-	FetchContent_MakeAvailable(imgui)
-
-
-	# add imgui_plot
-	FetchContent_Declare(
-		imgui_plot
-		GIT_REPOSITORY https://github.com/soulthreads/imgui-plot
-		GIT_TAG "master"
-	)
-
-	FetchContent_MakeAvailable(imgui_plot)
+    endif()
+endif()
 
 
-	# add SDL2-gfx
-	FetchContent_Declare(
-		sdl2_gfx
-		GIT_REPOSITORY https://github.com/giroletm/SDL2_gfx.git
-		GIT_TAG "master" 
-		GIT_SHALLOW TRUE
-		GIT_PROGRESS TRUE
-	)
+# Add SDL3_gfx
+find_package(SDL3_gfx CONFIG QUIET)
+if(SDL3_gfx_FOUND)
+    message("\n")
+    message("SDL3_gfx package found")
+else()
+    message("\n")
+    message("SDL3_gfx package NOT found, using FetchContent to get it")
 
-	FetchContent_MakeAvailable(sdl2_gfx) 
+    # The SDL3_gfx's CMake uses find_package to find an SDL3, but if it's not found, it searches,
+    # for the SDL which it fails at, so I set the SDL3_LIB (dummy) here, because otherwise the SDL3_gfx CMake fails
+    set(SDL3_LIB "${CMAKE_BINARY_DIR}/dummy_sdl3.lib" CACHE FILEPATH "Dummy SDL3 lib for SDL3_gfx" FORCE)
 
-	# add Nlohmann json
-	FetchContent_Declare(
-		json 
-		URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
-		DOWNLOAD_NO_PROGRESS ON
-		DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
-	)
+    FetchContent_Declare(
+        SDL3_gfx
+        GIT_REPOSITORY "https://github.com/sabdul-khabir/SDL3_gfx.git"
+        GIT_TAG "v1.0.1"
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(SDL3_gfx)
 
-	FetchContent_MakeAvailable(json)
+    # Disable the shared target
+    if(TARGET SDL3_gfx_Shared)
+        message(STATUS "Disabling SDL3_gfx_Shared target")
+        set_target_properties(SDL3_gfx_Shared PROPERTIES
+            EXCLUDE_FROM_ALL ON
+            EXCLUDE_FROM_DEFAULT_BUILD ON
+        )
+    endif()
 
-
-	# add libraries
-	add_library(imgui STATIC
-		${imgui_SOURCE_DIR}/imconfig.h
-		${imgui_SOURCE_DIR}/imgui.cpp
-		${imgui_SOURCE_DIR}/imgui.h
-		${imgui_SOURCE_DIR}/imgui_demo.cpp
-		${imgui_SOURCE_DIR}/imgui_draw.cpp
-		${imgui_SOURCE_DIR}/imgui_internal.h
-		${imgui_SOURCE_DIR}/imgui_tables.cpp  
-		${imgui_SOURCE_DIR}/imgui_widgets.cpp  
-		${imgui_SOURCE_DIR}/imstb_rectpack.h  
-		${imgui_SOURCE_DIR}/imstb_truetype.h  
-		${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
-		${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-	)
-
-	add_library(sdl2_gfx_lib STATIC
-		${sdl2_gfx_SOURCE_DIR}/SDL2_framerate.c
-		${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives.c
-		${sdl2_gfx_SOURCE_DIR}/SDL2_imageFilter.c
-		${sdl2_gfx_SOURCE_DIR}/SDL2_rotozoom.c
-		${sdl2_gfx_SOURCE_DIR}/SDL2_framerate.h
-		${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives.h
-		${sdl2_gfx_SOURCE_DIR}/SDL2_imageFilter.h
-		${sdl2_gfx_SOURCE_DIR}/SDL2_rotozoom.h
-		${sdl2_gfx_SOURCE_DIR}/SDL2_gfxPrimitives_font.h
-	)
-
-	
-	 
-	target_include_directories(imgui_plot PUBLIC
-		${imgui_plot_SOURCE_DIR}/include/imgui_plot
-	)
-
-	# Link Imgui Plot to ImGui
-	target_link_libraries(imgui_plot PUBLIC imgui)
+endif()
 
 
 
-	# include & link sdl to sdl2_gfx
-	target_include_directories(sdl2_gfx_lib PUBLIC
-		${sdl2_gfx_SOURCE_DIR}
-		${SDL2_INCLUDE_DIR}
-	)
+# Add imgui
+find_package(imgui CONFIG QUIET)
+if(imgui_FOUND)
+    message("\n")
+    message("imgui package found")
+else()
+    message("\n")
+    message("imgui package NOT found, using FetchContent to get it")
 
-	target_link_libraries(sdl2_gfx_lib PUBLIC
-		${SDL2_LIBRARIES}
-	)
+    FetchContent_Declare(
+        imgui
+        GIT_REPOSITORY "https://github.com/ocornut/imgui.git"
+        GIT_TAG "v1.92.6"
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(imgui)
 
-
-	# include & link sdl to imgui
-	target_include_directories(imgui PUBLIC 
-		${imgui_SOURCE_DIR} 
-		${imgui_SOURCE_DIR}/backends 
-		${SDL2_INCLUDE_DIR}
-	)
-
-	target_link_libraries(imgui PUBLIC
-		${SDL2_LIBRARIES}
-	)
-
-
-
-
-	find_package(VLD CONFIG)
-
-	set(XINPUT_LIB XInput)
-
-
-	# set all include directories
-	target_include_directories(${ENGINE_NAME} PUBLIC
-		${VLD_INCLUDE_DIR}
-		${SDL2_INCLUDE_DIR} 
-		${SDL2_IMAGE_INCLUDE_DIR} 
-		${SDL2_TTF_INCLUDE_DIR}
-		${SDL2_MIXER_INCLUDE_DIR}
-
-		${imgui_SOURCE_DIR}
-		${imgui_SOURCE_DIR}/backends
-		${imgui_plot_SOURCE_DIR}
-
-		${sdl2_gfx_SOURCE_DIR}
-	)
-
-    target_compile_definitions(${ENGINE_NAME} PRIVATE
-	    $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
-	    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+    add_library(imgui STATIC
+        ${imgui_SOURCE_DIR}/imconfig.h
+        ${imgui_SOURCE_DIR}/imgui.cpp
+        ${imgui_SOURCE_DIR}/imgui.h
+        ${imgui_SOURCE_DIR}/imgui_demo.cpp
+        ${imgui_SOURCE_DIR}/imgui_draw.cpp
+        ${imgui_SOURCE_DIR}/imgui_internal.h
+        ${imgui_SOURCE_DIR}/imgui_tables.cpp
+        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+        ${imgui_SOURCE_DIR}/imstb_rectpack.h
+        ${imgui_SOURCE_DIR}/imstb_truetype.h
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
     )
 
-	# include steamworks 
-	if(STEAMWORKS_AVAILABLE)
-
-		target_include_directories(${ENGINE_NAME} PUBLIC
-			${STEAMWORKS_INCLUDE_DIR}
-		)
-
-		target_compile_definitions(${ENGINE_NAME} PUBLIC STEAMWORKS_ENABLED)
-
-	endif()
+endif()
 
 
-	
-	# Link libraries to Engine
-	target_link_libraries(${ENGINE_NAME} PUBLIC
-		${SDL2_LIBRARIES} 
-		${SDL2_IMAGE_LIBRARIES} 
-		${SDL2_TTF_LIBRARIES} 
-		${SDL2_MIXER_LIBRARIES} 
+# Add imgui-plot
+find_package(imgui_plot CONFIG QUIET)
+if(imgui_plot_FOUND)
+    message("\n")
+    message("imgui_plot package found")
+else()
+    message("\n")
+    message("imgui_plot package NOT found, using FetchContent to get it")
 
-		${VLD_LIBRARY}
-		${XINPUT_LIB}
+    FetchContent_Declare(
+        imgui_plot
+        GIT_REPOSITORY "https://github.com/soulthreads/imgui-plot"
+        GIT_TAG "master"
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(imgui_plot)
 
-		imgui
-		imgui_plot
-		sdl2_gfx_lib
-		nlohmann_json::nlohmann_json
-	)
-
-	# Link Steamworks
-	if(STEAMWORKS_AVAILABLE)
-
-		target_link_libraries(${ENGINE_NAME} PUBLIC 
-			${STEAMWORKS_LIBRARY}
-		)
-
-	endif()
+endif()
 
 
-elseif(NOT EMSCRIPTEN)
+# Add nlohmann_json
+find_package(nlohmann_json 3.11.3 CONFIG QUIET)
+if(nlohmann_json_FOUND)
+    message("\n")
+    message("nlohmann_json package found")
+else()
+    message("\n")
+    message("nlohmann_json package NOT found, using FetchContent to get it")
 
-	# add SDL2
-	FetchContent_Declare(
-		SDL2
-		GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-		GIT_TAG release-2.32.8
-		GIT_SHALLOW TRUE
-		GIT_PROGRESS TRUE
-	)
-	FetchContent_MakeAvailable(SDL2)
-	
-	# add SDL2_image
-	FetchContent_Declare(
-		SDL2_image
-		GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
-		GIT_TAG release-2.8.8
-		GIT_SHALLOW TRUE
-		GIT_PROGRESS TRUE
-	)
-	
-	set(SDL2IMAGE_INSTALL OFF)
-	FetchContent_MakeAvailable(SDL2_image)
-	
-
-	# add SDL2_ttf
-	FetchContent_Declare(
-		SDL2_ttf
-		GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
-		GIT_TAG release-2.22.0
-		GIT_SHALLOW TRUE
-		GIT_PROGRESS TRUE
-	)
-	
-	set(SDL2TTF_INSTALL OFF)
-	FetchContent_MakeAvailable(SDL2_ttf) 
-	
-
-	# add SDL2_mixer
-	FetchContent_Declare(
-		SDL2_mixer
-		GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
-		GIT_TAG release-2.8.1
-		GIT_SHALLOW TRUE
-		GIT_PROGRESS TRUE
-	)
-	
-	set(SDL2MIXER_INSTALL OFF)
-	FetchContent_MakeAvailable(SDL2_mixer)
-
-	
-	# 
-
-	target_include_directories(${ENGINE_NAME} PUBLIC 
-		${sdl2_SOURCE_DIR}/include
-		${sdl2_image_SOURCE_DIR}/include
-		${sdl2_ttf_SOURCE_DIR}/include
-		${sdl2_mixer_SOURCE_DIR}/include
-	)
-	
-	target_link_libraries(${ENGINE_NAME} PUBLIC 
-		SDL2::SDL2main 
-		SDL2::SDL2 
-		SDL2_image::SDL2_image 
-		SDL2_ttf::SDL2_ttf
-		SDL2_mixer::SDL2_mixer
-	)
-
+    FetchContent_Declare(
+        nlohmann_json
+        GIT_REPOSITORY "https://github.com/nlohmann/json.git"
+        GIT_TAG "v3.11.3"
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(nlohmann_json)
 
 
 endif()
 
 
-# after all the files are loaded, link glm to them
+# Add VLD
+#find_package(VLD CONFIG)
+if(VLD_FOUND)
+    message("\n")
+    message("VLD package found")
+else()
+    message("\n")
+    message("VLD package NOT found, using FetchContent to get it")
+
+    # Get the package from github
+    FetchContent_Declare(
+        vld
+        GIT_REPOSITORY "https://github.com/avadae/vld.git"
+        GIT_TAG "v2.5.12"
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(vld)
+
+
+endif()
+
+
+# Add XInput
+set(XINPUT_LIB XInput)
+
+
+
+# Include directories
+target_include_directories(SDL3_gfx_Static PUBLIC
+    SDL3::SDL3
+)
+
+target_include_directories(imgui PUBLIC
+    ${imgui_SOURCE_DIR}
+    ${imgui_SOURCE_DIR}/backends
+    SDL3::SDL3
+)
+
+target_include_directories(${ENGINE_NAME} PUBLIC
+    glm::glm
+
+    SDL3::SDL3
+    SDL3_TTF::SDL3_TTF
+    SDL3_MIXER::SDL3_MIXER
+    SDL3_gfx_Static
+
+    imgui::imgui
+    imgui_plot::imgui_plot
+
+    VLD::VLD
+)
+
+
+# Link Libraries
+target_link_libraries(imgui PUBLIC
+    SDL3::SDL3
+)
+
+target_link_libraries(imgui_plot PUBLIC
+    imgui
+)
+
+target_link_libraries(SDL3_gfx_Static PUBLIC
+    SDL3::SDL3
+)
+
+# Link libraries to Engine
+target_link_libraries(${ENGINE_NAME} PUBLIC
+#	${CMAKE_CURRENT_SOURCE_DIR}
+    glm::glm
+    SDL3::SDL3
+    SDL3_ttf::SDL3_ttf
+    SDL3_mixer::SDL3_mixer
+
+    imgui
+    imgui_plot
+    nlohmann_json::nlohmann_json
+
+    ${XINPUT_LIB}
+    ${VLD_LIBRARIES}
+)
+
+
+if(STEAMWORKS_AVAILABLE)
+    target_link_libraries("${ENGINE_NAME}" PUBLIC
+        Steamworks::Steamworks
+    )
+endif()
+
+
 target_include_directories(${ENGINE_NAME} PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${glm_SOURCE_DIR}
 )
 
+# Post-Build Commands
+if(WIN32)
 
-# compile at max warning level + treat warnings as errors
-target_compile_options(${ENGINE_NAME} PRIVATE
-	$<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
-	$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
-)
+    set(SDL_RUNTIME_DLLS
+        SDL3::SDL3
+        SDL3_ttf::SDL3_ttf
+        SDL3_mixer::SDL3_mixer
+        SDL3_gfx_Static
+    )
+
+    foreach(dllTarget IN LISTS SDL_RUNTIME_DLLS)
+        message("${ddlTarget}")
+        add_custom_command(
+            TARGET ${ENGINE_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:${dllTarget}>"
+            "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}"
+            VERBATIM
+        )
+    endforeach()
 
 
+    if(STEAMWORKS_AVAILABLE)
+
+        # Copy Steamworks dll
+        add_custom_command(
+            TARGET ${ENGINE_NAME} POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy
+            "${Steamworks_RUNTIME_DLL}"
+            "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}/"
+        )
+
+        # Create steam_appid file
+        add_custom_command(
+            TARGET ${ENGINE_NAME} POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E
+            echo "480" > "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}/steam_appid.txt"
+            COMMENT "Generating steam_appid.txt"
+        )
+
+    endif()
 
 
-if(WIN32) 
-
-	# add post build commands
-	add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
-		COMMAND "${CMAKE_COMMAND}" -E copy "${SDL2_LIBRARY_DLL}" "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}"
+    # Copy Resources folder
+	add_custom_command(
+        TARGET ${ENGINE_NAME} POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory
+        "${CMAKE_SOURCE_DIR}/Resources"
+        "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}/Resources"
 	)
-	add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
-		COMMAND "${CMAKE_COMMAND}" -E copy "${SDL2_IMAGE_LIBRARY_DLL}" "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}"
-	)
-
-	add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
-		COMMAND "${CMAKE_COMMAND}" -E copy "${SDL2_TTF_LIBRARY_DLL}" "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}"
-	)
- 
-	add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
-		COMMAND "${CMAKE_COMMAND}" -E copy "${SDL2_MIXER_LIBRARY_DLL}" "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}"
-	)
-
-
-   if(STEAMWORKS_AVAILABLE)
-
-		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND "${CMAKE_COMMAND}" -E copy "${CMAKE_SOURCE_DIR}/BudgetEngine/Core/steam_appid.txt" "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}/steam_appid.txt"
-		)
-
-		add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
-			COMMAND "${CMAKE_COMMAND}" -E copy "${STEAMWORKS_LIBRARY_DLL}" "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}"
-		)
-
-
-	endif()
-
-
-	add_custom_command(TARGET ${ENGINE_NAME} POST_BUILD
-		COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_SOURCE_DIR}/Resources" "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}/Resources"
-	)
-
-
-elseif(EMSCRIPTEN)
-
-	set(EMSCRIPTEN_COMPILE_FLAGS "${EMSCRIPTEN_LINK_FLAGS} \ 
-		-sUSE_SDL=2 \
-		-sUSE_SDL_IMAGE=2 \ 
-		-sUSE_SDL_TTF=2 \
-		-sUSE_SDL_MIXER=2 \ 
-		-g"
-	)
-	set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} \
-		-sUSE_SDL=2 \
-		-sUSE_SDL_IMAGE=2 \
-		-sUSE_SDL_TTF=2 \
-		-sUSE_SDL_MIXER=2 \
-		-g \
-		-sALLOW_MEMORY_GROWTH \ 
-		--preload-file \"${CMAKE_SOURCE_DIR}/Resources@/\" \
-		-sSDL2_IMAGE_FORMATS=['tga','png']"
-	)
-
-	# work around https://github.com/emscripten-core/emscripten/issues/11513
-	set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -fno-stack-protector")
-
-	# Use the Emscripten toolchain
-	set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/EmscriptenToolchain.cmake)
-
-	# Additional settings for Emscripten build
-	set_target_properties(${ENGINE_NAME} PROPERTIES
-		COMPILE_FLAGS "${EMSCRIPTEN_COMPILE_FLAGS}"
-		LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}"
-	)
-
-	# Have emscripten generate a html page too.
-	set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
 endif()
 
