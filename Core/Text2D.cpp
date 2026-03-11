@@ -1,6 +1,6 @@
 ﻿#include "Text2D.h"
 
-#include <SDL_ttf.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include "Core/Renderer.h"
 #include "Managers/ResourceManager.h"
@@ -29,7 +29,7 @@ void Text2D::Update()
 	if (m_bNeedsUpdate)
 	{
 
-		const auto surf = TTF_RenderText_Blended(m_uFont->GetFont(), m_Text.c_str(), m_Color);
+		const auto surf = TTF_RenderText_Blended(m_uFont->GetFont(), m_Text.c_str(),  m_Text.length(), m_Color);
 		if (!surf)
 			throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
 
@@ -37,7 +37,7 @@ void Text2D::Update()
 		if (!texture)
 			throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
 
-		SDL_FreeSurface(surf);
+		SDL_DestroySurface(surf);
 		m_uTextTexture = std::make_unique<Texture2D>(texture);
 
 		m_bNeedsUpdate = false;

@@ -14,8 +14,8 @@
 #include <unordered_map>
 #include <memory>
 
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include <SDL3/SDL.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 #include "Core/HelperFunctions.h"
 #include "Core/ServiceLocator.h"
@@ -208,7 +208,9 @@ AudioChunk* SdlSoundSystem::GetAudioChunk(SoundID soundId)
 SdlSoundSystem::Impl::Impl()
 {
 
-	if (!Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG))
+    // TODO: update
+	// if (!Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG))
+    if (false)
 	{
 		std::cout << "AudioChunk: Failed to Initialize Mixer \n";
 		throw std::runtime_error(std::string("Failed to Initialize Mixer: ") + SDL_GetError());
@@ -220,20 +222,23 @@ SdlSoundSystem::Impl::Impl()
 	VLDDisable();
 #endif
 
-	const int openAudioResult = Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+    // TODO: update
+	// const int openAudioResult = Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 
 #if defined(_DEBUG) && __has_include(<vld.h>)
 	VLDEnable();
 #endif
 
 
-	if (openAudioResult < 0)
+    // TODO: update
+	// if (openAudioResult < 0)
 	{
 		std::cout << "AudioChunk: Failed to OpenAudio \n";
 		throw std::runtime_error(std::string("Failed to OpenAudio: ") + SDL_GetError());
 	}
 
-	Mix_AllocateChannels(m_NrChannels);
+    // TODO: update
+	// Mix_AllocateChannels(m_NrChannels);
 
 }
 
@@ -243,9 +248,10 @@ SdlSoundSystem::Impl::~Impl()
 
 	m_LoadedAudio.clear();
 
-	Mix_HaltChannel(-1);
-	Mix_CloseAudio();
-	Mix_Quit();
+    // TODO: update
+	// Mix_HaltChannel(-1);
+	// Mix_CloseAudio();
+	// Mix_Quit();
 
 	if (SDL_WasInit(SDL_INIT_AUDIO))
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);

@@ -1,5 +1,7 @@
 ﻿#include "FpsCounterComponent.h"
 
+#include <numbers>
+
 #include "Wrappers/Font.h"
 #include "Components/TextComponent.h"
 #include "Singletons/GameTime.h"
@@ -53,7 +55,8 @@ void FpsTextComponent::Render() const
 		finalAngle = -finalAngle;
 
 
-	const float angleRad = finalAngle * static_cast<float>(M_PI) / 180.f;
+
+	const float angleRad = finalAngle * static_cast<float>(std::numbers::pi) / 180.f;
 	const float cosA = cosf(angleRad);
 	const float sinA = sinf(angleRad);
 

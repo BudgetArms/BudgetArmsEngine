@@ -2,7 +2,7 @@
 #include <string>
 
 
-struct _TTF_Font;
+struct TTF_Font;
 namespace bae
 {
 	/**
@@ -11,7 +11,7 @@ namespace bae
 	class Font final
 	{
 	public:
-		explicit Font(const std::string& fullPath, unsigned int size);
+		explicit Font(const std::string& fullPath, float size);
 		~Font();
 
 		Font(const Font&) = delete;
@@ -20,11 +20,11 @@ namespace bae
 		Font& operator= (const Font&&) = delete;
 
 
-		_TTF_Font* GetFont() const;
+		TTF_Font* GetFont() const;
 
 
 	private:
-		_TTF_Font* m_font;
+		TTF_Font* m_font;
 	};
 }
 

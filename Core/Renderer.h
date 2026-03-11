@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include <glm.hpp>
-#include <SDL.h>
+#include <glm/glm.hpp>
+#include <SDL3/SDL.h>
 
 #include "Core/Utils.h"
 #include "Singletons/Singleton.h"
@@ -22,7 +22,7 @@ namespace bae
 
 		void RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const glm::vec2& position, float angle, const glm::vec2& scale = { 1.f, 1.f }) const;
 		void RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const glm::vec2& position, float width, float height) const;
-		void RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const SDL_Rect& src, const SDL_Rect& dst, float angle = 0.f, const glm::vec2& scale = { 1.f, 1.f }) const;
+		void RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const SDL_FRect& src, const SDL_FRect& dst, float angle = 0.f, const glm::vec2& scale = { 1.f, 1.f }) const;
 
 		[[nodiscard]] SDL_Renderer* GetSDLRenderer() const { return m_Renderer; }
 		[[nodiscard]] SDL_Window* GetSDLWindow() const { return m_Window; }

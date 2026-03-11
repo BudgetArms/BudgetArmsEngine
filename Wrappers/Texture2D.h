@@ -1,6 +1,7 @@
 ﻿#pragma once
-#include <vec2.hpp>
 #include <string>
+
+#include <glm/vec2.hpp>
 
 
 struct SDL_Texture;
@@ -22,7 +23,7 @@ namespace bae
 		Texture2D& operator= (const Texture2D&&) = delete;
 
 
-		glm::ivec2 GetSize() const;
+		glm::vec2 GetSize() const;
 		SDL_Texture* GetSDLTexture() const;
 
 

@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <ranges>
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 
 using namespace bae;
@@ -92,16 +92,16 @@ void Keyboard::Impl::ProcessInput()
 
 	const int maxPeakedEvents{ 128 };
 	SDL_Event events[maxPeakedEvents];
-	int nrEvents = SDL_PeepEvents(events, maxPeakedEvents, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+	int nrEvents = SDL_PeepEvents(events, maxPeakedEvents, SDL_PEEKEVENT, SDL_EVENT_FIRST, SDL_EVENT_LAST);
 
 	for (int i = 0; i < nrEvents; i++)
 	{
 		const SDL_Event& event = events[i];
 
-		if (event.type == SDL_KEYDOWN)
-			m_CurrentKeysDown[event.key.keysym.sym] = true;
-		else if (event.type == SDL_KEYUP)
-			m_CurrentKeysDown[event.key.keysym.sym] = false;
+		if (event.type == SDL_EVENT_KEY_DOWN)
+			m_CurrentKeysDown[event.key.key] = true;
+		else if (event.type == SDL_EVENT_KEY_UP)
+			m_CurrentKeysDown[event.key.key] = false;
 
 	}
 

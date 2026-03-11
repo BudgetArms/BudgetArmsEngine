@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include <glm.hpp>
-#include <SDL_rect.h>
+#include <glm/glm.hpp>
+#include <SDL3/SDL_rect.h>
 
 
 namespace bae::Utils
@@ -63,8 +63,8 @@ namespace bae::Utils
 
 	void DrawLine(const glm::vec2& line1, const glm::vec2& line2, int width, const Color& color);
 
-	void DrawRect(const SDL_Rect& rect, const Color& color);
-	void FillRect(const SDL_Rect& rect, const Color& color);
+	void DrawRect(const SDL_FRect& rect, const Color& color);
+	void FillRect(const SDL_FRect& rect, const Color& color);
 
 	void DrawCircle(const glm::vec2& center, int radius, const Color& color);
 	void FillCircle(const glm::vec2& center, int radius, const Color& color);

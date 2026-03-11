@@ -1,7 +1,7 @@
 ﻿#include "TextComponent.h"
 
 #include <stdexcept>
-#include <SDL_ttf.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include "Core/Renderer.h"
 #include "Wrappers/Font.h"
@@ -30,7 +30,7 @@ void TextComponent::Update()
 	if (m_NeedsUpdate)
 	{
 
-		const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Color);
+		const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Text.length(), m_Color);
 		if (!surf)
 		{
 			throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
@@ -42,7 +42,7 @@ void TextComponent::Update()
 			throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
 		}
 
-		SDL_FreeSurface(surf);
+		SDL_DestroySurface(surf);
 		m_TextTexture = std::make_unique<Texture2D>(texture);
 
 		m_NeedsUpdate = false;

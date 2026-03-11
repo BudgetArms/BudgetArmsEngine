@@ -43,11 +43,12 @@ void GridGraph::Render() const
 				const int idx = GetNodeId(gridPosition);
 				const glm::vec2 cellPos = GetNodePos(idx);
 
-				const SDL_Rect nodeRect
+				const SDL_FRect nodeRect
 				{
-					static_cast<int>(cellPos.x - m_CellSize.x / 2.f),
-					static_cast<int>(cellPos.y - m_CellSize.y / 2.f),
-					m_CellSize.x, m_CellSize.y
+					cellPos.x - m_CellSize.x / 2.f,
+					cellPos.y - m_CellSize.y / 2.f,
+					static_cast<float>(m_CellSize.x),
+				    static_cast<float>(m_CellSize.y)
 				};
 
 				bu::DrawRect(nodeRect, m_RenderColorNodeOutlines);

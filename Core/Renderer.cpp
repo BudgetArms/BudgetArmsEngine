@@ -1,11 +1,10 @@
 ﻿#include <stdexcept>
 #include <string>
-#include <iostream>
 
-#include <glm.hpp>
+#include <glm/glm.hpp>
 #include <imgui.h>
-#include <imgui_impl_sdl2.h>
-#include <imgui_impl_opengl3.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_sdlrenderer3.h>
 
 #include "Renderer.h"
 #include "Managers/SceneManager.h"
@@ -17,34 +16,31 @@
 namespace bu = bae::Utils;
 
 
-int GetOpenGLDriverIndex()
-{
-	auto openglIndex = -1;
-	const auto driverCount = SDL_GetNumRenderDrivers();
-	for (auto i = 0; i < driverCount; i++)
-	{
-		SDL_RendererInfo info;
-		if (!SDL_GetRenderDriverInfo(i, &info))
-			if (!strcmp(info.name, "opengl"))
-				openglIndex = i;
-
-	}
-
-	return openglIndex;
-}
-
 void bae::Renderer::Init(SDL_Window* window)
 {
 	m_Window = window;
-	m_Renderer = SDL_CreateRenderer(window, GetOpenGLDriverIndex(), SDL_RENDERER_ACCELERATED);
+
+	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+
+#if defined(__EMSCRIPTEN__)
+	m_Renderer = SDL_CreateRenderer(window, nullptr);
+#else
+	m_Renderer = SDL_CreateRenderer(window, nullptr);
+#endif
 
 	if (m_Renderer == nullptr)
+	{
 		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
+	}
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGui_ImplSDL2_InitForOpenGL(Renderer::GetInstance().GetSDLWindow(), SDL_GL_GetCurrentContext());
-	ImGui_ImplOpenGL3_Init();
+    const bool sucess = ImGui_ImplSDL3_InitForSDLRenderer(m_Window, m_Renderer);
+	ImGui_ImplSDLRenderer3_Init(m_Renderer);
+    if (!sucess)
+    {
+        throw std::runtime_error("ImGui_ImplSDL3_InitForSDLRenderer: failed to initialize");
+    }
 }
 
 void bae::Renderer::Render() const
@@ -55,22 +51,22 @@ void bae::Renderer::Render() const
 
 	SceneManager::GetInstance().Render();
 
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame();
-	ImGui::NewFrame();
+    ImGui_ImplSDLRenderer3_NewFrame();
+    ImGui_ImplSDL3_NewFrame();
+    ImGui::NewFrame();
 
 	SceneManager::GetInstance().RenderGUI();
 
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    ImGui::Render();
+	ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_Renderer);
 
 	SDL_RenderPresent(m_Renderer);
 }
 
 void bae::Renderer::Destroy()
 {
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
+    ImGui_ImplSDLRenderer3_Shutdown();
+	ImGui_ImplSDL3_Shutdown();
 	ImGui::DestroyContext();
 
 	if (m_Renderer != nullptr)
@@ -82,33 +78,33 @@ void bae::Renderer::Destroy()
 
 void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const glm::vec2& position, float angle, const glm::vec2& scale) const
 {
-	SDL_Rect dst{};
-	dst.x = static_cast<int>(position.x);
-	dst.y = static_cast<int>(position.y);
+	SDL_FRect dst{};
+	dst.x = position.x;
+	dst.y = position.y;
 
-	SDL_QueryTexture(texture.GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
+	SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
 
-	dst.w = static_cast<int>(std::abs(scale.x) * dst.w);
-	dst.h = static_cast<int>(std::abs(scale.y) * dst.h);
+	dst.w = std::abs(scale.x) * dst.w;
+	dst.h = std::abs(scale.y) * dst.h;
 
 	if (isCenteredAtPosition)
 	{
-		dst.x -= static_cast<int>(dst.w / 2.f);
-		dst.y -= static_cast<int>(dst.h / 2.f);
+		dst.x -= dst.w / 2.f;
+		dst.y -= dst.h / 2.f;
 	}
 
 
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	SDL_FlipMode flip = SDL_FLIP_NONE;
 
 	if (scale.x < 0.0f && scale.y < 0.0f)
-		flip = static_cast<SDL_RendererFlip>(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
+		flip = static_cast<SDL_FlipMode>(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
 	else if (scale.y < 0.0f)
 		flip = SDL_FLIP_HORIZONTAL;
 	else if (scale.y < 0.0f)
 		flip = SDL_FLIP_VERTICAL;
 
 
-	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, nullptr, flip);
+	SDL_RenderTextureRotated(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, angle, nullptr, flip);
 
 
 	if (m_bRenderPosition)
@@ -121,19 +117,19 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPos
 
 void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const glm::vec2& position, const float width, const float height) const
 {
-	SDL_Rect dst{};
-	dst.x = static_cast<int>(position.x);
-	dst.y = static_cast<int>(position.y);
-	dst.w = static_cast<int>(width);
-	dst.h = static_cast<int>(height);
+	SDL_FRect dst{};
+	dst.x = position.x;
+	dst.y = position.y;
+	dst.w = width;
+	dst.h = height;
 
 	if (isCenteredAtPosition)
 	{
-		dst.x -= static_cast<int>(dst.w / 2.f);
-		dst.y -= static_cast<int>(dst.h / 2.f);
+		dst.x -= dst.w / 2.f;
+		dst.y -= dst.h / 2.f;
 	}
 
-	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 
 
 	if (m_bRenderPosition)
@@ -145,29 +141,29 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPos
 }
 
 
-void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const SDL_Rect& src, const SDL_Rect& dst, float angle, const glm::vec2& scale) const
+void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const SDL_FRect& src, const SDL_FRect& dst, float angle, const glm::vec2& scale) const
 {
-	SDL_Rect dstScaled = dst;
-	dstScaled.w = static_cast<int>(std::abs(scale.x) * dstScaled.w);
-	dstScaled.h = static_cast<int>(std::abs(scale.y) * dstScaled.h);
+	SDL_FRect dstScaled = dst;
+	dstScaled.w = std::abs(scale.x) * dstScaled.w;
+	dstScaled.h = std::abs(scale.y) * dstScaled.h;
 
 	if (isCenteredAtPosition)
 	{
-		dstScaled.x -= static_cast<int>(dstScaled.w / 2.f);
-		dstScaled.y -= static_cast<int>(dstScaled.h / 2.f);
+		dstScaled.x -= dstScaled.w / 2.f;
+		dstScaled.y -= dstScaled.h / 2.f;
 	}
 
 
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	SDL_FlipMode flip = SDL_FLIP_NONE;
 
 	if (scale.x < 0.0f && scale.y < 0.0f)
-		flip = static_cast<SDL_RendererFlip>(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
+		flip = static_cast<SDL_FlipMode>(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
 	else if (scale.x < 0.0f)
 		flip = SDL_FLIP_HORIZONTAL;
 	else if (scale.y < 0.0f)
 		flip = SDL_FLIP_VERTICAL;
 
-	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dstScaled, angle, nullptr, flip);
+	SDL_RenderTextureRotated(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dstScaled, angle, nullptr, flip);
 
 
 	if (m_bRenderPosition)

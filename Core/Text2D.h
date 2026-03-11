@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include "Wrappers/Texture2D.h"
 #include "Wrappers/Font.h"

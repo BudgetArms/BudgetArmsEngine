@@ -5,7 +5,7 @@
 #include <algorithm>
 
 
-#include <SDL_mixer.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 #include "Core/HelperFunctions.h"
 #include "Core/ServiceLocator.h"
@@ -198,7 +198,8 @@ SdlAudioClip::Impl::~Impl()
 
 bool SdlAudioClip::Impl::Play()
 {
-	m_Channel = Mix_PlayChannel(-1, ServiceLocator::GetSoundSystem().GetAudioChunk(m_SoundId)->GetChunk(), 0);
+	// TODO: update
+	// m_Channel = Mix_PlayChannel(-1, ServiceLocator::GetSoundSystem().GetAudioChunk(m_SoundId)->GetChunk(), 0);
 
 	if (m_Channel == -1)
 	{
@@ -219,7 +220,8 @@ void SdlAudioClip::Impl::Stop()
 		if (m_Channel == -1)
 			return;
 
-		Mix_HaltChannel(m_Channel);
+	    // TODO: update
+		// Mix_HaltChannel(m_Channel);
 		m_Channel = -1;
 	}
 }
@@ -230,11 +232,12 @@ void SdlAudioClip::Impl::Resume()
 	if (m_Channel == -1)
 		return;
 
-	if (Mix_Paused(m_Channel))
-	{
-		Mix_Resume(m_Channel);
-		m_bIsPaused = false;
-	}
+	// TODO: update
+	// if (Mix_Paused(m_Channel))
+	// {
+	// 	Mix_Resume(m_Channel);
+	// 	m_bIsPaused = false;
+	// }
 
 }
 
@@ -243,11 +246,12 @@ void SdlAudioClip::Impl::Pause()
 	if (m_Channel == -1)
 		return;
 
-	if (!Mix_Paused(m_Channel))
-	{
-		Mix_Pause(m_Channel);
-		m_bIsPaused = true;
-	}
+	// TODO: update
+	// if (!Mix_Paused(m_Channel))
+	// {
+	// 	Mix_Pause(m_Channel);
+	// 	m_bIsPaused = true;
+	// }
 }
 
 
@@ -257,7 +261,8 @@ void SdlAudioClip::Impl::Mute()
 		return;
 
 	m_bIsMuted = true;
-	Mix_Volume(m_Channel, 0); // can't use SetVolume, bc it also changes m_Volume
+	// TODO: update
+	// Mix_Volume(m_Channel, 0); // can't use SetVolume, bc it also changes m_Volume
 }
 
 void SdlAudioClip::Impl::UnMute()
@@ -275,7 +280,9 @@ bool SdlAudioClip::Impl::IsPlaying() const
 	if (m_Channel == -1)
 		return false;
 
-	return Mix_Playing(m_Channel);
+	// TODO: update
+	// return Mix_Playing(m_Channel);
+    return true;
 }
 
 
@@ -302,8 +309,9 @@ void SdlAudioClip::Impl::SetVolume(float volume)
 
 	m_Volume = std::clamp(volume, 0.f, 1.f);
 
-	if (!m_bIsMuted)
-		Mix_Volume(m_Channel, static_cast<int>(MIX_MAX_VOLUME * m_Volume));
+    // TODO: update
+	// if (!m_bIsMuted)
+		// Mix_Volume(m_Channel, static_cast<int>(MIX_MAX_VOLUME * m_Volume));
 }
 
 SoundID SdlAudioClip::Impl::GetSoundId()

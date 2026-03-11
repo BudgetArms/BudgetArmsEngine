@@ -1,8 +1,8 @@
-﻿#include <SDL.h>
+﻿#include <SDL3/SDL.h>
 #include "InputManager.h"
 
-#include "imgui.h"
-#include "imgui_impl_sdl2.h"
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
 
 #include "Wrappers/Controller.h"
 #include "Wrappers/Keyboard.h"
@@ -37,17 +37,17 @@ bool InputManager::ProcessInput()
 	SDL_Event e;
 	while (SDL_PollEvent(&e))
 	{
-		if (e.type == SDL_QUIT)
+		if (e.type == SDL_EVENT_QUIT)
 			return false;
 
 #ifdef STEAMWORKS_ENABLED
-		if (e.key.keysym.sym == SDLK_PERIOD)
+		if (e.key.key == SDLK_PERIOD)
 			SteamManager::GetInstance().ResetAllAchievements();
 #endif
 
 
 		//process event for IMGUI
-		ImGui_ImplSDL2_ProcessEvent(&e);
+		ImGui_ImplSDL3_ProcessEvent(&e);
 	}
 
 	for (auto& controller : m_Controllers)

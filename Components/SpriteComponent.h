@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Components/TextureComponent.h"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 
 namespace bae
@@ -11,20 +11,20 @@ namespace bae
 	{
 	public:
 		// we should use a setting's struct to initialize the variables first, to make it more organized
-		explicit SpriteComponent(GameObject& owner, const std::string& filename, const SDL_Rect& srcRect,
+		explicit SpriteComponent(GameObject& owner, const std::string& filename, const SDL_FRect& srcRect,
 			int nrColumns, int nrSprites, const glm::ivec2& srcOffset = {});
 
 
 		virtual void Render() const override;
 
 
-		SDL_Rect GetDstRect() const { return m_DstRect; };
-		void SetDstRect(const SDL_Rect& dstRect) { m_DstRect = dstRect; };
+		SDL_FRect GetDstRect() const { return m_DstRect; };
+		void SetDstRect(const SDL_FRect& dstRect) { m_DstRect = dstRect; };
 
-		SDL_Rect GetCurrentSpriteRect() const;
+		SDL_FRect GetCurrentSpriteRect() const;
 
-		SDL_Rect GetSrcRect() const { return m_SrcRect; };
-		void SetSrcRect(const SDL_Rect& srcRect) { m_SrcRect = srcRect; };
+		SDL_FRect GetSrcRect() const { return m_SrcRect; };
+		void SetSrcRect(const SDL_FRect& srcRect) { m_SrcRect = srcRect; };
 
 		void PreviousSprite();
 		void NextSprite();
@@ -43,8 +43,8 @@ namespace bae
 	private:
 		glm::ivec2 m_SrcOffset{};
 
-		SDL_Rect m_SrcRect;
-		SDL_Rect m_DstRect;
+		SDL_FRect m_SrcRect;
+		SDL_FRect m_DstRect;
 
 		const int m_NrSprites;
 		const int m_NrColumns;

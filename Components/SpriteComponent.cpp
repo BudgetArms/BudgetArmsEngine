@@ -8,7 +8,7 @@
 using namespace bae;
 
 
-SpriteComponent::SpriteComponent(GameObject& owner, const std::string& filename, const SDL_Rect& fullSrcRect,
+SpriteComponent::SpriteComponent(GameObject& owner, const std::string& filename, const SDL_FRect& fullSrcRect,
 	int nrColumns, int nrSprites, const glm::ivec2& srcOffset) :
 	TextureComponent(owner, filename),
 	m_SrcOffset{ srcOffset },
@@ -40,41 +40,41 @@ void SpriteComponent::Render() const
 	const glm::vec2& position = m_Owner->GetWorldLocation();
 
 
-	SDL_Rect dstRect{};
+	SDL_FRect dstRect{};
 	if (m_bUseParentLocation)
 	{
-		dstRect.x = static_cast<int>(position.x);
-		dstRect.y = static_cast<int>(position.y);
+		dstRect.x = position.x;
+		dstRect.y = position.y;
 	}
 	else
 	{
-		dstRect.x = static_cast<int>(m_DstRect.w);
-		dstRect.y = static_cast<int>(m_DstRect.h);
+		dstRect.x = m_DstRect.w;
+		dstRect.y = m_DstRect.h;
 	}
 
-	dstRect.w = static_cast<int>(m_DstRect.w);
-	dstRect.h = static_cast<int>(m_DstRect.h);
+	dstRect.w = m_DstRect.w;
+	dstRect.h = m_DstRect.h;
 
 	const float rotation = m_Owner->GetWorldRotation();
 	const glm::vec2& scale = m_Owner->GetWorldScale();
 	Renderer::GetInstance().RenderTexture(*m_Texture, m_bIsCenteredAtPosition, GetCurrentSpriteRect(), dstRect, rotation, scale);
 }
 
-SDL_Rect SpriteComponent::GetCurrentSpriteRect() const
+SDL_FRect SpriteComponent::GetCurrentSpriteRect() const
 {
-	SDL_Rect srcRect{};
+	SDL_FRect srcRect{};
 
 	const int currentColumn = m_Index % m_NrColumns;
 	const int currentRow = static_cast<int>(static_cast<float>(m_Index) / m_NrColumns);
 
-	const int spriteWidth = static_cast<int>(static_cast<float>(m_SrcRect.w - m_NrColumns * m_SrcOffset.x) / m_NrColumns);
-	const int spriteHeight = static_cast<int>(static_cast<float>(m_SrcRect.h - m_NrRows * m_SrcOffset.y) / m_NrRows);
+	const float spriteWidth   = (m_SrcRect.w - m_NrColumns * m_SrcOffset.x) / m_NrColumns;
+	const float spriteHeight  = (m_SrcRect.h - m_NrRows * m_SrcOffset.y) / m_NrRows;
 
-	srcRect.x = static_cast<int>(m_SrcRect.x) + currentColumn * (spriteWidth + m_SrcOffset.x);
-	srcRect.y = static_cast<int>(m_SrcRect.y) + currentRow * (spriteHeight + m_SrcOffset.y);
+	srcRect.x = m_SrcRect.x + currentColumn * (spriteWidth + m_SrcOffset.x);
+	srcRect.y = m_SrcRect.y + currentRow * (spriteHeight + m_SrcOffset.y);
 
-	srcRect.x = static_cast<int>(m_SrcRect.x) + currentColumn * (spriteWidth + m_SrcOffset.x) + m_SrcOffset.x;
-	srcRect.y = static_cast<int>(m_SrcRect.y) + currentRow * (spriteHeight + m_SrcOffset.y) + m_SrcOffset.y;
+	srcRect.x = m_SrcRect.x + currentColumn * (spriteWidth + m_SrcOffset.x) + m_SrcOffset.x;
+	srcRect.y = m_SrcRect.y + currentRow * (spriteHeight + m_SrcOffset.y) + m_SrcOffset.y;
 
 	srcRect.w = spriteWidth;
 	srcRect.h = spriteHeight;

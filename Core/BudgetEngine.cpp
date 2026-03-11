@@ -16,9 +16,10 @@
 #include <windows.h>
 #endif
 
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
+#include <glm/glm.hpp>
+#include <SDL3/SDL.h>
+#include <SDL3_mixer/SDL_mixer.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #ifdef STEAMWORKS_ENABLED
 #pragma warning (push)
@@ -43,10 +44,16 @@
 
 #ifdef __EMSCRIPTEN__
 #include "emscripten.h"
+
+void LoopCallback(void* arg)
+{
+	static_cast<bae::BudgetEngine*>(arg)->RunOneFrame();
+}
+
 #endif
 
 
-void LogSDLVersion(const std::string& message, const SDL_version& v);
+void LogSDLVersion(const std::string& message, int major, int minor, int patch);
 void PrintSDLVersion();
 
 SDL_Window* g_window{};
@@ -56,7 +63,7 @@ bae::BudgetEngine::BudgetEngine(const bae::Utils::Window& window)
 {
 	PrintSDLVersion();
 
-	if (SDL_Init(SDL_INIT_VIDEO) != 0)
+	if (!SDL_InitSubSystem(SDL_INIT_VIDEO))
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 
 
@@ -67,11 +74,9 @@ bae::BudgetEngine::BudgetEngine(const bae::Utils::Window& window)
 
 	g_window = SDL_CreateWindow(
 		window.title.c_str(),
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
 		window.width,
 		window.height,
-		SDL_WINDOW_OPENGL
+		SDL_WINDOW_VULKAN
 	);
 
 #if defined(_DEBUG) && __has_include(<vld.h>)
@@ -84,9 +89,9 @@ bae::BudgetEngine::BudgetEngine(const bae::Utils::Window& window)
 
 	if (window.bIsVSyncOn)
 	{
-		if (SDL_GL_SetSwapInterval(1) < 0)
+		if (SDL_GL_SetSwapInterval(1) == false)
 		{
-			std::cerr << "BaseGame::Initialize( ), error when calling SDL_GL_SetSwapInterval: " << SDL_GetError() << std::endl;
+			std::cerr << "BudgetEngine::BudgetEngine, error when calling SDL_GL_SetSwapInterval: " << SDL_GetError() << std::endl;
 			return;
 		}
 	}
@@ -101,6 +106,7 @@ bae::BudgetEngine::BudgetEngine(const bae::Utils::Window& window)
 bae::BudgetEngine::~BudgetEngine()
 {
 	Renderer::GetInstance().Destroy();
+    MIX_Quit();
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
 	SDL_Quit();
@@ -153,47 +159,36 @@ void bae::BudgetEngine::RunOneFrame()
 
 
 
-void LogSDLVersion(const std::string& message, const SDL_version& v)
+
+void LogSDLVersion(const std::string& message, int major, int minor, int patch)
 {
 #if WIN32
 	std::stringstream ss;
-	ss << message << static_cast<int>(v.major) << "." << static_cast<int>(v.minor) << "." << static_cast<int>(v.patch) << "\n";
+	ss << message << major << "." << minor << "." << patch << "\n";
 	OutputDebugString(ss.str().c_str());
 #else
-	std::cout << message << static_cast<int>(v.major) << "." << static_cast<int>(v.minor) << "." << static_cast<int>(v.patch) << "\n";
+	std::cout << message << major << "." << minor << "." << patch << "\n";
 #endif
 }
 
-#ifdef __EMSCRIPTEN__
 
-void LoopCallback(void* arg)
-{
-	static_cast<bae::BudgetEngine*>(arg)->RunOneFrame();
-}
-
-#endif
-
-
+// Why bother with this, because sometimes students have a different SDL version installed on their pc.
+// That is not a problem unless for some reason the dll's from this project are not copied next to the exe.
+// These entries in the debug output help to identify that issue.
 void PrintSDLVersion()
 {
-	SDL_version version{};
-	SDL_VERSION(&version);
-	LogSDLVersion("We compiled against SDL version ", version);
+	LogSDLVersion("Compiled with SDL", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION);
+	const int sdlVersion = SDL_GetVersion();
+	LogSDLVersion("Linked with SDL ", SDL_VERSIONNUM_MAJOR(sdlVersion), SDL_VERSIONNUM_MINOR(sdlVersion), SDL_VERSIONNUM_MICRO(sdlVersion));
 
-	SDL_GetVersion(&version);
-	LogSDLVersion("We linked against SDL version ", version);
+	LogSDLVersion("Compiled with SDL_ttf ",	SDL_TTF_MAJOR_VERSION, SDL_TTF_MINOR_VERSION, SDL_TTF_MICRO_VERSION);
+	const int ttfVersion = TTF_Version();
+	LogSDLVersion("Linked with SDL_ttf ", SDL_VERSIONNUM_MAJOR(ttfVersion), SDL_VERSIONNUM_MINOR(ttfVersion),	SDL_VERSIONNUM_MICRO(ttfVersion));
 
-	SDL_IMAGE_VERSION(&version);
-	LogSDLVersion("We compiled against SDL_image version ", version);
+	LogSDLVersion("Compiled with SDL_mixer ",	SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_MICRO_VERSION);
+	const int mixerVersion = MIX_Version();
+	LogSDLVersion("Linked with SDL_mixer ", SDL_VERSIONNUM_MAJOR(mixerVersion), SDL_VERSIONNUM_MINOR(mixerVersion),	SDL_VERSIONNUM_MICRO(mixerVersion));
 
-	version = *IMG_Linked_Version();
-	LogSDLVersion("We linked against SDL_image version ", version);
 
-	SDL_TTF_VERSION(&version)
-		LogSDLVersion("We compiled against SDL_ttf version ", version);
-
-	version = *TTF_Linked_Version();
-	LogSDLVersion("We linked against SDL_ttf version ", version);
 }
-
 

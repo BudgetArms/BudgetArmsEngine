@@ -6,7 +6,7 @@
 #include <vector>
 #include <algorithm>
 
-#include <glm.hpp>
+#include <glm/glm.hpp>
 
 
 namespace bae

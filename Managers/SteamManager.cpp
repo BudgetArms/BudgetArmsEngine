@@ -17,12 +17,14 @@ bool SteamManager::Initialize(uint32_t appId)
 	if (!SteamAPI_Init())
 	{
 		std::cerr << "Steam failed to initialize" << '\n';
+		std::cerr << "Make sure Steam is running" << '\n';
 		return false;
 	}
 
 	std::cout << "Steam Initialize" << '\n';
 	m_bInitialized = true;
-	SteamUserStats()->RequestCurrentStats();
+    // this is now done automatically
+	// SteamUserStats()->RequestCurrentStats();
 
 	return true;
 }
@@ -151,5 +153,7 @@ bool SteamManager::IsSteamRunning() const
 
 	return SteamAPI_IsSteamRunning();
 }
+
+
 
 

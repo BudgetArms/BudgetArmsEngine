@@ -3,7 +3,8 @@
 #include <string>
 #include <memory>
 
-#include <SDL_pixels.h>
+#include <SDL3/SDL_pixels.h>
+// #include <SDL_pixels.h>
 
 #include "Core/GameObject.h"
 #include "Components/TransformComponent.h"

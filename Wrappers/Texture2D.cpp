@@ -1,15 +1,35 @@
-﻿#include <SDL.h>
-#include <SDL_image.h>
-#include "Texture2D.h"
-#include "Core/Renderer.h"
+﻿#include "Texture2D.h"
+
 #include <stdexcept>
 
+#include <SDL3/SDL.h>
 
-bae::Texture2D::Texture2D(const std::string& fullPath)
+#include "Core/Renderer.h"
+
+
+bae::Texture2D::Texture2D(const std::string &fullPath)
 {
-	m_texture = IMG_LoadTexture(Renderer::GetInstance().GetSDLRenderer(), fullPath.c_str());
-	if (m_texture == nullptr)
-		throw std::runtime_error(std::string("Failed to load texture: ") + SDL_GetError());
+    SDL_Surface* surface = SDL_LoadPNG(fullPath.c_str());
+    if (!surface)
+    {
+        throw std::runtime_error(
+            std::string("Failed to load PNG: ") + SDL_GetError()
+        );
+    }
+
+    m_texture = SDL_CreateTextureFromSurface(
+        Renderer::GetInstance().GetSDLRenderer(),
+        surface
+    );
+
+    SDL_DestroySurface(surface);
+
+    if (!m_texture)
+    {
+        throw std::runtime_error(
+            std::string("Failed to create texture from surface: ") + SDL_GetError()
+        );
+    }
 }
 
 bae::Texture2D::Texture2D(SDL_Texture* texture) : m_texture{ texture }
@@ -23,11 +43,12 @@ bae::Texture2D::~Texture2D()
 }
 
 
-glm::ivec2 bae::Texture2D::GetSize() const
+glm::vec2 bae::Texture2D::GetSize() const
 {
-	SDL_Rect dst;
-	SDL_QueryTexture(GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
-	return { dst.w,dst.h };
+	float width{};
+	float height{};
+    SDL_GetTextureSize(m_texture, &width, &height);
+	return { width, height };
 }
 
 SDL_Texture* bae::Texture2D::GetSDLTexture() const

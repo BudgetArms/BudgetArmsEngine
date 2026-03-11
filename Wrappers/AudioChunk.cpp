@@ -4,7 +4,7 @@
 #include <iostream>
 #include <filesystem>
 
-#include <SDL_mixer.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 
 bae::AudioChunk::AudioChunk(const std::string& fullPath) :
@@ -18,7 +18,8 @@ bae::AudioChunk::AudioChunk(const std::string& fullPath) :
 	}
 
 
-	m_Chunk = Mix_LoadWAV(fullPath.c_str());
+    // TODO Load chunk
+	// m_Chunk = Mix_LoadWAV(fullPath.c_str());
 	if (!m_Chunk)
 	{
 		std::cout << "AudioChunk: Failed to load WAV file\n";
@@ -29,7 +30,8 @@ bae::AudioChunk::AudioChunk(const std::string& fullPath) :
 
 bae::AudioChunk::~AudioChunk()
 {
-	Mix_FreeChunk(m_Chunk);
+    // TODO destroy chunk
+	// Mix_FreeChunk(m_Chunk);
 	m_Chunk = nullptr;
 }
 

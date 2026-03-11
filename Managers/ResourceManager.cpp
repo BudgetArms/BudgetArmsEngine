@@ -1,6 +1,6 @@
 ﻿#include <stdexcept>
 
-#include <SDL_ttf.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include "Core/Renderer.h"
 #include "ResourceManager.h"
@@ -15,8 +15,10 @@ void bae::ResourceManager::Init(const std::filesystem::path& dataPath)
 {
 	m_ResourcesPath = dataPath;
 
-	if (TTF_Init() != 0)
+	if (!TTF_Init())
+	{
 		throw std::runtime_error(std::string("Failed to load support for fonts: ") + SDL_GetError());
+	}
 
 }
 

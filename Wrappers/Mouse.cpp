@@ -4,7 +4,7 @@
 #include <vector>
 #include <ranges>
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 
 using namespace bae;
@@ -90,11 +90,11 @@ void Mouse::Impl::ProcessInput()
 
 	Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
 
-	m_CurrentButtonsDown[SDL_BUTTON_LEFT] = (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
-	m_CurrentButtonsDown[SDL_BUTTON_MIDDLE] = (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
-	m_CurrentButtonsDown[SDL_BUTTON_RIGHT] = (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
-	m_CurrentButtonsDown[SDL_BUTTON_X1] = (mouseState & SDL_BUTTON(SDL_BUTTON_X1)) != 0;
-	m_CurrentButtonsDown[SDL_BUTTON_X2] = (mouseState & SDL_BUTTON(SDL_BUTTON_X2)) != 0;
+	m_CurrentButtonsDown[SDL_BUTTON_LEFT] = (mouseState & SDL_BUTTON_MASK(SDL_BUTTON_LEFT)) != 0;
+	m_CurrentButtonsDown[SDL_BUTTON_MIDDLE] = (mouseState & SDL_BUTTON_MASK(SDL_BUTTON_MIDDLE)) != 0;
+	m_CurrentButtonsDown[SDL_BUTTON_RIGHT] = (mouseState & SDL_BUTTON_MASK(SDL_BUTTON_RIGHT)) != 0;
+	m_CurrentButtonsDown[SDL_BUTTON_X1] = (mouseState & SDL_BUTTON_MASK(SDL_BUTTON_X1)) != 0;
+	m_CurrentButtonsDown[SDL_BUTTON_X2] = (mouseState & SDL_BUTTON_MASK(SDL_BUTTON_X2)) != 0;
 
 
 	for (const auto& [command, button, state] : m_MouseCommands)
