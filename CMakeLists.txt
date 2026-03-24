@@ -391,7 +391,7 @@ endif()
 
 
 # Add VLD
-#find_package(VLD CONFIG)
+find_package(VLD CONFIG)
 if(VLD_FOUND)
     message("\n")
     message("VLD package found")
@@ -459,7 +459,6 @@ target_link_libraries(SDL3_gfx_Static PUBLIC
 
 # Link libraries to Engine
 target_link_libraries(${ENGINE_NAME} PUBLIC
-#	${CMAKE_CURRENT_SOURCE_DIR}
     glm::glm
     SDL3::SDL3
     SDL3_ttf::SDL3_ttf
@@ -475,7 +474,7 @@ target_link_libraries(${ENGINE_NAME} PUBLIC
 
 
 if(STEAMWORKS_AVAILABLE)
-    target_link_libraries("${ENGINE_NAME}" PUBLIC
+    target_link_libraries(${ENGINE_NAME} PUBLIC
         Steamworks::Steamworks
     )
 endif()
@@ -483,6 +482,10 @@ endif()
 
 target_include_directories(${ENGINE_NAME} PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(${ENGINE_NAME} PRIVATE
+    glm::glm
 )
 
 # Post-Build Commands
