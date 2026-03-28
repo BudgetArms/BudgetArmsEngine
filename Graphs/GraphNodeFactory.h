@@ -20,8 +20,8 @@ namespace bae::Graphs
 		GraphNodeFactory() = default;
 		virtual ~GraphNodeFactory() = default;
 
-		virtual GraphNode* const CreateNode(const glm::vec2& pos) const = 0;
-		virtual GraphNode* const CloneNode(const GraphNode& other) const = 0;
+		virtual GraphNode* CreateNode(const glm::vec2& pos) const = 0;
+		virtual GraphNode* CloneNode(const GraphNode& other) const = 0;
 
 
 	};
@@ -33,8 +33,8 @@ namespace bae::Graphs
 		GraphNodeFactoryTemplate() = default;
         ~GraphNodeFactoryTemplate() override = default;
 
-		GraphNode* const CreateNode(const glm::vec2& pos) const  override { return new T_GraphNode(pos); }
-		GraphNode* const CloneNode(const GraphNode& other) const  override { return  new T_GraphNode(static_cast<const T_GraphNode &>(other)); }
+		GraphNode* CreateNode(const glm::vec2& pos) const  override { return new T_GraphNode(pos); }
+		GraphNode* CloneNode(const GraphNode& other) const  override { return  new T_GraphNode(static_cast<const T_GraphNode &>(other)); }
 
 
 	};

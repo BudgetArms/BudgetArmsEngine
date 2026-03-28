@@ -16,21 +16,16 @@ using namespace bae::Graphs;
 
 Graph::Graph(bool isDirectional, GraphNodeFactory* const pNodeFactory) :
 	m_bIsDirectional{ isDirectional },
-	m_NextNodeId{ 0 },
-	m_uNodes{},
-	m_uConnections{},
 	m_sNodeFactory{ pNodeFactory }
 {
 }
 
 // Copy constructor
 Graph::Graph(const Graph& other) :
-	m_uNodes{  },
-	m_uConnections{ },
-	m_AmountConnections{ other.m_AmountConnections },
 	m_AmountNodes{ other.m_AmountNodes },
-	m_NextNodeId{ other.m_NextNodeId },
+	m_AmountConnections{ other.m_AmountConnections },
 	m_bIsDirectional{ other.m_bIsDirectional },
+	m_NextNodeId{ other.m_NextNodeId },
 	m_sNodeFactory{ other.m_sNodeFactory }
 {
 	m_uConnections.clear();
@@ -158,7 +153,7 @@ bool Graph::IsNodeValid(int index) const
 	return static_cast<size_t>(index) < m_uNodes.size() && m_uNodes[index] != nullptr;
 }
 
-GraphNode* const Graph::GetNode(int index) const
+GraphNode* Graph::GetNode(int index) const
 {
 	if (!IsNodeValid(index))
 		return nullptr;
@@ -183,7 +178,7 @@ int Graph::GetNodeIdAtPosition(const glm::vec2& pos, float errorMargin) const
 	return pGraphNode->GetId();
 }
 
-GraphNode* const Graph::GetNodeAtPosition(const glm::vec2& position, float errorMargin) const
+GraphNode* Graph::GetNodeAtPosition(const glm::vec2& position, float errorMargin) const
 {
 	const float nodeRadius = std::abs(m_DefaultNodeRadius * errorMargin);
 	const auto foundIt = std::ranges::find_if(m_pActiveNodes,
@@ -232,7 +227,7 @@ void Graph::AddConnection(std::unique_ptr<GraphConnection> pConnection)
 	}
 }
 
-GraphConnection* const Graph::GetConnection(int fromNodeId, int toNodeId) const
+GraphConnection* Graph::GetConnection(int fromNodeId, int toNodeId) const
 {
 	assert(IsNodeValid(fromNodeId) && "<Graph::GetConnection>: invalid 'from' node index");
 	assert(IsNodeValid(toNodeId) && "<Graph::GetConnection>: invalid 'to' node index");
@@ -373,8 +368,10 @@ void Graph::UpdateActiveNodes()
 
 void Graph::OnGraphModified(bool nrOfNodesChanged, bool nrOfConnectionsChanged)
 {
-    nrOfConnectionsChanged;
-    nrOfNodesChanged;
+    // TODO: fix unused var
+    std::cout << nrOfNodesChanged << nrOfConnectionsChanged << '\n';
+    // nrOfConnectionsChanged;
+    // nrOfNodesChanged;
 }
 
 void Graph::AddNodeAtIndex(std::unique_ptr<GraphNode> uNode)

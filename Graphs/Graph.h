@@ -31,7 +31,7 @@ namespace bae::Graphs
 		void RemoveNode(int nodeId);
 
 		bool IsNodeValid(int nodeId) const;
-		GraphNode* const GetNode(int nodeId) const;
+		GraphNode* GetNode(int nodeId) const;
 		std::unique_ptr<GraphNode> GetNodeRef(int nodeId);
 		const std::vector<GraphNode*>& GetAllNodes() const { return m_pActiveNodes; }
 
@@ -42,7 +42,7 @@ namespace bae::Graphs
 		void RemoveConnection(std::unique_ptr<GraphConnection> pConnection);
 		void RemoveAllConnectionsWithNode(int nodeId);
 
-		GraphConnection* const GetConnection(int fromNodeId, int toNodeId) const;
+		GraphConnection* GetConnection(int fromNodeId, int toNodeId) const;
 		std::unique_ptr<GraphConnection> GetConnectionRef(int fromNodeId, int toNodeId);
 		const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(int nodeId) const;
 		const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(const GraphNode* const pNode) const { return GetConnectionsFromNode(pNode->GetId()); }
@@ -51,12 +51,12 @@ namespace bae::Graphs
 
 		//Query nodes and connections
 		int GetNodeIdAtPosition(const glm::vec2& position, float errorMargin = 1.f) const;
-		GraphNode* const GetNodeAtPosition(const glm::vec2& position, float errorMargin) const;
+		GraphNode* GetNodeAtPosition(const glm::vec2& position, float errorMargin) const;
 		bool ConnectionExists(int fromNodeId, int toNodeId) const { return GetConnection(fromNodeId, toNodeId) != nullptr; }
 
 		virtual glm::vec2 GetNodePos(int nodeId) const;
 		virtual int GetNodeIdAtPosition(const glm::vec2& position) const { return GetNodeIdAtPosition(position, 1.0f); }
-		virtual GraphNode* const GetNodeAtPosition(const glm::vec2& position) const { return GetNodeAtPosition(position, 1.0f); }
+		virtual GraphNode* GetNodeAtPosition(const glm::vec2 &position) const { return GetNodeAtPosition(position, 1.0f); }
 
 
 	private:
@@ -82,8 +82,8 @@ namespace bae::Graphs
 		int m_NextNodeId{ 0 };
 
 
-		std::vector<std::unique_ptr<GraphNode>> m_uNodes;
-		std::vector<std::vector<std::unique_ptr<GraphConnection>>> m_uConnections;
+		std::vector<std::unique_ptr<GraphNode>> m_uNodes{};
+		std::vector<std::vector<std::unique_ptr<GraphConnection>>> m_uConnections{};
 
 		std::vector<GraphNode*> m_pActiveNodes;
 		std::shared_ptr<GraphNodeFactory> m_sNodeFactory;

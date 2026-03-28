@@ -53,7 +53,7 @@ namespace bae::Graphs
 		GraphNode* GetNode(GridPosition position) const;
 
 		int GetNodeIdAtPosition(const glm::vec2& pos) const override;
-		GraphNode* const GetNodeAtPosition(const glm::vec2& pos) const override;
+		GraphNode* GetNodeAtPosition(const glm::vec2& pos) const override;
 
 		glm::vec2 GetNodePos(int nodeId) const override;
 		GridPosition GetGridPosition(int idx) const;
