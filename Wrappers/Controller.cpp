@@ -7,6 +7,7 @@ using namespace bae;
 class Controller::Impl
 {
 public:
+#ifndef __EMSCRIPTEN__
 	void ProcessInput(int controllerIndex);
 	void ClearCommands();
 
@@ -16,10 +17,23 @@ public:
 	bool IsButtonDown(unsigned int button) const;
 	bool IsButtonPressed(unsigned int button) const;
 
+#else
+    void ProcessInput(int) {};
+	void ClearCommands() {};
+
+	void AddControllerCommands(std::unique_ptr<Command>, unsigned int, InputManager::ButtonState){};
+
+    bool IsButtonUp(unsigned int) const{ return false; };
+	bool IsButtonDown(unsigned int) const{ return false; };
+	bool IsButtonPressed(unsigned int) const{  return false; };
+#endif
+
 
 private:
+#ifndef __EMSCRIPTEN__
 	XINPUT_STATE m_PreviousState{};
 	XINPUT_STATE m_CurrentState{};
+#endif
 
 	std::vector<std::tuple<std::unique_ptr<Command>, unsigned int, InputManager::ButtonState>> m_ControllerCommands{};
 
@@ -42,22 +56,28 @@ Controller::~Controller()
 
 void Controller::ProcessInput()
 {
-	m_Pimpl->ProcessInput(m_ControllerIndex);
+    if (m_Pimpl)
+	    m_Pimpl->ProcessInput(m_ControllerIndex);
 }
 
 void Controller::ClearCommands()
 {
-	m_Pimpl->ClearCommands();
+    if (m_Pimpl)
+	    m_Pimpl->ClearCommands();
 }
 
 void Controller::AddControllerCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)
 {
-	m_Pimpl->AddControllerCommands(std::move(command), button, activationState);
+    if (m_Pimpl)
+	    m_Pimpl->AddControllerCommands(std::move(command), button, activationState);
 }
 
 bool Controller::IsButtonPressed(unsigned int button) const
 {
-	return m_Pimpl->IsButtonPressed(button);
+    if (m_Pimpl)
+	    return m_Pimpl->IsButtonPressed(button);
+
+    return false;
 }
 
 
@@ -66,6 +86,8 @@ bool Controller::IsButtonPressed(unsigned int button) const
 
 #pragma region Controller | PIMPL
 
+
+#ifndef __EMSCRIPTEN__
 
 void Controller::Impl::ProcessInput(int controllerIndex)
 {
@@ -140,3 +162,4 @@ bool Controller::Impl::IsButtonPressed(unsigned int button) const
 #pragma endregion
 
 
+#endif // ifndef __EMSCRIPTEN__

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <ranges>
 #include <unordered_map>
+#include <thread>
 
 #include "Core/HelperFunctions.h"
 #include "Core/RingBuffer.h"
@@ -28,10 +29,19 @@ namespace bae
 	{
 		static_assert(std::is_base_of_v<bae::AudioClip, AudioClipType>, "AudioClipType must derive from AudioClip");
 
-
 	public:
 		AudioQueue();
-        ~AudioQueue() override;
+        ~AudioQueue() override
+        {
+            m_bQuit = true;
+            if (m_AudioThread.joinable())
+                m_AudioThread.join();
+
+            for (const auto& [activeSoundId, uAudioClip] : m_ActiveAudio)
+            	uAudioClip->Stop();
+
+            m_ActiveAudio.clear();
+        }
 
 		void SendSoundEvent(const SoundEventData& soundEvent) override;
 		const AudioClip* GetAudioClip(ActiveSoundID activeSoundId) override;
@@ -67,21 +77,6 @@ bae::AudioQueue<AudioClipType>::AudioQueue() :
 	std::cout << "Initialized AudioQueue\n";
 	m_AudioThread = std::thread(&AudioQueue::AudioThreadLoop, this);
 }
-
-
-template<typename AudioClipType>
-bae::AudioQueue<AudioClipType>::~AudioQueue()
-{
-	m_bQuit = true;
-	if (m_AudioThread.joinable())
-		m_AudioThread.join();
-
-	for (auto& [activeSoundId, uAudioClip] : m_ActiveAudio)
-		uAudioClip->Stop();
-
-	m_ActiveAudio.clear();
-}
-
 
 template<typename AudioClipType>
 void bae::AudioQueue<AudioClipType>::SendSoundEvent(const SoundEventData& soundEvent)

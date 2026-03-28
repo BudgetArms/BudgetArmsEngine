@@ -1,19 +1,20 @@
-﻿#if _DEBUG
-#if __has_include(<vld.h>)
-#include <vld.h>
-#endif
+﻿// VLD include
+#if _DEBUG && __has_include(<vld.h>)
+	#include <vld.h>
 #endif
 
-
+// STD includes
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
 #include <chrono> 
-#include <thread> 
+#include <thread>
 
+
+// External libraries includes
 #if WIN32
-#define WIN32_LEAN_AND_MEAN 
-#include <windows.h>
+	#define WIN32_LEAN_AND_MEAN
+	#include <Windows.h>
 #endif
 
 #include <glm/glm.hpp>
@@ -22,34 +23,39 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #ifdef STEAMWORKS_ENABLED
-#pragma warning (push)
-#pragma warning (disable: 4996)
-#include <steam_api.h>
-#pragma warning (pop)
+	#pragma warning (push)
+	#pragma warning (disable: 4996)
+	#include <steam_api.h>
+	#pragma warning (pop)
 #endif
-
-#include "BudgetEngine.h"
-#include "Managers/InputManager.h"
-#include "Managers/SceneManager.h"
-#include "Managers/ResourceManager.h"
-#include "Core/EventQueue.h"
-#include "Core/ServiceLocator.h"
-
-#ifdef STEAMWORKS_ENABLED
-#include "Managers/SteamManager.h"
-#endif
-
-#include "Singletons/GameTime.h"
-#include "Renderer.h"
 
 #ifdef __EMSCRIPTEN__
-#include "emscripten.h"
+	#include <emscripten.h>
+#endif
 
-void LoopCallback(void* arg)
-{
-	static_cast<bae::BudgetEngine*>(arg)->RunOneFrame();
-}
 
+// BudgetArmsEngine includes
+#include "Core/BudgetEngine.h"
+#include "Core/EventQueue.h"
+#include "Core/Renderer.h"
+
+#include "Managers/InputManager.h"
+#include "Managers/ResourceManager.h"
+#include "Managers/SceneManager.h"
+
+#include "Singletons/GameTime.h"
+
+#ifdef STEAMWORKS_ENABLED
+	#include "Managers/SteamManager.h"
+#endif
+
+
+
+#ifdef __EMSCRIPTEN__
+	void LoopCallback(void* arg)
+	{
+		static_cast<bae::BudgetEngine*>(arg)->RunOneFrame();
+	}
 #endif
 
 
@@ -64,7 +70,9 @@ bae::BudgetEngine::BudgetEngine(const bae::Utils::Window& window)
 	PrintSDLVersion();
 
 	if (!SDL_InitSubSystem(SDL_INIT_VIDEO))
+	{
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
+	}
 
 
 	// Disabled VLD, because MMDevApi.dll leaking (only on my system for some reason)
@@ -79,24 +87,24 @@ bae::BudgetEngine::BudgetEngine(const bae::Utils::Window& window)
 		SDL_WINDOW_VULKAN
 	);
 
+	if (!g_window)
+	{
+		g_window = SDL_CreateWindow(
+			window.title.c_str(),
+			window.width,
+			window.height,
+			SDL_WINDOW_OPENGL
+		);
+
+		if (!g_window)
+		{
+			throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
+		}
+	}
+
 #if defined(_DEBUG) && __has_include(<vld.h>)
 	VLDEnable();
 #endif
-
-	if (g_window == nullptr)
-		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
-
-
-	if (window.bIsVSyncOn)
-	{
-		if (SDL_GL_SetSwapInterval(1) == false)
-		{
-			std::cerr << "BudgetEngine::BudgetEngine, error when calling SDL_GL_SetSwapInterval: " << SDL_GetError() << std::endl;
-			return;
-		}
-	}
-	else
-		SDL_GL_SetSwapInterval(0);
 
 
 	Renderer::GetInstance().Init(g_window);
@@ -119,7 +127,9 @@ void bae::BudgetEngine::Run(const std::function<void()>& load)
 
 #ifndef __EMSCRIPTEN__
 	while (!m_Quit)
+	{
 		RunOneFrame();
+	}
 #else
 	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
 #endif

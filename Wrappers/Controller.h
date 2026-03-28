@@ -3,8 +3,10 @@
 #include <memory>
 #include <vector>
 
-#include <Windows.h>
-#include <XInput.h>
+#if WIN32
+    #include <Windows.h>
+    #include <XInput.h>
+#endif
 
 #include "Commands/Command.h"
 #include "Managers/InputManager.h"

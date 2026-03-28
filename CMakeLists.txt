@@ -1,24 +1,20 @@
 ﻿cmake_minimum_required(VERSION 4.0.0)
 project(BudgetEngine)
 
-message("\nBudgetArmsEngine CMake")
+message("\nBudgetArmsEngine CMake:")
 
+set(ENGINE_NAME BudgetEngine PARENT_SCOPE)
+set(ENGINE_NAME BudgetEngine)
 
 if(EMSCRIPTEN)
 	message("Using Emscripten!")
-	set(ENGINE_NAME BudgetEngine_web PARENT_SCOPE)
-	set(ENGINE_NAME BudgetEngine_web)
-	set(ENGINE_PARAM )
 else()
-	set(ENGINE_NAME BudgetEngine PARENT_SCOPE)
-	set(ENGINE_NAME BudgetEngine)
+	message("NOT Using Emscripten!")
+endif()
 
-	if(ENABLE_CONSOLE)
-		set(ENGINE_PARAM )
-	else()
-		set(ENGINE_PARAM WIN32)
-	endif()
-
+# Emscripten doesn't allow shared libs
+if(EMSCRIPTEN)
+    set(BUILD_SHARED_LIBS OFF)
 endif()
 
 
@@ -87,25 +83,6 @@ add_library(${ENGINE_NAME} STATIC
 	"Wrappers/Texture2D.cpp"						"Wrappers/Texture2D.h"
 )
  
-
-
-# Add Steamworks
-if(ENABLE_STEAMWORKS)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake/steam")
-    find_package(Steamworks QUIET)
-    if(NOT Steamworks_FOUND)
-        message("\n")
-        message(WARNING "Steamworks package NOT found")
-        set(STEAMWORKS_AVAILABLE FALSE)
-
-    else()
-        message("\n")
-        message("Steamworks package Found")
-        set(STEAMWORKS_AVAILABLE TRUE)
-
-    endif()
-endif()
-
 
 if(STEAMWORKS_AVAILABLE)
     target_sources(${ENGINE_NAME} PRIVATE
@@ -226,7 +203,7 @@ else()
 
         set(SDL3TTF_INSTALL OFF)
         if(EMSCRIPTEN)
-            list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/emscripten")
+            list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/emscripten")
             set(SDL3TTF_USE_SYSTEM_FREETYPE ON)
             set(SDL3TTF_VENDORED OFF)
             set(SDLTTF_PLUTOSVG OFF)
@@ -269,7 +246,6 @@ else()
             GIT_SHALLOW TRUE
             GIT_PROGRESS TRUE
         )
-
         FetchContent_MakeAvailable(SDL3_mixer)
 
     endif()
@@ -298,7 +274,6 @@ else()
     )
     FetchContent_MakeAvailable(SDL3_gfx)
 
-    # Disable the shared target
     if(TARGET SDL3_gfx_Shared)
         message(STATUS "Disabling SDL3_gfx_Shared target")
         set_target_properties(SDL3_gfx_Shared PROPERTIES
@@ -306,7 +281,6 @@ else()
             EXCLUDE_FROM_DEFAULT_BUILD ON
         )
     endif()
-
 endif()
 
 
@@ -386,30 +360,29 @@ else()
     )
     FetchContent_MakeAvailable(nlohmann_json)
 
-
 endif()
 
-
 # Add VLD
-find_package(VLD CONFIG)
-if(VLD_FOUND)
-    message("\n")
-    message("VLD package found")
-else()
-    message("\n")
-    message("VLD package NOT found, using FetchContent to get it")
+if(WIN32)
+    find_package(VLD CONFIG)
+    if(VLD_FOUND)
+        message("\n")
+        message("VLD package found")
+    else()
+        message("\n")
+        message("VLD package NOT found, using FetchContent to get it")
 
-    # Get the package from github
-    FetchContent_Declare(
-        vld
-        GIT_REPOSITORY "https://github.com/avadae/vld.git"
-        GIT_TAG "v2.5.12"
-        GIT_SHALLOW TRUE
-        GIT_PROGRESS TRUE
-    )
-    FetchContent_MakeAvailable(vld)
+        # Get the package from github
+        FetchContent_Declare(
+            vld
+            GIT_REPOSITORY "https://github.com/avadae/vld.git"
+            GIT_TAG "v2.5.12"
+            GIT_SHALLOW TRUE
+            GIT_PROGRESS TRUE
+        )
+        FetchContent_MakeAvailable(vld)
 
-
+    endif()
 endif()
 
 
@@ -435,12 +408,13 @@ target_include_directories(${ENGINE_NAME} PUBLIC
     SDL3::SDL3
     SDL3_TTF::SDL3_TTF
     SDL3_MIXER::SDL3_MIXER
-    SDL3_gfx_Static
+
+    ${sdl3_gfx_SOURCE_DIR}
 
     imgui::imgui
     imgui_plot::imgui_plot
 
-    VLD::VLD
+    ${VLD_INCLUDE_DIR}
 )
 
 
@@ -464,14 +438,20 @@ target_link_libraries(${ENGINE_NAME} PUBLIC
     SDL3_ttf::SDL3_ttf
     SDL3_mixer::SDL3_mixer
 
+    SDL3_gfx_Static
+
     imgui
     imgui_plot
     nlohmann_json::nlohmann_json
 
-    ${XINPUT_LIB}
-    ${VLD_LIBRARIES}
 )
 
+if(WIN32)
+    target_link_libraries(${ENGINE_NAME} PUBLIC
+        ${XINPUT_LIB}
+        ${VLD_LIBRARIES}
+    )
+endif()
 
 if(STEAMWORKS_AVAILABLE)
     target_link_libraries(${ENGINE_NAME} PUBLIC
@@ -531,12 +511,12 @@ if(WIN32)
     endif()
 
 
-    # Copy Resources folder
+    # Copy Resource folder
 	add_custom_command(
         TARGET ${ENGINE_NAME} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy_directory
-        "${CMAKE_SOURCE_DIR}/Resources"
-        "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}/Resources"
+        "${CMAKE_SOURCE_DIR}/${RESOURCE_FOLDER_NAME}"
+        "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}/${RESOURCE_FOLDER_NAME}"
 	)
 
 endif()
