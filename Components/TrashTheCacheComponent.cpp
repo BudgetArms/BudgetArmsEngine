@@ -55,10 +55,14 @@ void TrashTheCacheComponent::RenderGUI()
 		ImGui::InputInt("samples", &m_NrSamples, 10);
 
 		if (ImGui::Button("Trash the cache"))
+		{
 			TimingExercise1();
+		}
 
 		if (m_NrSamples < 1)
+		{
 			m_NrSamples = 10;
+		}
 
 		if (!m_TimingsExercise1.empty())
 		{
@@ -86,13 +90,19 @@ void TrashTheCacheComponent::RenderGUI()
 		ImGui::InputInt("samples", &m_NrSamples, 100);
 
 		if (ImGui::Button("Trash the cache with GameObject3D"))
+		{
 			TimingExercise2();
+		}
 
 		if (ImGui::Button("Trash the cache with GameObject3DAlt"))
+		{
 			TimingExercise2Alt();
+		}
 
 		if (m_NrSamples < 1)
+		{
 			m_NrSamples = 100;
+		}
 
 		if (!m_TimingsExercise2.empty())
 		{
@@ -160,9 +170,7 @@ void TrashTheCacheComponent::RenderGUI()
 
 			ImGui::Plot("plot 2combined", conf);
 
-
 		}
-
 
 
 		ImGui::End();
@@ -185,11 +193,13 @@ void TrashTheCacheComponent::TimingExercise1()
 		{
 			const auto beginIteration{ std::chrono::high_resolution_clock::now() };
 
-			for (int i{ 0 }; i < buffer.size(); i += stepsize)
+			for (int i{}; i < static_cast<int>(buffer.size()); i += stepsize)
+			{
 				buffer[i] *= 2;
+			}
 
 			const auto timeElapsed{ std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - beginIteration) };
-			timings[timingIndex] += timeElapsed.count();
+			timings[timingIndex] += static_cast<float>(timeElapsed.count());
 
 			++timingIndex;
 		}
@@ -197,7 +207,9 @@ void TrashTheCacheComponent::TimingExercise1()
 
 	// average out all the timings
 	for (auto& timing : timings)
-		timing /= m_NrSamples;
+	{
+		timing /= static_cast<float>(m_NrSamples);
+	}
 
 	m_TimingsExercise1 = std::move(timings);
 }
@@ -207,7 +219,7 @@ void TrashTheCacheComponent::TimingExercise2()
 	m_TimingsExercise2.clear();
 
 	std::vector<float> timings(m_NrSamples + 1, 0.f);
-	std::vector<GameObject3D> buffer(static_cast<size_t>(m_BufferSize));
+	std::vector<GameObject3D> buffer(m_BufferSize);
 
 	for (int sampleIndex{}; sampleIndex < m_NrSamples; ++sampleIndex)
 	{
@@ -217,11 +229,13 @@ void TrashTheCacheComponent::TimingExercise2()
 		{
 			const auto beginIteration{ std::chrono::high_resolution_clock::now() };
 
-			for (int i{ 0 }; i < buffer.size(); i += stepsize)
+			for (int i{}; i < static_cast<int>(buffer.size()); i += stepsize)
+			{
 				buffer[i].ID *= 2;
+			}
 
 			const auto timeElapsed{ std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - beginIteration) };
-			timings[timingIndex] += timeElapsed.count();
+			timings[timingIndex] += static_cast<float>(timeElapsed.count());
 
 			++timingIndex;
 		}
@@ -229,7 +243,7 @@ void TrashTheCacheComponent::TimingExercise2()
 
 	// average out all the timings
 	for (auto& timing : timings)
-		timing /= m_NrSamples;
+		timing /= static_cast<float>(m_NrSamples);
 
 	m_TimingsExercise2 = std::move(timings);
 }
@@ -240,7 +254,7 @@ void TrashTheCacheComponent::TimingExercise2Alt()
 	m_TimingsExercise2Alt.clear();
 
 	std::vector<float> timings(m_NrSamples + 1, 0.f);
-	std::vector<GameObject3DAlt> buffer{ static_cast<size_t>(m_BufferSize) };
+	std::vector<GameObject3DAlt> buffer(m_BufferSize);
 
 	for (int sampleIndex{}; sampleIndex < m_NrSamples; ++sampleIndex)
 	{
@@ -250,11 +264,13 @@ void TrashTheCacheComponent::TimingExercise2Alt()
 		{
 			const auto beginIteration{ std::chrono::high_resolution_clock::now() };
 
-			for (int i{ 0 }; i < buffer.size(); i += stepsize)
+			for (int i{}; i < static_cast<int>(buffer.size()); i += stepsize)
+			{
 				buffer[i].ID *= 2;
+			}
 
 			const auto timeElapsed{ std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - beginIteration) };
-			timings[timingIndex] += timeElapsed.count();
+			timings[timingIndex] += static_cast<float>(timeElapsed.count());
 
 			++timingIndex;
 		}
@@ -262,7 +278,7 @@ void TrashTheCacheComponent::TimingExercise2Alt()
 
 	// average out all the timings
 	for (auto& timing : timings)
-		timing /= m_NrSamples;
+		timing /= static_cast<float>(m_NrSamples);
 
 	m_TimingsExercise2Alt = std::move(timings);
 }

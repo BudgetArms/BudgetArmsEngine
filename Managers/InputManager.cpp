@@ -81,7 +81,7 @@ Controller* InputManager::GetController(int index) const
 	if (m_Controllers.empty())
 		return nullptr;
 
-	if (index < 0 || index >= m_Controllers.size())
+	if (index < 0 || index >= static_cast<int>(m_Controllers.size()))
 		return nullptr;
 
 	return m_Controllers[index].get();
