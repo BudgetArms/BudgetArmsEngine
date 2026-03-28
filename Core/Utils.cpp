@@ -4,8 +4,7 @@
 
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
-// TODO: update
-// #include <SDL3/SDL3_gfxPrimitives.h>
+#include <SDL3_gfxPrimitives.h>
 
 #include "Core/Renderer.h"
 
@@ -62,7 +61,7 @@ const bu::Color bu::Color::Transparent(0.f, 0.f, 0.f, 0.f);
 
 bool bu::IsOverlapping(const SDL_Rect& rect1, const SDL_Rect& rect2)
 {
-	return static_cast<bool>(SDL_HasRectIntersection(&rect1, &rect2));
+	return SDL_HasRectIntersection(&rect1, &rect2);
 }
 
 
@@ -84,107 +83,94 @@ void bu::SetDrawColor(const Color& color)
 }
 
 
-// void bu::DrawLine(const glm::vec2& line1, const glm::vec2& line2, int width, const Color& color)
-void bu::DrawLine(const glm::vec2&, const glm::vec2&, int, const Color&)
+void bu::DrawLine(const glm::vec2& line1, const glm::vec2& line2, int width, const Color& color)
 {
 	auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
 	if (!pSdlRenderer)
 		return;
 
-	// GFX_thickLineRGBA(pSdlRenderer, static_cast<Sint16>(line1.x), static_cast<Sint16>(line1.y),
-		// static_cast<Sint16>(line2.x), static_cast<Sint16>(line2.y), static_cast<Uint8>(width),
-		// FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
+	thickLineRGBA(pSdlRenderer, static_cast<Sint16>(line1.x), static_cast<Sint16>(line1.y),
+		static_cast<Sint16>(line2.x), static_cast<Sint16>(line2.y), static_cast<Uint8>(width),
+		FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 }
 
 
-// void bu::DrawRect(const SDL_FRect& rect, const Color& color)
-void bu::DrawRect(const SDL_FRect&, const Color& color)
-{
-	auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
-	if (!pSdlRenderer)
-		return;
-
-	SetDrawColor(color);
-    // TODO: update
-	// GFX_rectangleRGBA(pSdlRenderer, static_cast<Sint16>(rect.x), static_cast<Sint16>(rect.y),
-		// static_cast<Sint16>(rect.x + rect.w), static_cast<Sint16>(rect.y + rect.h),
-		// FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
-
-}
-
-// void bu::FillRect(const SDL_FRect& rect, const Color& color)
-void bu::FillRect(const SDL_FRect&, const Color& color)
+void bu::DrawRect(const SDL_FRect& rect, const Color& color)
 {
 	auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
 	if (!pSdlRenderer)
 		return;
 
 	SetDrawColor(color);
-    // TODO: update
-	// GFX_boxRGBA(pSdlRenderer, static_cast<Sint16>(rect.x), static_cast<Sint16>(rect.y),
-		// static_cast<Sint16>(rect.x + rect.w), static_cast<Sint16>(rect.y + rect.h),
-		// FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
+	rectangleRGBA(pSdlRenderer, static_cast<Sint16>(rect.x), static_cast<Sint16>(rect.y),
+		static_cast<Sint16>(rect.x + rect.w), static_cast<Sint16>(rect.y + rect.h),
+		FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
+
 }
 
-
-// void bu::DrawCircle(const glm::vec2& center, int radius, const Color& color)
-void bu::DrawCircle(const glm::vec2&, int, const Color&)
+void bu::FillRect(const SDL_FRect& rect, const Color& color)
 {
 	auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
 	if (!pSdlRenderer)
 		return;
 
-    // TODO: update
-	// GFX_circleRGBA(pSdlRenderer, static_cast<Sint16>(center.x), static_cast<Sint16>(center.y),
-		// static_cast<Sint16>(radius),
-		// FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
+	SetDrawColor(color);
+	boxRGBA(pSdlRenderer, static_cast<Sint16>(rect.x), static_cast<Sint16>(rect.y),
+		static_cast<Sint16>(rect.x + rect.w), static_cast<Sint16>(rect.y + rect.h),
+		FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 }
 
-void bu::FillCircle(const glm::vec2&, int, const Color&)
+
+void bu::DrawCircle(const glm::vec2& center, int radius, const Color& color)
 {
 	auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
 	if (!pSdlRenderer)
 		return;
 
-    // TODO: update
-	// GFX_filledCircleRGBA(pSdlRenderer, static_cast<Sint16>(center.x), static_cast<Sint16>(center.y),
-		// static_cast<Sint16>(radius),
-		// FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
-
+	circleRGBA(pSdlRenderer, static_cast<Sint16>(center.x), static_cast<Sint16>(center.y),
+		static_cast<Sint16>(radius),
+		FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 }
 
-
-void bu::DrawEllipse(const glm::vec2&, int, int, const Color&)
+void bu::FillCircle(const glm::vec2& center, int radius, const Color& color)
 {
 	auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
 	if (!pSdlRenderer)
 		return;
 
-    // TODO: update
-    // center;radiusX;radiusY;color;
-	// GFX_ellipseRGBA(pSdlRenderer, static_cast<Sint16>(center.x), static_cast<Sint16>(center.y),
-		// static_cast<Sint16>(radiusX), static_cast<Sint16>(radiusY),
-		// FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
+	filledCircleRGBA(pSdlRenderer, static_cast<Sint16>(center.x), static_cast<Sint16>(center.y),
+		static_cast<Sint16>(radius),
+		FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 
 }
 
-// void bu::FillEllipse(const glm::vec2& center, int radiusX, int radiusY, const Color& color)
-void bu::FillEllipse(const glm::vec2&, int, int, const Color&)
+
+void bu::DrawEllipse(const glm::vec2& center, int radiusX, int radiusY, const Color& color)
 {
 	auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
 	if (!pSdlRenderer)
 		return;
 
-    // TODO: update
-	// GFX_filledEllipseRGBA(pSdlRenderer, static_cast<Sint16>(center.x), static_cast<Sint16>(center.y),
-		// static_cast<Sint16>(radiusX), static_cast<Sint16>(radiusY),
-		// FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
+	ellipseRGBA(pSdlRenderer, static_cast<Sint16>(center.x), static_cast<Sint16>(center.y),
+		static_cast<Sint16>(radiusX), static_cast<Sint16>(radiusY),
+		FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
+
+}
+
+void bu::FillEllipse(const glm::vec2& center, int radiusX, int radiusY, const Color& color)
+{
+	auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+	if (!pSdlRenderer)
+		return;
+
+	filledEllipseRGBA(pSdlRenderer, static_cast<Sint16>(center.x), static_cast<Sint16>(center.y),
+		static_cast<Sint16>(radiusX), static_cast<Sint16>(radiusY),
+		FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 
 }
 
 
-// void bu::DrawPolygon(const std::vector<glm::vec2>& points, const Color& color)
-void bu::DrawPolygon(const std::vector<glm::vec2>& points, const Color&)
+void bu::DrawPolygon(const std::vector<glm::vec2>& points, const Color& color)
 {
 	auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
 	if (!pSdlRenderer)
@@ -202,14 +188,12 @@ void bu::DrawPolygon(const std::vector<glm::vec2>& points, const Color&)
 		posY.push_back(static_cast<Sint16>(point.y));
 	}
 
-    // TODO: update
-	// GFX_polygonRGBA(pSdlRenderer, posX.data(), posY.data(), static_cast<int>(points.size()),
-		// FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
+	polygonRGBA(pSdlRenderer, posX.data(), posY.data(), static_cast<int>(points.size()),
+		FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 
 }
 
-// void bu::FillPolygon(const std::vector<glm::vec2>& points, const Color& color)
-void bu::FillPolygon(const std::vector<glm::vec2>& points, const Color&)
+void bu::FillPolygon(const std::vector<glm::vec2>& points, const Color& color)
 {
 	SDL_Renderer* pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
 	if (!pSdlRenderer)
@@ -227,10 +211,9 @@ void bu::FillPolygon(const std::vector<glm::vec2>& points, const Color&)
 		posY.push_back(static_cast<Sint16>(point.y));
 	}
 
-    // TODO: update (if it doesn't leak anymore)
-    // GFX_filledPolygonRGBA causes memory leaks, somehow
-	// GFX_filledPolygonRGBA(pSdlRenderer, posX.data(), posY.data(), static_cast<int>(points.size()),
-		// FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
+    // TODO: check if filledPolygonRGBA still causes memory leaks
+	filledPolygonRGBA(pSdlRenderer, posX.data(), posY.data(), static_cast<int>(points.size()),
+		FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 
 }
 
