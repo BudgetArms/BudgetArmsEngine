@@ -56,7 +56,6 @@ private:
 	ActiveSoundID m_ActiveSoundID{};
 	int m_Channel{ -1 };
 	float m_Volume{ 1.f };
-	bool m_Test{ false };
 	bool m_bIsPaused{ false };
 	bool m_bIsMuted{ false };
 
