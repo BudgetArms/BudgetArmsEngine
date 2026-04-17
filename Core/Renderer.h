@@ -13,6 +13,12 @@ namespace bae
 	/**
 	 * Simple RAII wrapper for the SDL renderer
 	 */
+	struct WindowSize
+	{
+		int Width{};
+		int Height{};
+	};
+
 	class Renderer final : public Singleton<Renderer>
 	{
 	public:
@@ -26,6 +32,7 @@ namespace bae
 
 		[[nodiscard]] SDL_Renderer* GetSDLRenderer() const { return m_Renderer; }
 		[[nodiscard]] SDL_Window* GetSDLWindow() const { return m_Window; }
+		[[nodiscard]] WindowSize GetSDLWindowSize() const;
 
 		[[nodiscard]] const SDL_Color& GetBackgroundColor() const { return m_ClearColor; }
 		void SetBackgroundColor(const SDL_Color& color) { m_ClearColor = color; }

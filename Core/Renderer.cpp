@@ -174,4 +174,13 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPos
 
 }
 
+bae::WindowSize bae::Renderer::GetSDLWindowSize() const
+{
+	int width{};
+	int height{};
+	SDL_GetWindowSize(m_Window, &width, &height);
+
+	return { width, height };
+}
+
 
