@@ -45,7 +45,6 @@ add_library(${ENGINE_NAME} STATIC
 	"Components/SpriteComponent.cpp"				"Components/SpriteComponent.h"
 	"Components/TextComponent.cpp"                  "Components/TextComponent.h"
 	"Components/TextureComponent.cpp"               "Components/TextureComponent.h"
-	"Components/TrashTheCacheComponent.cpp"         "Components/TrashTheCacheComponent.h"
 	"Components/TransformComponent.cpp"             "Components/TransformComponent.h"
 
 	"Graphs/ConnectionCostCalculator.h"
