@@ -147,7 +147,7 @@ void GameObject::SetParent(GameObject* newParent, bool keepLocation = true)
 
 }
 
-void GameObject::AttachChild(GameObject* newChild, bool freezeLocation, bool freezeRotation, bool freezeScale)
+void GameObject::AttachChild(GameObject* newChild, bool bFreezeLocation, bool bFreezeRotation, bool bFreezeScale)
 {
 	// if invalid
 	if (this == newChild || m_Parent == newChild || newChild == nullptr || IsChild(newChild))
@@ -156,19 +156,21 @@ void GameObject::AttachChild(GameObject* newChild, bool freezeLocation, bool fre
 		return;
 	}
 
-	if (freezeLocation)
+	if (bFreezeLocation)
 		newChild->SetLocalLocation(newChild->GetWorldLocation() - GetWorldLocation());
 
-	if (freezeRotation)
+	if (bFreezeRotation)
 		newChild->SetLocalRotation(newChild->GetWorldRotation() - GetWorldRotation());
 
-	if (freezeScale)
+	if (bFreezeScale)
 		newChild->SetLocalScale(newChild->GetWorldScale() / GetWorldScale());
 
 
-	SetLocationDirty();
-	SetRotationDirty();
-	SetScaleDirty();
+	// Shouldn't make own location/rotation/scale dirty
+	// SetLocationDirty();
+	// SetRotationDirty();
+	// SetScaleDirty();
+
 	newChild->SetLocationDirty();
 	newChild->SetRotationDirty();
 	newChild->SetScaleDirty();
@@ -271,65 +273,65 @@ const glm::vec2& GameObject::GetLocalScale() const
 }
 
 
-void GameObject::SetWorldLocation(const glm::vec2& location)
+void GameObject::SetWorldLocation(const glm::vec2& location) const
 {
 	m_Transform->SetWorldLocation(location);
 }
 
-void GameObject::SetWorldRotation(float rotation)
+void GameObject::SetWorldRotation(float rotation) const
 {
 	m_Transform->SetWorldRotation(rotation);
 }
 
-void GameObject::SetWorldScale(const glm::vec2& scale)
+void GameObject::SetWorldScale(const glm::vec2& scale) const
 {
 	m_Transform->SetWorldScale(scale);
 }
 
 
-void GameObject::SetLocalLocation(const glm::vec2& location)
+void GameObject::SetLocalLocation(const glm::vec2& location) const
 {
 	m_Transform->SetLocalLocation(location);
 }
 
-void GameObject::SetLocalRotation(float rotation)
+void GameObject::SetLocalRotation(float rotation) const
 {
 	m_Transform->SetLocalRotation(rotation);
 }
 
-void GameObject::SetLocalScale(const glm::vec2& scale)
+void GameObject::SetLocalScale(const glm::vec2& scale) const
 {
 	m_Transform->SetLocalScale(scale);
 }
 
 
-void GameObject::AddLocation(const glm::vec2& addLocation)
+void GameObject::AddLocation(const glm::vec2& addLocation) const
 {
 	m_Transform->AddLocation(addLocation);
 }
 
-void GameObject::AddRotation(float addRotation)
+void GameObject::AddRotation(float addRotation) const
 {
 	m_Transform->AddRotation(addRotation);
 }
 
-void GameObject::AddScale(const glm::vec2& addScale)
+void GameObject::AddScale(const glm::vec2& addScale) const
 {
 	m_Transform->AddScale(addScale);
 }
 
 
-constexpr void GameObject::SetLocationDirty()
+constexpr void GameObject::SetLocationDirty() const
 {
 	m_Transform->SetLocationDirty();
 }
 
-constexpr void GameObject::SetRotationDirty()
+constexpr void GameObject::SetRotationDirty() const
 {
 	m_Transform->SetRotationDirty();
 }
 
-constexpr void GameObject::SetScaleDirty()
+constexpr void GameObject::SetScaleDirty() const
 {
 	m_Transform->SetScaleDirty();
 }

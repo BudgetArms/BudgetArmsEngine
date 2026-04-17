@@ -60,21 +60,21 @@ namespace bae
 		float GetLocalRotation() const;
 		const glm::vec2& GetLocalScale() const;
 
-		void SetWorldLocation(const glm::vec2& location);
-		void SetWorldRotation(float rotation);
-		void SetWorldScale(const glm::vec2& scale);
+		void SetWorldLocation(const glm::vec2& location) const;
+		void SetWorldRotation(float rotation) const;
+		void SetWorldScale(const glm::vec2& scale) const;
 
-		void SetLocalLocation(const glm::vec2& location);
-		void SetLocalRotation(float rotation);
-		void SetLocalScale(const glm::vec2& scale);
+		void SetLocalLocation(const glm::vec2& location) const;
+		void SetLocalRotation(float rotation) const;
+		void SetLocalScale(const glm::vec2& scale) const;
 
-		void AddLocation(const glm::vec2& location);
-		void AddRotation(float rotation);
-		void AddScale(const glm::vec2& scale);
+		void AddLocation(const glm::vec2& location) const;
+		void AddRotation(float rotation) const;
+		void AddScale(const glm::vec2& scale) const;
 
-		constexpr void SetLocationDirty();
-		constexpr void SetRotationDirty();
-		constexpr void SetScaleDirty();
+		constexpr void SetLocationDirty() const;
+		constexpr void SetRotationDirty() const;
+		constexpr void SetScaleDirty() const;
 
 
 		std::vector<std::unique_ptr<bae::Component>>& GetComponents()
@@ -85,7 +85,7 @@ namespace bae
 
 		template<typename ComponentType, typename... Args, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
 			!std::is_same_v<bae::Component, ComponentType>>>
-			void AddComponent(Args&&... args)
+		void AddComponent(Args&&... args)
 		{
 			// We don't need two components of the same type
 			if (GameObject::HasComponent<ComponentType>())
@@ -99,7 +99,7 @@ namespace bae
 
 		template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
 			!std::is_same_v<bae::Component, ComponentType>>>
-			void RemoveComponent()
+		void RemoveComponent()
 		{
 			// if it does not have the component, you can't remove it
 			if (!GameObject::HasComponent<ComponentType>())
@@ -121,7 +121,7 @@ namespace bae
 
 		template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
 			!std::is_same_v<bae::Component, ComponentType>>>
-			bool HasComponent() const
+		bool HasComponent() const
 		{
 			// checks if any of them have the same type a component is the
 			// components vector
@@ -135,7 +135,7 @@ namespace bae
 
 		template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
 			!std::is_same_v<bae::Component, ComponentType>>>
-			ComponentType* GetComponent() const
+		ComponentType* GetComponent() const
 		{
 			auto it = std::ranges::find_if(m_Components,
 				[](const auto& component)
@@ -152,8 +152,7 @@ namespace bae
 
 	private:
 
-		// DON'T USE THIS,
-		// IT BREAK REALITY (AND YOUR MIND)
+		// DON'T USE THIS UNLESS ABSOLUTELY NECESSARY (THIS WILL MOST LIKELY RESULT IN A CRASH)
 		void ForceDestroy();
 
 		std::string m_Name{ "DefaultObject" };

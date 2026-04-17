@@ -63,7 +63,6 @@ void TransformComponent::SetWorldLocation(const glm::vec2& location)
 	SetLocationDirty();
 }
 
-//void TransformComponent::SetWorldRotation(const glm::vec2& rotation)
 void TransformComponent::SetWorldRotation(float rotation)
 {
 	if (!m_Owner->GetParent())
