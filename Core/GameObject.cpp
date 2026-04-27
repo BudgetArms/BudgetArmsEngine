@@ -1,13 +1,13 @@
 ﻿#include "GameObject.h"
 
-#include <assert.h>
-#include <string>
+#include <cassert>
 #include <iostream>
+#include <string>
 
 #include "Core/Renderer.h"
 
-#include "Components/TransformComponent.h"
 #include "Components/Component.h"
+#include "Components/TransformComponent.h"
 
 #include "Wrappers/Texture2D.h"
 
@@ -18,322 +18,374 @@ using namespace bae;
 
 GameObject::GameObject(const std::string& name)
 {
-	SetName(name);
+    SetName(name);
 
-	AddComponent<TransformComponent>(*this);
-	m_Transform = GetComponent<TransformComponent>();
+    AddComponent<TransformComponent>(*this);
+    m_Transform = GetComponent<TransformComponent>();
 }
 
 GameObject::~GameObject()
 {
-	// my design philosophy:
-	// Shared pointers: reset in LateUpdate if Marked For Deletion
-	// Unique pointers: release in LateUpdate if Marked For Deletion
+    // my design philosophy:
+    // Shared pointers: reset in LateUpdate if Marked For Deletion
+    // Unique pointers: release in LateUpdate if Marked For Deletion
 
-	// No Object/class should destroy itself.
+    // No Object/class should destroy itself.
 
 
-	// if it gets deleted with being marked for deletion && it's the project closing; assert
-	if (!m_MarkedForDeletion)
-	{
-		const std::string errorMessage{ "GameObject: " + m_Name + ", Destructor, Object should not be destroyed, because it's not marked for destruction\n" };
-		std::cout << errorMessage;
-		assert(false && errorMessage.c_str());
-	}
-
+    // if it gets deleted with being marked for deletion && it's the project closing; assert
+    if(!m_MarkedForDeletion)
+    {
+        const std::string errorMessage{
+            "GameObject: " + m_Name +
+            ", Destructor, Object should not be destroyed, because it's not marked for destruction\n"
+        };
+        std::cout << errorMessage;
+        assert(false && errorMessage.c_str());
+    }
 }
 
-void GameObject::Update()
+void GameObject::Update() const
 {
-	for (const auto pChild : m_Children)
-	    if (pChild)
-		    pChild->Update();
+    for(const GameObject* pChild : m_Children)
+    {
+        if(pChild)
+        {
+            pChild->Update();
+        }
+    }
 
-	for (const auto& component : m_Components)
-	    if (component)
-		    component->Update();
-
+    for(const std::unique_ptr<Component>& component : m_Components)
+    {
+        if(component)
+        {
+            component->Update();
+        }
+    }
 }
 
-void GameObject::FixedUpdate()
+void GameObject::FixedUpdate() const
 {
-	// The Physics/Networking gets done, by the Components and/or the future GameObjects
-	for (const auto pChild : m_Children)
-	    if (pChild)
-		    pChild->FixedUpdate();
+    // The Physics/Networking gets done, by the Components and/or the future GameObjects
+    for(const GameObject* pChild : m_Children)
+    {
+        if(pChild)
+        {
+            pChild->FixedUpdate();
+        }
+    }
 
-	for (const auto& component : m_Components)
-	    if (component)
-		    component->FixedUpdate();
-
+    for(const std::unique_ptr<Component>& component : m_Components)
+    {
+        if(component)
+        {
+            component->FixedUpdate();
+        }
+    }
 }
 
-void GameObject::LateUpdate()
+void GameObject::LateUpdate() const
 {
-	for (const auto& component : m_Components)
-	    if (component)
-		    component->LateUpdate();
+    for(const std::unique_ptr<Component>& component : m_Components)
+    {
+        if(component)
+        {
+            component->LateUpdate();
+        }
+    }
 }
 
 void GameObject::Render() const
 {
-	for (const auto& component : m_Components)
-	    if (component)
-		    component->Render();
+    for(const std::unique_ptr<Component>& component : m_Components)
+    {
+        if(component)
+        {
+            component->Render();
+        }
+    }
 }
 
-void GameObject::RenderGUI()
+void GameObject::RenderGUI() const
 {
-	for (const auto& component : m_Components)
-	    if (component)
-		    component->RenderGUI();
+    for(const auto& component : m_Components)
+    {
+        if(component)
+        {
+            component->RenderGUI();
+        }
+    }
 }
 
 void GameObject::Destroy()
 {
-	m_MarkedForDeletion = true;
+    m_MarkedForDeletion = true;
 
-	for (const auto pChild : m_Children)
-	    if (pChild)
-		    pChild->Destroy();
-
+    for(GameObject* pChild : m_Children)
+    {
+        if(pChild)
+        {
+            pChild->Destroy();
+        }
+    }
 }
 
 
-// this is for serialization, just as for all inputs
-void GameObject::SetName(const std::string& newName)
+void GameObject::AttachChild(GameObject* child, bool bFreezeLocation, bool bFreezeRotation, bool bFreezeScale)
 {
-	m_Name = newName;
+    // if invalid
+    if(this == child || m_Parent == child || child == nullptr || IsChild(child))
+    {
+        std::cout << "GameObject: " << m_Name << ", AttachChild: newChild is invalid\n";
+        return;
+    }
+
+    if(bFreezeLocation)
+    {
+        child->SetLocalLocation(child->GetWorldLocation() - GetWorldLocation());
+    }
+
+    if(bFreezeRotation)
+    {
+        child->SetLocalRotation(child->GetWorldRotation() - GetWorldRotation());
+    }
+
+    if(bFreezeScale)
+    {
+        child->SetLocalScale(child->GetWorldScale() / GetWorldScale());
+    }
+
+
+    // Shouldn't make own location/rotation/scale dirty
+    // SetLocationDirty();
+    // SetRotationDirty();
+    // SetScaleDirty();
+
+    child->SetLocationDirty();
+    child->SetRotationDirty();
+    child->SetScaleDirty();
+
+
+    // this removes the child from the parent's children list
+    if(child->m_Parent)
+    {
+        std::erase(child->m_Parent->m_Children, child);
+    }
+
+    // Make myself parent from newChild (get adopted) :D
+    child->m_Parent = this;
+
+    // YOU ARE NOW MY CHILD!!!
+    m_Children.emplace_back(child);
 }
 
-GameObject* GameObject::GetParent() const
+void GameObject::DetachChild(GameObject* child, bool bUpdateChildrenOfChildLocations)
 {
-	return m_Parent;
-}
-
-void GameObject::SetParent(GameObject* newParent, bool keepLocation = true)
-{
-	// if invalid
-	if (this == newParent || m_Parent == newParent || IsChild(newParent))
-	{
-		std::cout << "GameObject: " << m_Name << ", newParent is invalid\n";
-		return;
-	}
+    // if invalid
+    if(this == child || m_Parent == child || child == nullptr || !IsChild(child))
+    {
+        std::cout << "GameObject: " << m_Name << ", DetachChild: deleteChild is invalid\n";
+        return;
+    }
 
 
-	if (newParent == nullptr)
-	{
-		SetLocalLocation(GetWorldLocation());
-	}
-	else
-	{
-		// if keep location, local position with adjust to newParent's world location
-		// else, localPos, e.g. {100, 0, 0}, will also be {100, 0, 0} compared to newTarget
-		// We could also have an option to reset LocalPos always to {0, 0, 0}, but why?
-		if (keepLocation)
-			SetLocalLocation(GetWorldLocation() - newParent->GetWorldLocation());
+    if(bUpdateChildrenOfChildLocations)
+    {
+        child->SetLocalLocation(GetWorldLocation());
+    }
 
-		SetLocationDirty();
-	}
+    child->SetLocationDirty();
+    child->SetRotationDirty();
+    child->SetScaleDirty();
 
 
-	if (m_Parent)
-		m_Parent->AttachChild(this, true);
+    // remove deleteChild from my child list
+    std::erase(m_Children, child);
 
-	m_Parent = newParent;
-
-	if (m_Parent)
-		m_Parent->AttachChild(this);
-
-}
-
-void GameObject::AttachChild(GameObject* newChild, bool bFreezeLocation, bool bFreezeRotation, bool bFreezeScale)
-{
-	// if invalid
-	if (this == newChild || m_Parent == newChild || newChild == nullptr || IsChild(newChild))
-	{
-		std::cout << "GameObject: " << m_Name << ", AttachChild: newChild is invalid\n";
-		return;
-	}
-
-	if (bFreezeLocation)
-		newChild->SetLocalLocation(newChild->GetWorldLocation() - GetWorldLocation());
-
-	if (bFreezeRotation)
-		newChild->SetLocalRotation(newChild->GetWorldRotation() - GetWorldRotation());
-
-	if (bFreezeScale)
-		newChild->SetLocalScale(newChild->GetWorldScale() / GetWorldScale());
-
-
-	// Shouldn't make own location/rotation/scale dirty
-	// SetLocationDirty();
-	// SetRotationDirty();
-	// SetScaleDirty();
-
-	newChild->SetLocationDirty();
-	newChild->SetRotationDirty();
-	newChild->SetScaleDirty();
-
-
-	// this removes the child from the parent's children list
-	if (newChild->m_Parent)
-		std::erase(newChild->m_Parent->m_Children, newChild);
-
-	// Make myself parent from newChild (get adopted) :D
-	newChild->m_Parent = this;
-
-	// YOU ARE NOW MY CHILD!!!
-	m_Children.emplace_back(newChild);
-
-}
-
-void GameObject::DetachChild(GameObject* deleteChild, bool updateChildLocation)
-{
-	// if invalid
-	if (this == deleteChild || m_Parent == deleteChild || deleteChild == nullptr || !IsChild(deleteChild))
-	{
-		std::cout << "GameObject: " << m_Name << ", DetachChild: deleteChild is invalid\n";
-		return;
-	}
-
-
-	if (updateChildLocation)
-		deleteChild->SetLocalLocation(GetWorldLocation());
-
-	deleteChild->SetLocationDirty();
-	deleteChild->SetRotationDirty();
-	deleteChild->SetScaleDirty();
-
-
-	// remove deleteChild from my child list
-	std::erase(m_Children, deleteChild);
-
-	deleteChild->m_Parent = nullptr;
-
+    child->m_Parent = nullptr;
 }
 
 bool GameObject::IsChild(const GameObject* child) const
 {
-	return std::ranges::find(m_Children, child) != m_Children.end();
+    return std::ranges::find(m_Children, child) != m_Children.end();
+}
+
+GameObject* GameObject::GetParent() const
+{
+    return m_Parent;
+}
+
+void GameObject::SetParent(GameObject* newParent, bool keepLocation = true)
+{
+    // if invalid
+    if(this == newParent || m_Parent == newParent || IsChild(newParent))
+    {
+        std::cout << "GameObject: " << m_Name << ", newParent is invalid\n";
+        return;
+    }
+
+
+    if(newParent == nullptr)
+    {
+        SetLocalLocation(GetWorldLocation());
+    }
+    else
+    {
+        // if keep location, local position with adjust to newParent's world location
+        // else, localPos, e.g. {100, 0, 0}, will also be {100, 0, 0} compared to newTarget
+        // We could also have an option to reset LocalPos always to {0, 0, 0}, but why?
+        if(keepLocation)
+        {
+            SetLocalLocation(GetWorldLocation() - newParent->GetWorldLocation());
+        }
+
+        SetLocationDirty();
+    }
+
+
+    if(m_Parent)
+    {
+        m_Parent->AttachChild(this, true);
+    }
+
+    m_Parent = newParent;
+
+    if(m_Parent)
+    {
+        m_Parent->AttachChild(this);
+    }
 }
 
 void GameObject::ForceDestroy()
 {
-	// Go DFS (Deep First Search)
-	for (const auto pChild : m_Children)
-	    if (pChild)
-		    pChild->ForceDestroy();
+    // Go DFS (Deep First Search)
+    for(const auto pChild : m_Children)
+    {
+        if(pChild)
+        {
+            pChild->ForceDestroy();
+        }
+    }
 
-	for (const auto pChild : m_Children)
-		if (pChild)
-			std::cout << "child should be dead?\n";
+    for(const auto pChild : m_Children)
+    {
+        if(pChild)
+        {
+            std::cout << "child should be dead?\n";
+        }
+    }
 
-	m_Children.clear();
-	m_MarkedForDeletion = true;
+    m_Children.clear();
+    m_MarkedForDeletion = true;
 
 
-	// fuck it, let's crash
-	delete(this);
+    // fuck it, let's crash
+    delete(this);
+}
+
+// this is for serialization, just as for all inputs
+void GameObject::SetName(const std::string& newName)
+{
+    m_Name = newName;
 }
 
 
 #pragma region Tranform Functions
 
 
-const glm::vec2& GameObject::GetWorldLocation()
+const glm::vec2& GameObject::GetWorldLocation() const
 {
-	return m_Transform->GetWorldLocation();
+    return m_Transform->GetWorldLocation();
 }
 
-float GameObject::GetWorldRotation()
+float GameObject::GetWorldRotation() const
 {
-	return m_Transform->GetWorldRotation();
+    return m_Transform->GetWorldRotation();
 }
 
-const glm::vec2& GameObject::GetWorldScale()
+const glm::vec2& GameObject::GetWorldScale() const
 {
-	return m_Transform->GetWorldScale();
+    return m_Transform->GetWorldScale();
 }
 
 
 const glm::vec2& GameObject::GetLocalLocation() const
 {
-	return m_Transform->GetLocalLocation();
+    return m_Transform->GetLocalLocation();
 }
 
 float GameObject::GetLocalRotation() const
 {
-	return m_Transform->GetLocalRotation();
+    return m_Transform->GetLocalRotation();
 }
 
 const glm::vec2& GameObject::GetLocalScale() const
 {
-	return m_Transform->GetLocalScale();
+    return m_Transform->GetLocalScale();
 }
 
 
 void GameObject::SetWorldLocation(const glm::vec2& location) const
 {
-	m_Transform->SetWorldLocation(location);
+    m_Transform->SetWorldLocation(location);
 }
 
 void GameObject::SetWorldRotation(float rotation) const
 {
-	m_Transform->SetWorldRotation(rotation);
+    m_Transform->SetWorldRotation(rotation);
 }
 
 void GameObject::SetWorldScale(const glm::vec2& scale) const
 {
-	m_Transform->SetWorldScale(scale);
+    m_Transform->SetWorldScale(scale);
 }
 
 
 void GameObject::SetLocalLocation(const glm::vec2& location) const
 {
-	m_Transform->SetLocalLocation(location);
+    m_Transform->SetLocalLocation(location);
 }
 
 void GameObject::SetLocalRotation(float rotation) const
 {
-	m_Transform->SetLocalRotation(rotation);
+    m_Transform->SetLocalRotation(rotation);
 }
 
 void GameObject::SetLocalScale(const glm::vec2& scale) const
 {
-	m_Transform->SetLocalScale(scale);
+    m_Transform->SetLocalScale(scale);
 }
 
 
 void GameObject::AddLocation(const glm::vec2& addLocation) const
 {
-	m_Transform->AddLocation(addLocation);
+    m_Transform->AddLocation(addLocation);
 }
 
 void GameObject::AddRotation(float addRotation) const
 {
-	m_Transform->AddRotation(addRotation);
+    m_Transform->AddRotation(addRotation);
 }
 
 void GameObject::AddScale(const glm::vec2& addScale) const
 {
-	m_Transform->AddScale(addScale);
+    m_Transform->AddScale(addScale);
 }
 
 
 constexpr void GameObject::SetLocationDirty() const
 {
-	m_Transform->SetLocationDirty();
+    m_Transform->SetLocationDirty();
 }
 
 constexpr void GameObject::SetRotationDirty() const
 {
-	m_Transform->SetRotationDirty();
+    m_Transform->SetRotationDirty();
 }
 
 constexpr void GameObject::SetScaleDirty() const
 {
-	m_Transform->SetScaleDirty();
+    m_Transform->SetScaleDirty();
 }
 
 

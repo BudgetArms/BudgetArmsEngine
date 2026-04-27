@@ -8,21 +8,19 @@
 // or use smart-pointers for this, but that seems like a waste of memory/performance hit
 namespace bae
 {
-	class Event
-	{
-	public:
-		explicit Event(const std::string& id) :
-			ID{ id }
-		{
-		}
+    class Event
+    {
+    public:
+        explicit Event(const std::string& id) :
+            ID{ id }
+        {
+        }
 
-		constexpr std::string GetID() const { return ID; }
+        constexpr std::string GetID() const { return ID; }
 
-	private:
-		std::string ID;
-
-
-	};
+    private:
+        std::string ID;
+    };
 }
 
 

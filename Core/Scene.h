@@ -1,54 +1,53 @@
 ﻿#pragma once
 
-#include <vector>
-#include <string>
 #include <memory>
-#include "Managers/SceneManager.h"
+#include <string>
+#include <vector>
+
 #include "Core/GameObject.h"
+#include "Managers/SceneManager.h"
 
 
 namespace bae
 {
-	class GameObject;
-	class Scene final
-	{
-	public:
-		~Scene();
+    class GameObject;
 
-		Scene(const Scene& other) = delete;
-		Scene(Scene&& other) = delete;
-		Scene& operator=(const Scene& other) = delete;
-		Scene& operator=(Scene&& other) = delete;
+    class Scene final
+    {
+    public:
+        ~Scene();
 
-
-		void Update();
-		void FixedUpdate();
-		void LateUpdate();
-		void Render() const;
-		void RenderGUI();
-
-		void Add(std::shared_ptr<GameObject> object);
-		void RemoveAll();
-
-		std::string GetName() const { return m_Name; }
-		std::vector<std::shared_ptr<GameObject>>& GetObjects() { return m_Objects; };
+        Scene(const Scene& other)            = delete;
+        Scene(Scene&& other)                 = delete;
+        Scene& operator=(const Scene& other) = delete;
+        Scene& operator=(Scene&& other)      = delete;
 
 
-		bool m_bIsEnabled{ true };
+        void Update() const;
+        void FixedUpdate() const;
+        void LateUpdate();
+        void Render() const;
+        void RenderGUI() const;
+
+        void Add(std::shared_ptr<GameObject> object);
+        void RemoveAll() const;
+
+        std::string GetName() const { return m_Name; }
+        std::vector<std::shared_ptr<GameObject>>& GetObjects() { return m_Objects; };
 
 
-	private:
-		explicit Scene(const std::string& name);
+        bool m_bIsEnabled{ true };
 
-		friend Scene& SceneManager::CreateScene(const std::string& name);
-		void Remove(std::shared_ptr<GameObject> object);
+    private:
+        explicit Scene(const std::string& name);
 
-
-		std::string m_Name;
-		std::vector<std::shared_ptr<GameObject>> m_Objects{};
-		std::vector<std::shared_ptr<GameObject>> m_ObjectsPendingAdd{};
+        friend Scene& SceneManager::CreateScene(const std::string& name);
+        void Remove(const std::shared_ptr<GameObject>& object);
 
 
-	};
+        std::string m_Name;
+        std::vector<std::shared_ptr<GameObject>> m_Objects{};
+        std::vector<std::shared_ptr<GameObject>> m_ObjectsPendingAdd{};
+    };
 }
 

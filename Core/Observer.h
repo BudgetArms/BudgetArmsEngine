@@ -5,15 +5,13 @@
 
 namespace bae
 {
-	class Subject;
+    class Subject;
 
-	class Observer
-	{
-	public:
-		virtual ~Observer() = default;
-		virtual void Notify(EventType event, Subject* subject) = 0;
-
-
-	};
+    class Observer
+    {
+    public:
+        virtual ~Observer() = default;
+        virtual void Notify(EventType event, Subject* subject) = 0;
+    };
 }
 

@@ -7,14 +7,14 @@
 
 inline int GetRandomNumber()
 {
-	static bool bSeeded = false;
-	if (!bSeeded)
-	{
-		std::srand(static_cast<unsigned int>(std::time(nullptr)));
-		bSeeded = true;
-	}
+    static bool bSeeded = false;
+    if(!bSeeded)
+    {
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
+        bSeeded = true;
+    }
 
-	return std::rand();
+    return std::rand();
 }
 
 
