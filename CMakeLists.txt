@@ -401,15 +401,7 @@ target_include_directories(imgui PUBLIC
 target_include_directories(${ENGINE_NAME} PUBLIC
     glm::glm
 
-    SDL3::SDL3
-    SDL3_TTF::SDL3_TTF
-    SDL3_MIXER::SDL3_MIXER
-
     ${sdl3_gfx_SOURCE_DIR}
-
-    imgui::imgui
-    imgui_plot::imgui_plot
-
     ${VLD_INCLUDE_DIR}
 )
 
@@ -439,7 +431,6 @@ target_link_libraries(${ENGINE_NAME} PUBLIC
     imgui
     imgui_plot
     nlohmann_json::nlohmann_json
-
 )
 
 if(WIN32)
