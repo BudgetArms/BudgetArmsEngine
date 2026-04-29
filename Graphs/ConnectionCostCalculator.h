@@ -5,16 +5,14 @@
 
 namespace bae::Graphs
 {
-	class ConnectionCostCalculator
-	{
-	public:
-		ConnectionCostCalculator() = default;
-		virtual ~ConnectionCostCalculator() = default;
+    class ConnectionCostCalculator
+    {
+    public:
+        ConnectionCostCalculator()          = default;
+        virtual ~ConnectionCostCalculator() = default;
 
 
-		virtual float CalculateConnectionCost(const Graph* const pGraph, int fromNodeId, int toNodeId) const = 0;
-
-
-	};
+        virtual float CalculateConnectionCost(const Graph* pGraph, int fromNodeId, int toNodeId) const = 0;
+    };
 }
 

@@ -24,14 +24,14 @@ namespace bae
         void ProcessEvents();
 
     private:
-        friend class Singleton<EventQueue>;
+        friend class Singleton;
         EventQueue()           = default;
         ~EventQueue() override = default;
 
         void ProcessEvent(Event& event) const;
 
-        bool IsEmpty() const { return (!m_bFull && m_Head == m_Tail); }
-        bool IsFull() const { return m_bFull; }
+        [[nodiscard]] bool IsEmpty() const { return !m_bFull && m_Head == m_Tail; }
+        [[nodiscard]] bool IsFull() const { return m_bFull; }
 
 
         static constexpr size_t m_Capacity{ 64 };

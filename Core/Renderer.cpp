@@ -1,17 +1,17 @@
 ﻿#include <stdexcept>
 #include <string>
 
+
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
 #include <glm/glm.hpp>
 
-
-#include "Renderer.h"
+#include "Core/Renderer.h"
+#include "Core/HelperFunctions.h"
+#include "Core/Utils.h"
 #include "Managers/SceneManager.h"
 #include "Wrappers/Texture2D.h"
-
-#include "Core/Utils.h"
 
 
 namespace bu = bae::Utils;
@@ -29,18 +29,19 @@ void bae::Renderer::Init(SDL_Window* window)
     m_Renderer = SDL_CreateRenderer(window, nullptr);
     #endif
 
-    if(m_Renderer == nullptr)
+    if(!m_Renderer)
     {
-        throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
+        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed to create Renderer, Error: ") + SDL_GetError());
     }
 
+    // TODO: Remove ImGui related code
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     const bool success = ImGui_ImplSDL3_InitForSDLRenderer(m_Window, m_Renderer);
     ImGui_ImplSDLRenderer3_Init(m_Renderer);
     if(!success)
     {
-        throw std::runtime_error("ImGui_ImplSDL3_InitForSDLRenderer: failed to initialize");
+        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed to create Imgui"));
     }
 }
 
@@ -52,6 +53,7 @@ void bae::Renderer::Render() const
 
     SceneManager::GetInstance().Render();
 
+    // Todo: Remove ImGui
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
@@ -77,8 +79,8 @@ void bae::Renderer::Destroy()
     }
 }
 
-void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const glm::vec2& position,
-                                  float angle, const glm::vec2& scale) const
+void bae::Renderer::RenderTexture(const Texture2D& texture, const bool bIsCenteredAtPosition, const glm::vec2& position,
+                                  const float angle, const glm::vec2& scale) const
 {
     SDL_FRect dst{};
     dst.x = position.x;
@@ -89,7 +91,7 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPos
     dst.w = std::abs(scale.x) * dst.w;
     dst.h = std::abs(scale.y) * dst.h;
 
-    if(isCenteredAtPosition)
+    if(bIsCenteredAtPosition)
     {
         dst.x -= dst.w / 2.f;
         dst.y -= dst.h / 2.f;
@@ -126,7 +128,7 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPos
     }
 }
 
-void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const glm::vec2& position,
+void bae::Renderer::RenderTexture(const Texture2D& texture, const bool bIsCenteredAtPosition, const glm::vec2& position,
                                   const float width, const float height) const
 {
     SDL_FRect dst{};
@@ -135,7 +137,7 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPos
     dst.w = width;
     dst.h = height;
 
-    if(isCenteredAtPosition)
+    if(bIsCenteredAtPosition)
     {
         dst.x -= dst.w / 2.f;
         dst.y -= dst.h / 2.f;
@@ -156,14 +158,14 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPos
 }
 
 
-void bae::Renderer::RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const SDL_FRect& src,
-                                  const SDL_FRect& dst, float angle, const glm::vec2& scale) const
+void bae::Renderer::RenderTexture(const Texture2D& texture, const bool bIsCenteredAtPosition, const SDL_FRect& src,
+                                  const SDL_FRect& dst, const float angle, const glm::vec2& scale) const
 {
     SDL_FRect dstScaled = dst;
     dstScaled.w         = std::abs(scale.x) * dstScaled.w;
     dstScaled.h         = std::abs(scale.y) * dstScaled.h;
 
-    if(isCenteredAtPosition)
+    if(bIsCenteredAtPosition)
     {
         dstScaled.x -= dstScaled.w / 2.f;
         dstScaled.y -= dstScaled.h / 2.f;

@@ -15,12 +15,6 @@ Scene::~Scene()
     }
 }
 
-Scene::Scene(const std::string& name) :
-    m_Name(name)
-{
-};
-
-
 void Scene::Update() const
 {
     for(const std::shared_ptr<GameObject>& sObject : m_Objects)
@@ -31,6 +25,7 @@ void Scene::Update() const
         }
     }
 }
+
 
 void Scene::FixedUpdate() const
 {
@@ -43,7 +38,7 @@ void Scene::FixedUpdate() const
     }
 }
 
-void bae::Scene::LateUpdate()
+void Scene::LateUpdate()
 {
     for(const std::shared_ptr<GameObject>& sObject : m_Objects)
     {
@@ -54,7 +49,7 @@ void bae::Scene::LateUpdate()
     }
 
     std::erase_if(m_Objects,
-                  [](const std::shared_ptr<bae::GameObject>& uObject)
+                  [](const std::shared_ptr<GameObject>& uObject)
                   {
                       return uObject->IsMarkedForDeletion();
                   });
@@ -96,11 +91,11 @@ void Scene::RenderGUI() const
     }
 }
 
-
 void Scene::Add(std::shared_ptr<GameObject> object)
 {
     m_ObjectsPendingAdd.emplace_back(std::move(object));
 }
+
 
 void Scene::RemoveAll() const
 {
@@ -111,6 +106,11 @@ void Scene::RemoveAll() const
             sObject->Destroy();
         }
     }
+}
+
+Scene::Scene(const std::string& name) :
+    m_Name(name)
+{
 }
 
 

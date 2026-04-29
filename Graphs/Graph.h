@@ -14,59 +14,63 @@ namespace bae::Graphs
     class Graph
     {
     public:
-        explicit Graph(bool isDirectional, GraphNodeFactory* const pFactory = nullptr);
+        explicit Graph(bool isDirectional, GraphNodeFactory* pNodeFactory = nullptr);
         Graph(const Graph& other);
         virtual ~Graph();
 
 
         void Clear();
-        std::shared_ptr<Graph> Clone() const;
+        [[nodiscard]] std::shared_ptr<Graph> Clone() const;
 
-        bool IsDirectional() const { return m_bIsDirectional; }
-        int GetNextNodeId() const { return m_NextNodeId; }
-        int GetAmountOfConnections() const { return m_AmountConnections; }
-        int GetAmountOfNodes() const { return m_AmountNodes; }
+        [[nodiscard]] bool IsDirectional() const { return m_bIsDirectional; }
+        [[nodiscard]] int GetNextNodeId() const { return m_NextNodeId; }
+        [[nodiscard]] int GetAmountOfConnections() const { return m_AmountConnections; }
+        [[nodiscard]] int GetAmountOfNodes() const { return m_AmountNodes; }
 
         //Nodes
         int AddNode(std::unique_ptr<GraphNode> pNode);
         void RemoveNode(int nodeId);
 
-        bool IsNodeValid(int nodeId) const;
-        GraphNode* GetNode(int nodeId) const;
+        [[nodiscard]] bool IsNodeValid(int nodeId) const;
+        [[nodiscard]] GraphNode* GetNode(int nodeId) const;
         std::unique_ptr<GraphNode> GetNodeRef(int nodeId);
-        const std::vector<GraphNode*>& GetAllNodes() const { return m_pActiveNodes; }
+        [[nodiscard]] const std::vector<GraphNode*>& GetAllNodes() const { return m_pActiveNodes; }
 
 
         //Connections
-        void AddConnection(std::unique_ptr<GraphConnection> const pConnection);
+        void AddConnection(std::unique_ptr<GraphConnection> pConnection);
         void RemoveConnection(int fromNodeId, int toNodeId);
-        void RemoveConnection(std::unique_ptr<GraphConnection> pConnection);
+        void RemoveConnection(const std::unique_ptr<GraphConnection>& uConnection);
         void RemoveAllConnectionsWithNode(int nodeId);
 
-        GraphConnection* GetConnection(int fromNodeId, int toNodeId) const;
+        [[nodiscard]] GraphConnection* GetConnection(int fromNodeId, int toNodeId) const;
         std::unique_ptr<GraphConnection> GetConnectionRef(int fromNodeId, int toNodeId);
-        const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(int nodeId) const;
+        [[nodiscard]] const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(int nodeId) const;
 
         const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(const GraphNode* const pNode) const
         {
             return GetConnectionsFromNode(pNode->GetId());
         }
 
-        void SetConnectionCostsToDistances();
+        void SetConnectionCostsToDistances() const;
 
         //Query nodes and connections
-        int GetNodeIdAtPosition(const glm::vec2& position, float errorMargin = 1.f) const;
-        GraphNode* GetNodeAtPosition(const glm::vec2& position, float errorMargin) const;
+        [[nodiscard]] int GetNodeIdAtPosition(const glm::vec2& position, float errorMargin = 1.f) const;
+        [[nodiscard]] GraphNode* GetNodeAtPosition(const glm::vec2& position, float errorMargin) const;
 
-        bool ConnectionExists(int fromNodeId, int toNodeId) const
+        [[nodiscard]] bool ConnectionExists(const int fromNodeId, const int toNodeId) const
         {
             return GetConnection(fromNodeId, toNodeId) != nullptr;
         }
 
-        virtual glm::vec2 GetNodePos(int nodeId) const;
-        virtual int GetNodeIdAtPosition(const glm::vec2& position) const { return GetNodeIdAtPosition(position, 1.0f); }
+        [[nodiscard]] virtual glm::vec2 GetNodePos(int nodeId) const;
 
-        virtual GraphNode* GetNodeAtPosition(const glm::vec2& position) const
+        [[nodiscard]] virtual int GetNodeIdAtPosition(const glm::vec2& position) const
+        {
+            return GetNodeIdAtPosition(position, 1.0f);
+        }
+
+        [[nodiscard]] virtual GraphNode* GetNodeAtPosition(const glm::vec2& position) const
         {
             return GetNodeAtPosition(position, 1.0f);
         }
@@ -85,13 +89,12 @@ namespace bae::Graphs
         virtual void OnGraphModified(bool nrOfNodesChanged, bool nrOfConnectionsChanged);
         void AddNodeAtIndex(std::unique_ptr<GraphNode> uNode);
 
-        std::unique_ptr<GraphNode> CreateNode(const glm::vec2& pos);
-        std::unique_ptr<GraphNode> CloneNode(const GraphNode& other);
+        [[nodiscard]] std::unique_ptr<GraphNode> CreateNode(const glm::vec2& pos) const;
+        [[nodiscard]] std::unique_ptr<GraphNode> CloneNode(const GraphNode& other) const;
 
 
         bool m_bIsDirectional;
         int m_NextNodeId{ 0 };
-
 
         std::vector<std::unique_ptr<GraphNode>> m_uNodes{};
         std::vector<std::vector<std::unique_ptr<GraphConnection>>> m_uConnections{};

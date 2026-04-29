@@ -7,42 +7,39 @@
 
 namespace bae
 {
-	class SdlAudioClip final : public AudioClip
-	{
-	public:
-		SdlAudioClip(ActiveSoundID activeId, SoundID soundId);
+    class SdlAudioClip final : public AudioClip
+    {
+    public:
+        SdlAudioClip(ActiveSoundID activeId, SoundID soundId);
         ~SdlAudioClip() override; // empty, needed for Pimpl
 
-		bool Play() override;
-	    void Stop() override;
+        bool Play() override;
+        void Stop() override;
 
-		void Resume() override;
-		void Pause() override;
+        void Resume() override;
+        void Pause() override;
 
-		void Mute() override;
-		void UnMute() override;
-
-
-		bool IsPlaying() const override;
-
-		bool IsPaused() const override;
-		bool IsMuted() const override;
+        void Mute() override;
+        void UnMute() override;
 
 
-		float GetVolume() const override;
-		void SetVolume(float volume) override;
+        [[nodiscard]] bool IsPlaying() const override;
 
-		SoundID GetSoundId() override;
-		ActiveSoundID GetActiveSoundId() override;
-		int GetChannel() override;
+        [[nodiscard]] bool IsPaused() const override;
+        [[nodiscard]] bool IsMuted() const override;
 
 
-	private:
-		class Impl;
-		std::unique_ptr<Impl> m_Pimpl;
+        [[nodiscard]] float GetVolume() const override;
+        void SetVolume(float volume) override;
 
+        [[nodiscard]] SoundID GetSoundId() override;
+        [[nodiscard]] ActiveSoundID GetActiveSoundId() override;
+        [[nodiscard]] AudioTrack& GetAudioTrack() override;
 
-	};
+    private:
+        class Impl;
+        std::unique_ptr<Impl> m_Pimpl;
+    };
 }
 
 

@@ -32,8 +32,8 @@ namespace bae
         void Add(std::shared_ptr<GameObject> object);
         void RemoveAll() const;
 
-        std::string GetName() const { return m_Name; }
-        std::vector<std::shared_ptr<GameObject>>& GetObjects() { return m_Objects; };
+        [[nodiscard]] std::string GetName() const { return m_Name; }
+        std::vector<std::shared_ptr<GameObject>>& GetObjects() { return m_Objects; }
 
 
         bool m_bIsEnabled{ true };

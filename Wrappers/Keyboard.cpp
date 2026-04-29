@@ -1,9 +1,12 @@
 ﻿#include "Keyboard.h"
 
-#include <unordered_map>
 #include <ranges>
+#include <stdexcept>
+#include <unordered_map>
 
 #include <SDL3/SDL.h>
+
+#include "Core/HelperFunctions.h"
 
 
 using namespace bae;
@@ -12,68 +15,62 @@ using namespace bae;
 class Keyboard::Impl
 {
 public:
-	void ProcessInput();
-	void ClearCommands();
+    void ProcessInput();
+    void ClearCommands();
 
-	void AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState);
+    void AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button,
+                             InputManager::ButtonState activationState);
 
 
-	bool IsButtonDown(unsigned int button) const;
-	bool IsButtonUp(unsigned int button) const;
-	bool IsButtonPressed(unsigned int button) const;
-
+    [[nodiscard]] bool IsButtonDown(unsigned int button) const;
+    [[nodiscard]] bool IsButtonUp(unsigned int button) const;
+    [[nodiscard]] bool IsButtonPressed(unsigned int button) const;
 
 private:
-	std::vector<std::tuple<std::unique_ptr<Command>, SDL_Keycode, InputManager::ButtonState>> m_KeyboardCommands{};
+    std::vector<std::tuple<std::unique_ptr<Command>, SDL_Keycode, InputManager::ButtonState>> m_KeyboardCommands{};
 
-	std::unordered_map<SDL_Keycode, bool> m_CurrentKeysDown;
-	std::unordered_map<SDL_Keycode, bool> m_PreviousKeysDown;
-
-
+    std::unordered_map<SDL_Keycode, bool> m_CurrentKeysDown;
+    std::unordered_map<SDL_Keycode, bool> m_PreviousKeysDown;
 };
-
 
 
 #pragma region Keyboard | NOT PIMPL
 
 
-Keyboard::Keyboard()
+Keyboard::Keyboard() = default;
+
+Keyboard::~Keyboard() = default;
+
+void Keyboard::ProcessInput() const
 {
+    m_Pimpl->ProcessInput();
 }
 
-Keyboard::~Keyboard()
+void Keyboard::ClearCommands() const
 {
+    m_Pimpl->ClearCommands();
 }
 
-void Keyboard::ProcessInput()
+void Keyboard::AddKeyboardCommands(std::unique_ptr<Command> command, const unsigned int button,
+                                   const InputManager::ButtonState activationState) const
 {
-	m_Pimpl->ProcessInput();
-}
-
-void Keyboard::ClearCommands()
-{
-	m_Pimpl->ClearCommands();
-}
-
-void Keyboard::AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)
-{
-	m_Pimpl->AddKeyboardCommands(std::move(command), button, activationState);
+    m_Pimpl->AddKeyboardCommands(std::move(command), button, activationState);
 }
 
 
-bool Keyboard::IsButtonUp(unsigned int button) const
+bool Keyboard::IsButtonUp(const unsigned int button) const
 {
-	return m_Pimpl->IsButtonPressed(button);
+    return m_Pimpl->IsButtonPressed(button);
 }
 
-bool Keyboard::IsButtonDown(unsigned int button) const
+bool Keyboard::IsButtonDown(const unsigned int button) const
 {
-	return m_Pimpl->IsButtonPressed(button);
+    return m_Pimpl->IsButtonPressed(button);
 }
 
-bool Keyboard::IsButtonPressed(unsigned int button) const
+bool Keyboard::IsButtonPressed(const unsigned int button) const
 {
-	return m_Pimpl->IsButtonPressed(button);
+    return m_Pimpl->IsButtonPressed(button);
 }
 
 
@@ -85,123 +82,159 @@ bool Keyboard::IsButtonPressed(unsigned int button) const
 
 void Keyboard::Impl::ProcessInput()
 {
-	m_PreviousKeysDown = m_CurrentKeysDown;
+    m_PreviousKeysDown = m_CurrentKeysDown;
 
-	// Gets newest event information
-	SDL_PumpEvents();
+    // Gets newest event information
+    SDL_PumpEvents();
 
-	const int maxPeakedEvents{ 128 };
-	SDL_Event events[maxPeakedEvents];
-	int nrEvents = SDL_PeepEvents(events, maxPeakedEvents, SDL_PEEKEVENT, SDL_EVENT_FIRST, SDL_EVENT_LAST);
+    constexpr int maxPeakedEvents{ 128 };
+    SDL_Event events[maxPeakedEvents];
+    const int nrEvents = SDL_PeepEvents(events, maxPeakedEvents, SDL_PEEKEVENT, SDL_EVENT_FIRST, SDL_EVENT_LAST);
 
-	for (int i = 0; i < nrEvents; i++)
-	{
-		const SDL_Event& event = events[i];
+    for(int i = 0; i < nrEvents; i++)
+    {
+        const SDL_Event& event = events[i];
 
-		if (event.type == SDL_EVENT_KEY_DOWN)
-			m_CurrentKeysDown[event.key.key] = true;
-		else if (event.type == SDL_EVENT_KEY_UP)
-			m_CurrentKeysDown[event.key.key] = false;
-
-	}
-
-
-	for (const auto& [command, button, state] : m_KeyboardCommands)
-	{
-		if (!command)
-			throw std::runtime_error("Keyboard::ProcessInput: Command is nullptr");
-
-		bool keyPreviouslyPressed = false;
-		bool keyCurrentlyPressed = false;
-
-		if (auto buttonIt = m_CurrentKeysDown.find(button); buttonIt != m_CurrentKeysDown.end())
-			keyCurrentlyPressed = buttonIt->second;
-
-		if (auto buttonIt = m_PreviousKeysDown.find(button); buttonIt != m_PreviousKeysDown.end())
-			keyPreviouslyPressed = buttonIt->second;
+        if(event.type == SDL_EVENT_KEY_DOWN)
+        {
+            m_CurrentKeysDown[event.key.key] = true;
+        }
+        else if(event.type == SDL_EVENT_KEY_UP)
+        {
+            m_CurrentKeysDown[event.key.key] = false;
+        }
+    }
 
 
-		switch (state)
-		{
-			case InputManager::ButtonState::Down:
-			{
-				if (!keyPreviouslyPressed && keyCurrentlyPressed)
-					command->Execute();
-			} break;
-			case InputManager::ButtonState::Up:
-			{
-				if (keyPreviouslyPressed && !keyCurrentlyPressed)
-					command->Execute();
-			} break;
-			case InputManager::ButtonState::Pressed:
-			{
-				if (keyPreviouslyPressed && keyCurrentlyPressed)
-					command->Execute();
-			} break;
-		}
-	}
+    for(const auto& [command, button, state] : m_KeyboardCommands)
+    {
+        if(!command)
+        {
+            throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! Command is nullptr"));
+        }
 
+        bool keyPreviouslyPressed = false;
+        bool keyCurrentlyPressed  = false;
+
+        if(auto buttonIt = m_CurrentKeysDown.find(button); buttonIt != m_CurrentKeysDown.end())
+        {
+            keyCurrentlyPressed = buttonIt->second;
+        }
+
+        if(auto buttonIt = m_PreviousKeysDown.find(button); buttonIt != m_PreviousKeysDown.end())
+        {
+            keyPreviouslyPressed = buttonIt->second;
+        }
+
+
+        switch(state)
+        {
+            case InputManager::ButtonState::Down:
+            {
+                if(!keyPreviouslyPressed && keyCurrentlyPressed)
+                {
+                    command->Execute();
+                }
+            }
+            break;
+            case InputManager::ButtonState::Up:
+            {
+                if(keyPreviouslyPressed && !keyCurrentlyPressed)
+                {
+                    command->Execute();
+                }
+            }
+            break;
+            case InputManager::ButtonState::Pressed:
+            {
+                if(keyPreviouslyPressed && keyCurrentlyPressed)
+                {
+                    command->Execute();
+                }
+            }
+            break;
+        }
+    }
 }
 
 void Keyboard::Impl::ClearCommands()
 {
-	m_KeyboardCommands.clear();
+    m_KeyboardCommands.clear();
 }
 
-void Keyboard::Impl::AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button, InputManager::ButtonState activationState)
+void Keyboard::Impl::AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button,
+                                         InputManager::ButtonState activationState)
 {
-	m_KeyboardCommands.emplace_back(std::move(command), button, activationState);
+    m_KeyboardCommands.emplace_back(std::move(command), button, activationState);
 }
 
-bool Keyboard::Impl::IsButtonDown(unsigned int button) const
+bool Keyboard::Impl::IsButtonDown(const unsigned int button) const
 {
-	bool keyPreviouslyPressed = false;
-	bool keyCurrentlyPressed = false;
+    bool keyPreviouslyPressed = false;
+    bool keyCurrentlyPressed  = false;
 
-	if (auto buttonIt = m_CurrentKeysDown.find(button); buttonIt != m_CurrentKeysDown.end())
-		keyCurrentlyPressed = buttonIt->second;
+    if(const auto buttonIt = m_CurrentKeysDown.find(button); buttonIt != m_CurrentKeysDown.end())
+    {
+        keyCurrentlyPressed = buttonIt->second;
+    }
 
-	if (auto buttonIt = m_PreviousKeysDown.find(button); buttonIt != m_PreviousKeysDown.end())
-		keyPreviouslyPressed = buttonIt->second;
+    if(const auto buttonIt = m_PreviousKeysDown.find(button); buttonIt != m_PreviousKeysDown.end())
+    {
+        keyPreviouslyPressed = buttonIt->second;
+    }
 
-	if (!keyPreviouslyPressed && keyCurrentlyPressed)
-		return true;
+    if(!keyPreviouslyPressed && keyCurrentlyPressed)
+    {
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
-bool Keyboard::Impl::IsButtonUp(unsigned int button) const
+bool Keyboard::Impl::IsButtonUp(const unsigned int button) const
 {
-	bool keyPreviouslyPressed = false;
-	bool keyCurrentlyPressed = false;
+    bool keyPreviouslyPressed = false;
+    bool keyCurrentlyPressed  = false;
 
-	if (auto buttonIt = m_CurrentKeysDown.find(button); buttonIt != m_CurrentKeysDown.end())
-		keyCurrentlyPressed = buttonIt->second;
+    if(const auto buttonIt = m_CurrentKeysDown.find(button); buttonIt != m_CurrentKeysDown.end())
+    {
+        keyCurrentlyPressed = buttonIt->second;
+    }
 
-	if (auto buttonIt = m_PreviousKeysDown.find(button); buttonIt != m_PreviousKeysDown.end())
-		keyPreviouslyPressed = buttonIt->second;
+    if(const auto buttonIt = m_PreviousKeysDown.find(button); buttonIt != m_PreviousKeysDown.end())
+    {
+        keyPreviouslyPressed = buttonIt->second;
+    }
 
-	if (keyPreviouslyPressed && !keyCurrentlyPressed)
-		return true;
+    if(keyPreviouslyPressed && !keyCurrentlyPressed)
+    {
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
-bool Keyboard::Impl::IsButtonPressed(unsigned int button) const
+bool Keyboard::Impl::IsButtonPressed(const unsigned int button) const
 {
-	bool keyPreviouslyPressed = false;
-	bool keyCurrentlyPressed = false;
+    bool keyPreviouslyPressed = false;
+    bool keyCurrentlyPressed  = false;
 
-	if (auto buttonIt = m_CurrentKeysDown.find(button); buttonIt != m_CurrentKeysDown.end())
-		keyCurrentlyPressed = buttonIt->second;
+    if(const auto buttonIt = m_CurrentKeysDown.find(button); buttonIt != m_CurrentKeysDown.end())
+    {
+        keyCurrentlyPressed = buttonIt->second;
+    }
 
-	if (auto buttonIt = m_PreviousKeysDown.find(button); buttonIt != m_PreviousKeysDown.end())
-		keyPreviouslyPressed = buttonIt->second;
+    if(const auto buttonIt = m_PreviousKeysDown.find(button); buttonIt != m_PreviousKeysDown.end())
+    {
+        keyPreviouslyPressed = buttonIt->second;
+    }
 
-	if (keyPreviouslyPressed && keyCurrentlyPressed)
-		return true;
+    if(keyPreviouslyPressed && keyCurrentlyPressed)
+    {
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 

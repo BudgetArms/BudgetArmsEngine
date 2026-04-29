@@ -10,12 +10,12 @@
 
 namespace bae
 {
-    class Text2D
+    class Text2D final
     {
     public:
         explicit Text2D(const std::string& text, std::shared_ptr<Font> font = nullptr,
                         const SDL_Color& color                              = SDL_Color{ 255, 255, 255, 255 });
-        virtual ~Text2D() = default;
+        ~Text2D() = default;
 
         Text2D(const Text2D& other)            = delete;
         Text2D(Text2D&& other)                 = delete;
@@ -26,14 +26,13 @@ namespace bae
         void Update();
         void Render() const;
 
-
-        std::string GetText();
+        [[nodiscard]] std::string GetText();
         void SetText(const std::string& text);
 
-        SDL_Color GetColor();
+        [[nodiscard]] SDL_Color GetColor();
         void SetColor(const SDL_Color& color);
 
-        [[nodiscard]] Font* GetFont() const { return m_uFont.get(); };
+        [[nodiscard]] Font* GetFont() const { return m_uFont.get(); }
         void SetFont(std::shared_ptr<Font> font);
 
 

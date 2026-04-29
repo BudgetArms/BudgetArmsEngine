@@ -44,21 +44,21 @@ namespace bae
 
         bool IsChild(const GameObject* child) const;
 
-        std::string GetName() const { return m_Name; };
+        [[nodiscard]] std::string GetName() const { return m_Name; }
 
-        GameObject* GetParent() const;
-        void SetParent(GameObject* newParent, bool keepLocation);
+        [[nodiscard]] GameObject* GetParent() const;
+        void SetParent(GameObject* newParent, bool bKeepLocation);
 
-        constexpr bool IsMarkedForDeletion() const { return m_MarkedForDeletion; };
+        [[nodiscard]] constexpr bool IsMarkedForDeletion() const { return m_MarkedForDeletion; }
 
 
-        const glm::vec2& GetWorldLocation() const;
-        float GetWorldRotation() const;
-        const glm::vec2& GetWorldScale() const;
+        [[nodiscard]] const glm::vec2& GetWorldLocation() const;
+        [[nodiscard]] float GetWorldRotation() const;
+        [[nodiscard]] const glm::vec2& GetWorldScale() const;
 
-        const glm::vec2& GetLocalLocation() const;
-        float GetLocalRotation() const;
-        const glm::vec2& GetLocalScale() const;
+        [[nodiscard]] const glm::vec2& GetLocalLocation() const;
+        [[nodiscard]] float GetLocalRotation() const;
+        [[nodiscard]] const glm::vec2& GetLocalScale() const;
 
         void SetWorldLocation(const glm::vec2& location) const;
         void SetWorldRotation(float rotation) const;
@@ -68,24 +68,24 @@ namespace bae
         void SetLocalRotation(float rotation) const;
         void SetLocalScale(const glm::vec2& scale) const;
 
-        void AddLocation(const glm::vec2& location) const;
-        void AddRotation(float rotation) const;
-        void AddScale(const glm::vec2& scale) const;
+        void AddLocation(const glm::vec2& addLocation) const;
+        void AddRotation(float addRotation) const;
+        void AddScale(const glm::vec2& addScale) const;
 
         constexpr void SetLocationDirty() const;
         constexpr void SetRotationDirty() const;
         constexpr void SetScaleDirty() const;
 
 
-        std::vector<std::unique_ptr<bae::Component>>& GetComponents()
+        std::vector<std::unique_ptr<Component>>& GetComponents()
         {
             return m_Components;
         }
 
 
-        template<typename ComponentType, typename... Args, typename = std::enable_if_t<std::is_base_of_v<bae::Component,
-                         ComponentType> &&
-                     !std::is_same_v<bae::Component, ComponentType>>>
+        template<typename ComponentType, typename... Args,
+                 typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
+                     !std::is_same_v<Component, ComponentType>>>
         void AddComponent(Args&&... args)
         {
             // We don't need two components of the same type
@@ -98,8 +98,8 @@ namespace bae
             m_Components.emplace_back(std::make_unique<ComponentType>(std::forward<Args>(args)...));
         }
 
-        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
-                     !std::is_same_v<bae::Component, ComponentType>>>
+        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
+                     !std::is_same_v<Component, ComponentType>>>
         void RemoveComponent()
         {
             // if it does not have the component, you can't remove it
@@ -120,22 +120,22 @@ namespace bae
         }
 
 
-        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
-                     !std::is_same_v<bae::Component, ComponentType>>>
-        bool HasComponent() const
+        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
+                     !std::is_same_v<Component, ComponentType>>>
+        [[nodiscard]] bool HasComponent() const
         {
             // checks if any of them have the same type a component is the
             // components vector
             return std::ranges::any_of(m_Components,
                                        [](const auto& component)
                                        {
-                                           return (dynamic_cast<ComponentType*>(component.get()) != nullptr);
+                                           return dynamic_cast<ComponentType*>(component.get()) != nullptr;
                                        });
         }
 
-        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<bae::Component, ComponentType> &&
-                     !std::is_same_v<bae::Component, ComponentType>>>
-        ComponentType* GetComponent() const
+        template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
+                     !std::is_same_v<Component, ComponentType>>>
+        [[nodiscard]] ComponentType* GetComponent() const
         {
             auto it = std::ranges::find_if(m_Components,
                                            [](const auto& component)
@@ -160,7 +160,7 @@ namespace bae
 
         GameObject* m_Parent{ nullptr };
         std::vector<GameObject*> m_Children;
-        std::vector<std::unique_ptr<bae::Component>> m_Components;
+        std::vector<std::unique_ptr<Component>> m_Components;
 
     protected:
         void SetName(const std::string& newName);

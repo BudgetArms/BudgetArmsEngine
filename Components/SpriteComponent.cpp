@@ -1,6 +1,7 @@
 ﻿#include "SpriteComponent.h"
 
 #include "Core/GameObject.h"
+#include "Core/HelperFunctions.h"
 #include "Core/Renderer.h"
 #include "Managers/ResourceManager.h"
 
@@ -16,15 +17,23 @@ SpriteComponent::SpriteComponent(GameObject& owner, const std::string& filename,
     m_DstRect{},
     m_NrSprites{ nrSprites },
     m_NrColumns{ nrColumns },
-    m_NrRows{ static_cast<int>(std::ceil(static_cast<float>(nrSprites) / nrColumns)) }
+    m_NrRows{ static_cast<int>(std::ceil(static_cast<float>(m_NrSprites) / static_cast<float>(m_NrColumns))) }
 {
-    if(m_NrColumns == 0 || m_NrRows == 0 || m_NrSprites == 0)
+    if(m_NrColumns == 0)
     {
-        throw std::runtime_error("SpriteComponent: Ctor: Columns/Rows/Sprites can not be 0");
+        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! NrColumns is 0"));
+    }
+    if(m_NrRows == 0)
+    {
+        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! NrRows is 0"));
+    }
+    if(m_NrSprites == 0)
+    {
+        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! NrSprites is 0"));
     }
 
-    m_DstRect.w = m_SrcRect.w / m_NrColumns - srcOffset.x;
-    m_DstRect.h = m_SrcRect.h / m_NrRows - srcOffset.y;
+    m_DstRect.w = m_SrcRect.w / static_cast<float>(m_NrColumns) - static_cast<float>(srcOffset.x);
+    m_DstRect.h = m_SrcRect.h / static_cast<float>(m_NrRows) - static_cast<float>(srcOffset.y);
 
     SetTexture(filename);
 }
@@ -70,16 +79,18 @@ SDL_FRect SpriteComponent::GetCurrentSpriteRect() const
     SDL_FRect srcRect{};
 
     const int currentColumn = m_Index % m_NrColumns;
-    const int currentRow    = static_cast<int>(static_cast<float>(m_Index) / m_NrColumns);
+    const int currentRow    = static_cast<int>(static_cast<float>(m_Index) / static_cast<float>(m_NrColumns));
 
-    const float spriteWidth  = (m_SrcRect.w - m_NrColumns * m_SrcOffset.x) / m_NrColumns;
-    const float spriteHeight = (m_SrcRect.h - m_NrRows * m_SrcOffset.y) / m_NrRows;
+    const float spriteWidth = (m_SrcRect.w - static_cast<float>(m_NrColumns) * m_SrcOffset.x) / static_cast<float>(
+        m_NrColumns);
+    const float spriteHeight = (m_SrcRect.h - static_cast<float>(m_NrRows) * m_SrcOffset.y) / static_cast<float>(
+        m_NrRows);
 
-    srcRect.x = m_SrcRect.x + currentColumn * (spriteWidth + m_SrcOffset.x);
-    srcRect.y = m_SrcRect.y + currentRow * (spriteHeight + m_SrcOffset.y);
+    srcRect.x = m_SrcRect.x + static_cast<float>(currentColumn) * (spriteWidth + m_SrcOffset.x);
+    srcRect.y = m_SrcRect.y + static_cast<float>(currentRow) * (spriteHeight + m_SrcOffset.y);
 
-    srcRect.x = m_SrcRect.x + currentColumn * (spriteWidth + m_SrcOffset.x) + m_SrcOffset.x;
-    srcRect.y = m_SrcRect.y + currentRow * (spriteHeight + m_SrcOffset.y) + m_SrcOffset.y;
+    srcRect.x = m_SrcRect.x + static_cast<float>(currentColumn) * (spriteWidth + m_SrcOffset.x) + m_SrcOffset.x;
+    srcRect.y = m_SrcRect.y + static_cast<float>(currentRow) * (spriteHeight + m_SrcOffset.y) + m_SrcOffset.y;
 
     srcRect.w = spriteWidth;
     srcRect.h = spriteHeight;

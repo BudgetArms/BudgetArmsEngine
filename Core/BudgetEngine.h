@@ -11,7 +11,7 @@ namespace bae
     class BudgetEngine final
     {
     public:
-        explicit BudgetEngine(const bae::Utils::Window& window);
+        explicit BudgetEngine(const Utils::Window& window);
         ~BudgetEngine();
 
         BudgetEngine(const BudgetEngine& other)            = delete;

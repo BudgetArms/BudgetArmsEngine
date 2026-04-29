@@ -5,40 +5,34 @@
 
 namespace bae
 {
-	class AudioClip
-	{
-	public:
-		AudioClip(ActiveSoundID, SoundID) {};
-		virtual ~AudioClip() = default;
+    class AudioClip
+    {
+    public:
+        AudioClip(ActiveSoundID, SoundID) {}
+        virtual ~AudioClip() = default;
 
-		// return indicates success creation
-		virtual bool Play() = 0;
-		virtual void Stop() = 0;
+        // return indicates success creation
+        virtual bool Play() = 0;
+        virtual void Stop() = 0;
 
-		virtual void Resume() = 0;
-		virtual void Pause() = 0;
+        virtual void Resume() = 0;
+        virtual void Pause() = 0;
 
-		virtual void Mute() = 0;
-		virtual void UnMute() = 0;
-
-
-		virtual bool IsPlaying() const = 0;
-
-		virtual bool IsPaused() const = 0;
-		virtual bool IsMuted() const = 0;
+        virtual void Mute() = 0;
+        virtual void UnMute() = 0;
 
 
-		virtual float GetVolume() const = 0;
-		virtual void SetVolume(float volume) = 0;
+        [[nodiscard]] virtual bool IsPlaying() const = 0;
+        [[nodiscard]] virtual bool IsPaused() const = 0;
+        [[nodiscard]] virtual bool IsMuted() const = 0;
 
-		virtual SoundID GetSoundId() = 0;
-		virtual ActiveSoundID GetActiveSoundId() = 0;
-		virtual int GetChannel() = 0;
-		// channel probably also should a be a class bc other audio libraries might not 
-		// use int to identify their channels
+        [[nodiscard]] virtual float GetVolume() const = 0;
+        virtual void SetVolume(float volume) = 0;
 
-
-	};
+        [[nodiscard]] virtual SoundID GetSoundId() = 0;
+        [[nodiscard]] virtual ActiveSoundID GetActiveSoundId() = 0;
+        [[nodiscard]] virtual AudioTrack& GetAudioTrack() = 0;
+    };
 }
 
 

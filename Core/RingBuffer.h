@@ -18,11 +18,11 @@ namespace bae
         bool Pop(T& item);
         // bool Resize(int size);
 
-        bool IsEmpty() const;
-        bool IsFull() const;
+        [[nodiscard]] bool IsEmpty() const;
+        [[nodiscard]] bool IsFull() const;
 
     private:
-        size_t Increment(size_t idx) const;
+        [[nodiscard]] size_t Increment(size_t idx) const;
 
 
         std::mutex m_Mutex;
@@ -45,7 +45,7 @@ bae::RingBuffer<T>::RingBuffer(int capacity) :
 template<typename T>
 bool bae::RingBuffer<T>::Push(const T& item)
 {
-    std::lock_guard<std::mutex> lock(m_Mutex);
+    std::lock_guard lock(m_Mutex);
 
     if(IsFull())
     {
@@ -61,7 +61,7 @@ bool bae::RingBuffer<T>::Push(const T& item)
 template<typename T>
 bool bae::RingBuffer<T>::Pop(T& item)
 {
-    std::lock_guard<std::mutex> lock(m_Mutex);
+    std::lock_guard lock(m_Mutex);
 
     if(IsEmpty())
     {
@@ -76,17 +76,17 @@ bool bae::RingBuffer<T>::Pop(T& item)
 template<typename T>
 bool bae::RingBuffer<T>::IsEmpty() const
 {
-    return (m_Head == m_Tail);
+    return m_Head == m_Tail;
 }
 
 template<typename T>
 bool bae::RingBuffer<T>::IsFull() const
 {
-    return (Increment(m_Head) == m_Tail);
+    return Increment(m_Head) == m_Tail;
 }
 
 template<typename T>
-size_t bae::RingBuffer<T>::Increment(size_t idx) const
+size_t bae::RingBuffer<T>::Increment(const size_t idx) const
 {
     return (idx + 1) % m_Buffer.capacity();
 }

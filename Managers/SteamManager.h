@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <string>
+
 #ifdef STEAMWORKS_ENABLED
 #pragma warning (push)
 #pragma warning (disable: 4996)
@@ -9,54 +11,48 @@
 
 #include "Singletons/Singleton.h"
 
-#include <string>
-#include <functional>
-
 
 namespace bae
 {
-	class SteamManager final : public Singleton<SteamManager>
-	{
-	public:
-		~SteamManager() override = default;
+    class SteamManager final : public Singleton<SteamManager>
+    {
+    public:
+        ~SteamManager() override = default;
 
-		SteamManager(const SteamManager& other) = delete;
-		SteamManager(SteamManager&& other) = delete;
-		SteamManager& operator=(const SteamManager& other) = delete;
-		SteamManager& operator=(SteamManager&& other) = delete;
-
-
-		bool Initialize(uint32_t appId = 0);
-		void Shutdown();
-		void Update();
-
-		bool UnlockAchievement(const std::string& achievementId);
-		bool IsAchievementUnlocked(const std::string& achievementId);
-		void ResetAllAchievements();
-
-		bool SetStat(const std::string& statName, int32_t value);
-		bool SetStat(const std::string& statName, float value);
-		bool GetStat(const std::string& statName, int32_t& outValue);
-		bool GetStat(const std::string& statName, float& outValue);
-
-		void UploadScore(const std::string& leaderboardName, int32_t score);
-
-		std::string GetPlayerName();
-		uint64_t GetSteamID();
-
-		bool IsInitialized() const { return m_bInitialized; }
-		bool IsSteamRunning() const;
+        SteamManager(const SteamManager& other)            = delete;
+        SteamManager(SteamManager&& other)                 = delete;
+        SteamManager& operator=(const SteamManager& other) = delete;
+        SteamManager& operator=(SteamManager&& other)      = delete;
 
 
-	private:
-		friend class Singleton<SteamManager>;
-		SteamManager() = default;
+        bool Initialize(uint32_t appId = 0);
+        void Shutdown();
+        void Update();
+
+        bool UnlockAchievement(const std::string& achievementId);
+        bool IsAchievementUnlocked(const std::string& achievementId);
+        void ResetAllAchievements();
+
+        bool SetStat(const std::string& statName, int32_t value);
+        bool SetStat(const std::string& statName, float value);
+        bool GetStat(const std::string& statName, int32_t& outValue);
+        bool GetStat(const std::string& statName, float& outValue);
+
+        void UploadScore(const std::string& leaderboardName, int32_t score) const;
+
+        [[nodiscard]] std::string GetPlayerName();
+        [[nodiscard]] uint64_t GetSteamID();
+
+        [[nodiscard]] bool IsInitialized() const { return m_bInitialized; }
+        [[nodiscard]] bool IsSteamRunning() const;
+
+    private:
+        friend class Singleton<SteamManager>;
+        SteamManager() = default;
 
 
-		bool m_bInitialized{ false };
-
-
-	};
+        bool m_bInitialized{ false };
+    };
 }
 
 

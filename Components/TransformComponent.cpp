@@ -73,7 +73,7 @@ void TransformComponent::SetWorldLocation(const glm::vec2& location)
     SetLocationDirty();
 }
 
-void TransformComponent::SetWorldRotation(float rotation)
+void TransformComponent::SetWorldRotation(const float rotation)
 {
     if(!m_Owner->GetParent())
     {
@@ -108,7 +108,7 @@ void TransformComponent::SetLocalLocation(const glm::vec2& location)
     SetLocationDirty();
 }
 
-void TransformComponent::SetLocalRotation(float rotation)
+void TransformComponent::SetLocalRotation(const float rotation)
 {
     m_LocalRotation = rotation;
     SetRotationDirty();
@@ -132,7 +132,7 @@ void TransformComponent::AddLocation(const glm::vec2& addLocation)
     SetLocationDirty();
 }
 
-void TransformComponent::AddRotation(float addRotation)
+void TransformComponent::AddRotation(const float addRotation)
 {
     if(m_bRotationDirty)
     {

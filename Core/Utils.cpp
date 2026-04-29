@@ -9,22 +9,19 @@
 #include "Core/Renderer.h"
 
 
-namespace bu = bae::Utils;
-
-
-bu::Window::Window(const std::string& title, const std::filesystem::path& resourceFolder, const int width,
-                   const int height,
-                   const bool isVSyncOn) :
-    title{ title },
-    resourceFolder{ resourceFolder },
-    width{ width },
-    height{ height },
+bae::Utils::Window::Window(const std::string& title, const std::filesystem::path& resourceFolder, const int width,
+                           const int height,
+                           const bool isVSyncOn) :
+    Title{ title },
+    ResourceFolder{ resourceFolder },
+    Width{ width },
+    Height{ height },
     bIsVSyncOn{ isVSyncOn }
 {
 }
 
 
-bu::Color::Color(const float r, const float g, const float b, const float a) :
+bae::Utils::Color::Color(const float r, const float g, const float b, const float a) :
     r{ r },
     g{ g },
     b{ b },
@@ -32,12 +29,12 @@ bu::Color::Color(const float r, const float g, const float b, const float a) :
 {
 }
 
-bu::Color::Color(const bu::Color& other, const float a) :
-    bu::Color(other.r, other.g, other.b, a)
+bae::Utils::Color::Color(const Color& other, const float a) :
+    Color(other.r, other.g, other.b, a)
 {
 }
 
-bu::Color::Color() :
+bae::Utils::Color::Color() :
     r{ 0.f },
     g{ 0.f },
     b{ 0.f },
@@ -46,37 +43,37 @@ bu::Color::Color() :
 }
 
 
-const bu::Color bu::Color::White(1.f, 1.f, 1.f);
-const bu::Color bu::Color::Black(0.f, 0.f, 0.f);
-const bu::Color bu::Color::Red(1.f, 0.f, 0.f);
-const bu::Color bu::Color::Green(0.f, 1.f, 0.f);
-const bu::Color bu::Color::Blue(0.f, 0.f, 1.f);
-const bu::Color bu::Color::Yellow(1.f, 1.f, 0.f);
-const bu::Color bu::Color::Orange(1.f, 0.392f, 0.f);
-const bu::Color bu::Color::Magenta(1.f, 0.f, 1.f);
-const bu::Color bu::Color::Cyan(0.f, 1.f, 1.f);
-const bu::Color bu::Color::Purple(0.392f, 0.165f, 0.624f);
-const bu::Color bu::Color::Gray(0.753f, 0.753f, 0.753f);
-const bu::Color bu::Color::DarkGray(0.212f, 0.231f, 0.247f);
-const bu::Color bu::Color::Transparent(0.f, 0.f, 0.f, 0.f);
+const bae::Utils::Color bae::Utils::Color::White(1.f, 1.f, 1.f);
+const bae::Utils::Color bae::Utils::Color::Black(0.f, 0.f, 0.f);
+const bae::Utils::Color bae::Utils::Color::Red(1.f, 0.f, 0.f);
+const bae::Utils::Color bae::Utils::Color::Green(0.f, 1.f, 0.f);
+const bae::Utils::Color bae::Utils::Color::Blue(0.f, 0.f, 1.f);
+const bae::Utils::Color bae::Utils::Color::Yellow(1.f, 1.f, 0.f);
+const bae::Utils::Color bae::Utils::Color::Orange(1.f, 0.392f, 0.f);
+const bae::Utils::Color bae::Utils::Color::Magenta(1.f, 0.f, 1.f);
+const bae::Utils::Color bae::Utils::Color::Cyan(0.f, 1.f, 1.f);
+const bae::Utils::Color bae::Utils::Color::Purple(0.392f, 0.165f, 0.624f);
+const bae::Utils::Color bae::Utils::Color::Gray(0.753f, 0.753f, 0.753f);
+const bae::Utils::Color bae::Utils::Color::DarkGray(0.212f, 0.231f, 0.247f);
+const bae::Utils::Color bae::Utils::Color::Transparent(0.f, 0.f, 0.f, 0.f);
 
 
-bool bu::IsOverlapping(const SDL_Rect& rect1, const SDL_Rect& rect2)
+bool bae::Utils::IsOverlapping(const SDL_Rect& rect1, const SDL_Rect& rect2)
 {
     return SDL_HasRectIntersection(&rect1, &rect2);
 }
 
 
-Uint8 bu::FloatToUint8(float v)
+Uint8 bae::Utils::FloatToUint8(float v)
 {
     v = std::clamp(v, 0.0f, 1.0f);
     return static_cast<Uint8>(std::roundf(v * 255.0f));
 }
 
 
-void bu::SetDrawColor(const Color& color)
+void bae::Utils::SetDrawColor(const Color& color)
 {
-    auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+    auto const pSdlRenderer = Renderer::GetInstance().GetSDLRenderer();
     if(!pSdlRenderer)
     {
         return;
@@ -87,9 +84,9 @@ void bu::SetDrawColor(const Color& color)
 }
 
 
-void bu::DrawLine(const glm::vec2& line1, const glm::vec2& line2, const int width, const Color& color)
+void bae::Utils::DrawLine(const glm::vec2& line1, const glm::vec2& line2, const int width, const Color& color)
 {
-    auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+    auto const pSdlRenderer = Renderer::GetInstance().GetSDLRenderer();
     if(!pSdlRenderer)
     {
         return;
@@ -101,9 +98,9 @@ void bu::DrawLine(const glm::vec2& line1, const glm::vec2& line2, const int widt
 }
 
 
-void bu::DrawRect(const SDL_FRect& rect, const Color& color)
+void bae::Utils::DrawRect(const SDL_FRect& rect, const Color& color)
 {
-    auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+    auto const pSdlRenderer = Renderer::GetInstance().GetSDLRenderer();
     if(!pSdlRenderer)
     {
         return;
@@ -115,9 +112,9 @@ void bu::DrawRect(const SDL_FRect& rect, const Color& color)
                   FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 }
 
-void bu::FillRect(const SDL_FRect& rect, const Color& color)
+void bae::Utils::FillRect(const SDL_FRect& rect, const Color& color)
 {
-    auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+    auto const pSdlRenderer = Renderer::GetInstance().GetSDLRenderer();
     if(!pSdlRenderer)
     {
         return;
@@ -130,9 +127,9 @@ void bu::FillRect(const SDL_FRect& rect, const Color& color)
 }
 
 
-void bu::DrawCircle(const glm::vec2& center, const int radius, const Color& color)
+void bae::Utils::DrawCircle(const glm::vec2& center, const int radius, const Color& color)
 {
-    auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+    auto const pSdlRenderer = Renderer::GetInstance().GetSDLRenderer();
     if(!pSdlRenderer)
     {
         return;
@@ -143,9 +140,9 @@ void bu::DrawCircle(const glm::vec2& center, const int radius, const Color& colo
                FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 }
 
-void bu::FillCircle(const glm::vec2& center, const int radius, const Color& color)
+void bae::Utils::FillCircle(const glm::vec2& center, const int radius, const Color& color)
 {
-    auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+    auto const pSdlRenderer = Renderer::GetInstance().GetSDLRenderer();
     if(!pSdlRenderer)
     {
         return;
@@ -157,9 +154,9 @@ void bu::FillCircle(const glm::vec2& center, const int radius, const Color& colo
 }
 
 
-void bu::DrawEllipse(const glm::vec2& center, const int radiusX, const int radiusY, const Color& color)
+void bae::Utils::DrawEllipse(const glm::vec2& center, const int radiusX, const int radiusY, const Color& color)
 {
-    auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+    auto const pSdlRenderer = Renderer::GetInstance().GetSDLRenderer();
     if(!pSdlRenderer)
     {
         return;
@@ -170,9 +167,9 @@ void bu::DrawEllipse(const glm::vec2& center, const int radiusX, const int radiu
                 FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 }
 
-void bu::FillEllipse(const glm::vec2& center, const int radiusX, const int radiusY, const Color& color)
+void bae::Utils::FillEllipse(const glm::vec2& center, const int radiusX, const int radiusY, const Color& color)
 {
-    auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+    auto const pSdlRenderer = Renderer::GetInstance().GetSDLRenderer();
     if(!pSdlRenderer)
     {
         return;
@@ -184,9 +181,9 @@ void bu::FillEllipse(const glm::vec2& center, const int radiusX, const int radiu
 }
 
 
-void bu::DrawPolygon(const std::vector<glm::vec2>& points, const Color& color)
+void bae::Utils::DrawPolygon(const std::vector<glm::vec2>& points, const Color& color)
 {
-    auto const pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+    auto const pSdlRenderer = Renderer::GetInstance().GetSDLRenderer();
     if(!pSdlRenderer)
     {
         return;
@@ -210,9 +207,9 @@ void bu::DrawPolygon(const std::vector<glm::vec2>& points, const Color& color)
                 FloatToUint8(color.r), FloatToUint8(color.g), FloatToUint8(color.b), FloatToUint8(color.a));
 }
 
-void bu::FillPolygon(const std::vector<glm::vec2>& points, const Color& color)
+void bae::Utils::FillPolygon(const std::vector<glm::vec2>& points, const Color& color)
 {
-    SDL_Renderer* pSdlRenderer = bae::Renderer::GetInstance().GetSDLRenderer();
+    SDL_Renderer* pSdlRenderer = Renderer::GetInstance().GetSDLRenderer();
     if(!pSdlRenderer)
     {
         return;

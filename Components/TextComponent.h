@@ -36,7 +36,7 @@ namespace bae
         SDL_Color GetColor();
         void SetColor(const SDL_Color& color);
 
-        Font* GetFont() const { return m_Font.get(); };
+        [[nodiscard]] Font* GetFont() const { return m_Font.get(); }
         void SetFont(std::shared_ptr<Font> font);
 
 

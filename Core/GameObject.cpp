@@ -9,12 +9,8 @@
 #include "Components/Component.h"
 #include "Components/TransformComponent.h"
 
-#include "Wrappers/Texture2D.h"
 
-
-// BudgetArmsEngine
 using namespace bae;
-
 
 GameObject::GameObject(const std::string& name)
 {
@@ -131,7 +127,8 @@ void GameObject::Destroy()
 }
 
 
-void GameObject::AttachChild(GameObject* child, bool bFreezeLocation, bool bFreezeRotation, bool bFreezeScale)
+void GameObject::AttachChild(GameObject* child, const bool bFreezeLocation, const bool bFreezeRotation,
+                             const bool bFreezeScale)
 {
     // if invalid
     if(this == child || m_Parent == child || child == nullptr || IsChild(child))
@@ -179,7 +176,7 @@ void GameObject::AttachChild(GameObject* child, bool bFreezeLocation, bool bFree
     m_Children.emplace_back(child);
 }
 
-void GameObject::DetachChild(GameObject* child, bool bUpdateChildrenOfChildLocations)
+void GameObject::DetachChild(GameObject* child, const bool bUpdateChildrenOfChildLocations)
 {
     // if invalid
     if(this == child || m_Parent == child || child == nullptr || !IsChild(child))
@@ -215,7 +212,7 @@ GameObject* GameObject::GetParent() const
     return m_Parent;
 }
 
-void GameObject::SetParent(GameObject* newParent, bool keepLocation = true)
+void GameObject::SetParent(GameObject* newParent, const bool bKeepLocation = true)
 {
     // if invalid
     if(this == newParent || m_Parent == newParent || IsChild(newParent))
@@ -234,7 +231,7 @@ void GameObject::SetParent(GameObject* newParent, bool keepLocation = true)
         // if keep location, local position with adjust to newParent's world location
         // else, localPos, e.g. {100, 0, 0}, will also be {100, 0, 0} compared to newTarget
         // We could also have an option to reset LocalPos always to {0, 0, 0}, but why?
-        if(keepLocation)
+        if(bKeepLocation)
         {
             SetLocalLocation(GetWorldLocation() - newParent->GetWorldLocation());
         }
@@ -280,7 +277,7 @@ void GameObject::ForceDestroy()
 
 
     // fuck it, let's crash
-    delete(this);
+    delete this;
 }
 
 // this is for serialization, just as for all inputs
@@ -330,7 +327,7 @@ void GameObject::SetWorldLocation(const glm::vec2& location) const
     m_Transform->SetWorldLocation(location);
 }
 
-void GameObject::SetWorldRotation(float rotation) const
+void GameObject::SetWorldRotation(const float rotation) const
 {
     m_Transform->SetWorldRotation(rotation);
 }
@@ -346,7 +343,7 @@ void GameObject::SetLocalLocation(const glm::vec2& location) const
     m_Transform->SetLocalLocation(location);
 }
 
-void GameObject::SetLocalRotation(float rotation) const
+void GameObject::SetLocalRotation(const float rotation) const
 {
     m_Transform->SetLocalRotation(rotation);
 }
@@ -362,7 +359,7 @@ void GameObject::AddLocation(const glm::vec2& addLocation) const
     m_Transform->AddLocation(addLocation);
 }
 
-void GameObject::AddRotation(float addRotation) const
+void GameObject::AddRotation(const float addRotation) const
 {
     m_Transform->AddRotation(addRotation);
 }

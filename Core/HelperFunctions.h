@@ -1,20 +1,22 @@
 ﻿#pragma once
+#include <ctime>
 
-#include <time.h>
+#define FUNCTION_NAME __FUNCTION__
 
-
-#define GetFunctionName() __FUNCTION__
-
-inline int GetRandomNumber()
+namespace bae
 {
-    static bool bSeeded = false;
-    if(!bSeeded)
+    // TODO: Fix random number generation by using mt19937 & high precision clock
+    // TODO: Use LibSodium instead, it's really random, while mt19937 isn't
+    inline int GetRandomNumber()
     {
-        std::srand(static_cast<unsigned int>(std::time(nullptr)));
-        bSeeded = true;
+        static bool bSeeded = false;
+        if(!bSeeded)
+        {
+            std::srand(static_cast<unsigned int>(std::time(nullptr)));
+            bSeeded = true;
+        }
+
+        return std::rand();
     }
-
-    return std::rand();
 }
-
 

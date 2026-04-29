@@ -7,9 +7,9 @@ set(ENGINE_NAME BudgetEngine PARENT_SCOPE)
 set(ENGINE_NAME BudgetEngine)
 
 if(EMSCRIPTEN)
-	message("Using Emscripten!")
+    message("Using Emscripten!")
 else()
-	message("NOT Using Emscripten!")
+    message("NOT Using Emscripten!")
 endif()
 
 # Emscripten doesn't allow shared libs
@@ -19,80 +19,80 @@ endif()
 
 
 add_library(${ENGINE_NAME} STATIC
-	"Core/BudgetEngine.cpp"							"Core/BudgetEngine.h"
-	"Core/EventTypes.h"
-	"Core/Event.h"
-	"Core/EventQueue.cpp"                           "Core/EventQueue.h"
-	"Core/EventListener.h"
-	"Core/GameObject.cpp"                           "Core/GameObject.h"                       
-	"Core/HelperFunctions.h"                       
-	"Core/Observer.h"
-	"Core/Renderer.cpp"                             "Core/Renderer.h"
-	"Core/RingBuffer.h"                         
-	"Core/ServiceLocator.cpp"                       "Core/ServiceLocator.h"
-	"Core/Scene.cpp"                                "Core/Scene.h"
-	"Core/State.h"
-	"Core/Subject.h"
-	"Core/Text2D.cpp"								"Core/Text2D.h"
-	"Core/Utils.cpp"								"Core/Utils.h"
+    "Core/BudgetEngine.cpp"
+    "Core/EventTypes.h"
+    "Core/Event.h"
+    "Core/EventQueue.cpp"
+    "Core/EventListener.h"
+    "Core/GameObject.cpp"
+    "Core/HelperFunctions.h"
+    "Core/Observer.h"
+    "Core/Renderer.cpp"
+    "Core/RingBuffer.h"
+    "Core/ServiceLocator.cpp"
+    "Core/Scene.cpp" "Core/Scene.h"
+    "Core/State.h"
+    "Core/Subject.h"
+    "Core/Text2D.cpp"
+    "Core/Utils.cpp"
 
-	"Commands/Command.h"
-	"Commands/GameActorCommand.h"
+    "Commands/Command.h"
+    "Commands/GameActorCommand.h"
 
-	"Components/Component.h"
-	"Components/FpsCounterComponent.cpp"            "Components/FpsCounterComponent.h"
-	"Components/ImguiComponent.cpp"                 "Components/ImguiComponent.h"
-	"Components/SpriteComponent.cpp"				"Components/SpriteComponent.h"
-	"Components/TextComponent.cpp"                  "Components/TextComponent.h"
-	"Components/TextureComponent.cpp"               "Components/TextureComponent.h"
-	"Components/TransformComponent.cpp"             "Components/TransformComponent.h"
+    "Components/Component.h"
+    "Components/FpsCounterComponent.cpp"
+    "Components/ImguiComponent.cpp"
+    "Components/SpriteComponent.cpp"
+    "Components/TextComponent.cpp"
+    "Components/TextureComponent.cpp"
+    "Components/TransformComponent.cpp"
 
-	"Graphs/ConnectionCostCalculator.h"
-	"Graphs/Graph.h"								"Graphs/Graph.cpp" 
-	"Graphs/GraphConnection.h" 
-	"Graphs/GraphEnums.h"  
-	"Graphs/GraphNode.h" 
-	"Graphs/GraphNodeFactory.h"
-	"Graphs/GridGraph.h"							"Graphs/GridGraph.cpp"
-	"Graphs/AStar.h"								"Graphs/AStar.cpp" 
-	"Graphs/HeuristicFunctions.h" 
-	"Graphs/Heuristic.h" 
+    "Graphs/ConnectionCostCalculator.h"
+    "Graphs/Graph.cpp"
+    "Graphs/GraphConnection.h"
+    "Graphs/GraphEnums.h"
+    "Graphs/GraphNode.h"
+    "Graphs/GraphNodeFactory.h"
+    "Graphs/GridGraph.cpp"
+    "Graphs/AStar.cpp"
+    "Graphs/HeuristicFunctions.h"
+    "Graphs/Heuristic.h"
 
-	"Managers/InputManager.cpp"                     "Managers/InputManager.h"
-	"Managers/ResourceManager.cpp"					"Managers/ResourceManager.h"
-	"Managers/SceneManager.cpp"						"Managers/SceneManager.h"
+    "Managers/InputManager.cpp"
+    "Managers/ResourceManager.cpp"
+    "Managers/SceneManager.cpp"
 
-	"Singletons/GameTime.h"
-	"Singletons/Singleton.h"
+    "Singletons/GameTime.h"
+    "Singletons/Singleton.h"
 
-	"Sounds/AudioClip.h"
-	"Sounds/AudioQueue.h"
-	"Sounds/LoggingSoundSystem.cpp"					"Sounds/LoggingSoundSystem.h"                 
-	"Sounds/NullAudioClip.h"
-	"Sounds/NullSoundSystem.h"
-	"Sounds/SdlAudioClip.cpp"						"Sounds/SdlAudioClip.h"                
-	"Sounds/SdlSoundSystem.cpp"						"Sounds/SdlSoundSystem.h"
-	"Sounds/SoundSystem.h"
+    "Sounds/AudioClip.h"
+    "Sounds/AudioQueue.h"
+    "Sounds/LoggingSoundSystem.cpp"
+    "Sounds/NullAudioClip.h"
+    "Sounds/NullSoundSystem.h"
+    "Sounds/SdlAudioClip.cpp"
+    "Sounds/SdlSoundSystem.cpp"
+    "Sounds/SoundSystem.h"
 
-	"Wrappers/AudioChunk.cpp"						"Wrappers/AudioChunk.h"
-	"Wrappers/Controller.cpp"						"Wrappers/Controller.h"
-	"Wrappers/Font.cpp"								"Wrappers/Font.h"
-	"Wrappers/Keyboard.cpp"							"Wrappers/Controller.h"
-	"Wrappers/Mouse.cpp"							"Wrappers/Mouse.h"
-	"Wrappers/Texture2D.cpp"						"Wrappers/Texture2D.h"
+    "Wrappers/Audio.cpp"
+    "Wrappers/Controller.cpp"
+    "Wrappers/Font.cpp"
+    "Wrappers/Keyboard.cpp"
+    "Wrappers/Mouse.cpp"
+    "Wrappers/Texture2D.cpp"
 )
- 
+
 
 if(STEAMWORKS_AVAILABLE)
     target_sources(${ENGINE_NAME} PRIVATE
-		"Core/Achievement.h"                "Core/Achievement.cpp"
-		"Managers/AchievementManager.h"
-		"Managers/SteamManager.h"           "Managers/SteamManager.cpp"
-	)
+        "Core/Achievement.cpp"
+        "Managers/AchievementManager.h"
+        "Managers/SteamManager.cpp"
+    )
 endif()
 
 
- # enable c++20 features
+# enable c++20 features
 target_compile_features(${ENGINE_NAME} PUBLIC cxx_std_20)
 
 # Compile at max warning level + treat warnings as errors
@@ -108,7 +108,6 @@ if(STEAMWORKS_AVAILABLE)
         "STEAMWORKS_ENABLED"
     )
 endif()
-
 
 
 include(FetchContent)
@@ -143,7 +142,7 @@ else()
     message("\n")
     message("SDL3 package NOT found, using FetchContent to get it")
 
-    if (WIN32)
+    if(WIN32)
         FetchContent_Declare(
             SDL3
             URL https://www.libsdl.org/release/SDL3-devel-3.4.0-VC.zip
@@ -178,7 +177,7 @@ else()
     message("\n")
     message("SDL3_ttf package NOT found, using FetchContent to get it")
 
-    if (WIN32)
+    if(WIN32)
         FetchContent_Declare(
             SDL3_ttf
             URL https://www.libsdl.org/projects/SDL_ttf/release/SDL3_ttf-devel-3.2.2-VC.zip
@@ -260,7 +259,7 @@ else()
     message("\n")
     message("SDL3_gfx package NOT found, using FetchContent to get it")
 
-    # The SDL3_gfx's CMake uses find_package to find an SDL3, but if it's not found, it searches,
+    # The CMake of the SDL3_gfx library uses find_package to find an SDL3, but if it's not found, it searches,
     # for the SDL which it fails at, so I set the SDL3_LIB (dummy) here, because otherwise the SDL3_gfx CMake fails
     set(SDL3_LIB "${CMAKE_BINARY_DIR}/dummy_sdl3.lib" CACHE FILEPATH "Dummy SDL3 lib for SDL3_gfx" FORCE)
 
@@ -281,7 +280,6 @@ else()
         )
     endif()
 endif()
-
 
 
 # Add imgui
@@ -389,7 +387,6 @@ endif()
 set(XINPUT_LIB XInput)
 
 
-
 # Include directories
 target_include_directories(SDL3_gfx_Static PUBLIC
     SDL3::SDL3
@@ -460,7 +457,7 @@ endif()
 
 
 target_include_directories(${ENGINE_NAME} PUBLIC
-	${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(${ENGINE_NAME} PRIVATE
@@ -511,12 +508,12 @@ if(WIN32)
 
 
     # Copy Resource folder
-	add_custom_command(
+    add_custom_command(
         TARGET ${ENGINE_NAME} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy_directory
         "${CMAKE_SOURCE_DIR}/${RESOURCE_FOLDER_NAME}"
         "${CMAKE_BINARY_DIR}/${PROJECT_FOLDER}/${RESOURCE_FOLDER_NAME}"
-	)
+    )
 
 endif()
 

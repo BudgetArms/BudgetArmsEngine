@@ -28,7 +28,7 @@ namespace bae
         GameObject* m_Actor;
 
     protected:
-        [[nodiscard]] GameObject* GetActor() const { return m_Actor; };
+        [[nodiscard]] GameObject* GetActor() const { return m_Actor; }
     };
 }
 

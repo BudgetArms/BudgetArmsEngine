@@ -16,17 +16,16 @@ namespace bae::Utils
                         bool isVSyncOn);
 
 
-        std::string title;
-        std::filesystem::path resourceFolder;
-        int width;
-        int height;
+        std::string Title;
+        std::filesystem::path ResourceFolder;
+        int Width;
+        int Height;
         bool bIsVSyncOn;
     };
 
 
     struct Color
     {
-    public:
         explicit Color(float r, float g, float b, float a = 1.f);
         Color(const Color& other, float a = 1.f);
         Color();

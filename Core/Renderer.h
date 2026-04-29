@@ -26,11 +26,11 @@ namespace bae
         void Render() const;
         void Destroy();
 
-        void RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const glm::vec2& position, float angle,
+        void RenderTexture(const Texture2D& texture, bool bIsCenteredAtPosition, const glm::vec2& position, float angle,
                            const glm::vec2& scale = { 1.f, 1.f }) const;
-        void RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const glm::vec2& position, float width,
+        void RenderTexture(const Texture2D& texture, bool bIsCenteredAtPosition, const glm::vec2& position, float width,
                            float height) const;
-        void RenderTexture(const Texture2D& texture, bool isCenteredAtPosition, const SDL_FRect& src,
+        void RenderTexture(const Texture2D& texture, bool bIsCenteredAtPosition, const SDL_FRect& src,
                            const SDL_FRect& dst, float angle = 0.f, const glm::vec2& scale = { 1.f, 1.f }) const;
 
         [[nodiscard]] SDL_Renderer* GetSDLRenderer() const { return m_Renderer; }
@@ -45,8 +45,8 @@ namespace bae
         bool m_bRenderDstRect{ false };
 
         int m_RenderPositionRadius{ 5 };
-        bae::Utils::Color m_RenderPositionColor{ bae::Utils::Color::Red };
-        bae::Utils::Color m_RenderDstRectColor{ bae::Utils::Color::Green };
+        Utils::Color m_RenderPositionColor{ Utils::Color::Red };
+        Utils::Color m_RenderDstRectColor{ Utils::Color::Green };
 
     private:
         SDL_Renderer* m_Renderer{};

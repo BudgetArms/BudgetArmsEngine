@@ -26,9 +26,9 @@ namespace bae
         float GetWorldRotation();
         const glm::vec2& GetWorldScale();
 
-        const glm::vec2& GetLocalLocation() const;
-        float GetLocalRotation() const;
-        const glm::vec2& GetLocalScale() const;
+        [[nodiscard]] const glm::vec2& GetLocalLocation() const;
+        [[nodiscard]] float GetLocalRotation() const;
+        [[nodiscard]] const glm::vec2& GetLocalScale() const;
 
         void SetWorldLocation(const glm::vec2& location);
         void SetWorldRotation(float rotation);
@@ -43,10 +43,10 @@ namespace bae
         void AddScale(const glm::vec2& addScale);
 
 
-        // trivial setter, so should actually be removed
-        constexpr void SetLocationDirty() { m_bLocationDirty = true; };
-        constexpr void SetRotationDirty() { m_bRotationDirty = true; };
-        constexpr void SetScaleDirty() { m_bScaleDirty = true; };
+        // Trivial setter, so should actually be removed
+        constexpr void SetLocationDirty() { m_bLocationDirty = true; }
+        constexpr void SetRotationDirty() { m_bRotationDirty = true; }
+        constexpr void SetScaleDirty() { m_bScaleDirty = true; }
 
     private:
         void UpdateWorldLocation();

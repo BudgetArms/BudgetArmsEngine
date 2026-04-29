@@ -11,39 +11,37 @@
 
 namespace bae
 {
-	class AchievementManager final : public Singleton<AchievementManager>, public Observer
-	{
-	public:
-		~AchievementManager() override = default;
+    class AchievementManager final : public Singleton<AchievementManager>, public Observer
+    {
+    public:
+        ~AchievementManager() override = default;
 
-		AchievementManager(const AchievementManager& other) = delete;
-		AchievementManager(AchievementManager&& other) = delete;
-		AchievementManager& operator=(const AchievementManager& other) = delete;
-		AchievementManager& operator=(AchievementManager&& other) = delete;
+        AchievementManager(const AchievementManager& other)            = delete;
+        AchievementManager(AchievementManager&& other)                 = delete;
+        AchievementManager& operator=(const AchievementManager& other) = delete;
+        AchievementManager& operator=(AchievementManager&& other)      = delete;
 
-		void AddAchievement(std::unique_ptr<Achievement> achievement)
-		{
-			m_Achievements.emplace_back(std::move(achievement));
-		}
-
-
-		virtual void Notify(EventType event, Subject* subject) override
-		{
-			for (const auto& achievement : m_Achievements)
-			    if (achievement)
-				    achievement->TryUnlock(event, subject);
-
-		}
+        void AddAchievement(std::unique_ptr<Achievement> achievement)
+        {
+            m_Achievements.emplace_back(std::move(achievement));
+        }
 
 
-	private:
-		friend class Singleton<AchievementManager>;
-		AchievementManager() = default;
+        void Notify(EventType event, Subject* subject) override
+        {
+            for(const auto& achievement : m_Achievements)
+            {
+                if(achievement)
+                    achievement->TryUnlock(event, subject);
+            }
+        }
 
-		std::vector<std::unique_ptr<Achievement>> m_Achievements;
+    private:
+        friend class Singleton<AchievementManager>;
+        AchievementManager() = default;
 
-
-	};
+        std::vector<std::unique_ptr<Achievement>> m_Achievements;
+    };
 }
 
 

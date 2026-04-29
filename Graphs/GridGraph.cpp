@@ -1,10 +1,10 @@
 ﻿#include "GridGraph.h"
 
 #include "Core/Utils.h"
-#include "Graphs/Graph.h"
-#include "Graphs/GraphEnums.h"
-#include "Graphs/GraphConnection.h"
 #include "Graphs/ConnectionCostCalculator.h"
+#include "Graphs/Graph.h"
+#include "Graphs/GraphConnection.h"
+#include "Graphs/GraphEnums.h"
 
 
 using namespace bae::Graphs;
@@ -12,223 +12,239 @@ namespace bu = bae::Utils;
 
 
 GridGraph::GridGraph(
-	const glm::vec2& position,
-	int nrColumns, int nrRows, const glm::ivec2& cellSize, bool isDirectionalGraph, bool isConnectedDiagonally, float costStraight,
-	float costDiagonal, GraphNodeFactory* const pFactory, std::unique_ptr<ConnectionCostCalculator> uCostCalculator) :
+    const glm::vec2& position,
+    const int nrColumns, const int nrRows, const glm::ivec2& cellSize, const bool bIsDirectionalGraph,
+    const bool bIsConnectedDiagonally,
+    const float costStraight,
+    const float costDiagonal, GraphNodeFactory* const factory,
+    std::unique_ptr<ConnectionCostCalculator> uCostCalculator) :
 
-	Graph(isDirectionalGraph, pFactory),
-	m_NrOfColumns{ nrColumns },
-	m_NrOfRows{ nrRows },
-	m_CellSize{ cellSize },
-	m_IsConnectedDiagonally{ isConnectedDiagonally },
-	m_DefaultCostStraight{ costStraight },
-	m_DefaultCostDiagonal{ costDiagonal },
-	m_Position{ position },
-	m_uCostCalculator{ std::move(uCostCalculator) }
+    Graph(bIsDirectionalGraph, factory),
+    m_NrOfColumns{ nrColumns },
+    m_NrOfRows{ nrRows },
+    m_CellSize{ cellSize },
+    m_IsConnectedDiagonally{ bIsConnectedDiagonally },
+    m_DefaultCostStraight{ costStraight },
+    m_DefaultCostDiagonal{ costDiagonal },
+    m_Position{ position },
+    m_uCostCalculator{ std::move(uCostCalculator) }
 {
-	InitializeGrid();
+    InitializeGrid();
 }
 
 
 void GridGraph::Render() const
 {
-	if (m_bRenderNodes)
-	{
-		for (int row = 0; row < m_NrOfRows; ++row)
-		{
-			for (int column = 0; column < m_NrOfColumns; ++column)
-			{
-			    GridPosition gridPosition { column, row };
+    if(m_bRenderNodes)
+    {
+        for(int row = 0; row < m_NrOfRows; ++row)
+        {
+            for(int column = 0; column < m_NrOfColumns; ++column)
+            {
+                const GridPosition gridPosition{ column, row };
 
-				const int idx = GetNodeId(gridPosition);
-				const glm::vec2 cellPos = GetNodePos(idx);
+                const int idx           = GetNodeId(gridPosition);
+                const glm::vec2 cellPos = GetNodePos(idx);
 
-				const SDL_FRect nodeRect
-				{
-					cellPos.x - m_CellSize.x / 2.f,
-					cellPos.y - m_CellSize.y / 2.f,
-					static_cast<float>(m_CellSize.x),
-				    static_cast<float>(m_CellSize.y)
-				};
+                const SDL_FRect nodeRect
+                {
+                    cellPos.x - static_cast<float>(m_CellSize.x) / 2.f,
+                    cellPos.y - static_cast<float>(m_CellSize.y) / 2.f,
+                    static_cast<float>(m_CellSize.x),
+                    static_cast<float>(m_CellSize.y)
+                };
 
-				bu::DrawRect(nodeRect, m_RenderColorNodeOutlines);
+                bu::DrawRect(nodeRect, m_RenderColorNodeOutlines);
 
-				const GraphNode* pGraphNode = GetNode(gridPosition);
-				pGraphNode->Render();
+                const GraphNode* pGraphNode = GetNode(gridPosition);
+                pGraphNode->Render();
+            }
+        }
+    }
 
-			}
-		}
-	}
+    if(m_bRenderConnections)
+    {
+        for(const GraphNode* pNode : m_pActiveNodes)
+        {
+            for(const std::unique_ptr<GraphConnection>& uConnection : GetConnectionsFromNode(pNode->GetId()))
+            {
+                glm::vec2 startPos = GetNodePos(uConnection->GetToNodeId());
+                glm::vec2 endPos   = GetNodePos(uConnection->GetFromNodeId());
 
-	if (m_bRenderConnections)
-	{
-		for (const GraphNode* pNode : m_pActiveNodes)
-		{
-			for (const std::unique_ptr<GraphConnection>& uConnection : GetConnectionsFromNode(pNode->GetId()))
-			{
-				glm::vec2 startPos = GetNodePos(uConnection->GetToNodeId());
-				glm::vec2 endPos = GetNodePos(uConnection->GetFromNodeId());
-
-				bu::DrawLine(startPos, endPos, 1, m_RenderColorConnections);
-			}
-		}
-	}
-
+                bu::DrawLine(startPos, endPos, 1, m_RenderColorConnections);
+            }
+        }
+    }
 }
 
 
-bool GridGraph::IsWithinBounds(GridPosition position) const
+bool GridGraph::IsWithinBounds(const GridPosition position) const
 {
-    if (position.Column < 0 || position.Row < 0)
+    if(position.Column < 0 || position.Row < 0)
+    {
         return false;
+    }
 
-    if (position.Column >= m_NrOfColumns || position.Row >= m_NrOfRows)
+    if(position.Column >= m_NrOfColumns || position.Row >= m_NrOfRows)
+    {
         return false;
+    }
 
     return true;
 }
 
-void GridGraph::AddConnectionsToAdjacentCells(GridPosition position)
+void GridGraph::AddConnectionsToAdjacentCells(const GridPosition position)
 {
     AddConnectionsToAdjacentCells(GetNodeId(position));
 }
 
-void GridGraph::AddConnectionsToAdjacentCells(int idx)
+void GridGraph::AddConnectionsToAdjacentCells(const int idx)
 {
-	GridPosition position = GetGridPosition(idx);
+    const GridPosition position = GetGridPosition(idx);
 
-	// Add connections in all directions, taking into account the dimensions of the grid
-	AddConnectionsInDirections(idx, position, m_StraightDirections);
+    // Add connections in all directions, taking into account the dimensions of the grid
+    AddConnectionsInDirections(idx, position, m_StraightDirections);
 
-	if (m_IsConnectedDiagonally)
-	{
-		AddConnectionsInDirections(idx, position, m_DiagonalDirections);
-	}
+    if(m_IsConnectedDiagonally)
+    {
+        AddConnectionsInDirections(idx, position, m_DiagonalDirections);
+    }
 
-	OnGraphModified(false, true);
+    OnGraphModified(false, true);
 }
 
 
-glm::vec2 GridGraph::GetPosition(GridPosition position) const
+glm::vec2 GridGraph::GetPosition(const GridPosition position) const
 {
-	const glm::vec2 cellCenterOffset = { m_CellSize.x * .5f, m_CellSize.y * .5f };
-	const glm::vec2 cellPosition =
-	{
-		static_cast<float>(position.Column) * m_CellSize.x,
-		static_cast<float>(position.Row) * m_CellSize.y
-	};
+    const glm::vec2 cellCenterOffset =
+    {
+        static_cast<float>(m_CellSize.x) / 2.f,
+        static_cast<float>(m_CellSize.y) / 2.f
+    };
+    const glm::vec2 cellPosition =
+    {
+        static_cast<float>(position.Column) * static_cast<float>(m_CellSize.x),
+        static_cast<float>(position.Row) * static_cast<float>(m_CellSize.y)
+    };
 
-	return m_Position + cellPosition + cellCenterOffset;
+    return m_Position + cellPosition + cellCenterOffset;
 }
 
 
-int GridGraph::GetNodeId(GridPosition position) const
+int GridGraph::GetNodeId(const GridPosition position) const
 {
     return position.Row * m_NrOfColumns + position.Column;
 }
 
-GraphNode* GridGraph::GetNode(GridPosition position) const
+GraphNode* GridGraph::GetNode(const GridPosition position) const
 {
     return Graph::GetNode(GetNodeId(position));
 }
 
 int GridGraph::GetNodeIdAtPosition(const glm::vec2& pos) const
 {
-	constexpr int idx = InvalidNodeID;
+    constexpr int idx = InvalidNodeID;
 
-	if (pos.x < 0 || pos.y < 0)
-		return InvalidNodeID;
-
-    GridPosition gridPosition
+    if(pos.x < 0 || pos.y < 0)
     {
-	    .Column = static_cast<int>((pos.x - m_Position.x) / m_CellSize.x),
-	    .Row = static_cast<int>((pos.y - m_Position.y) / m_CellSize.y)
+        return InvalidNodeID;
+    }
+
+    const GridPosition gridPosition
+    {
+        .Column = static_cast<int>((pos.x - m_Position.x) / static_cast<float>(m_CellSize.x)),
+        .Row    = static_cast<int>((pos.y - m_Position.y) / static_cast<float>(m_CellSize.y))
     };
 
-	if (!IsWithinBounds(gridPosition))
-		return idx;
+    if(!IsWithinBounds(gridPosition))
+    {
+        return idx;
+    }
 
-	return GetNodeId(gridPosition);
+    return GetNodeId(gridPosition);
 }
 
 GraphNode* GridGraph::GetNodeAtPosition(const glm::vec2& pos) const
 {
-	return Graph::GetNode(GetNodeIdAtPosition(pos));
+    return Graph::GetNode(GetNodeIdAtPosition(pos));
 }
 
-glm::vec2 GridGraph::GetNodePos(int nodeId) const
+glm::vec2 GridGraph::GetNodePos(const int nodeId) const
 {
-	return GetPosition(GetGridPosition(nodeId));
+    return GetPosition(GetGridPosition(nodeId));
 }
 
-GridPosition GridGraph::GetGridPosition(int idx) const
+GridPosition GridGraph::GetGridPosition(const int idx) const
 {
     return GridPosition
     {
         .Column = idx % m_NrOfColumns,
-        .Row = idx / m_NrOfColumns
+        .Row    = idx / m_NrOfColumns
     };
 }
 
 
 void GridGraph::InitializeGrid()
 {
-	// Create all nodes
-	for (int row = 0; row < m_NrOfRows; ++row)
-	{
-		for (int column = 0; column < m_NrOfColumns; ++column)
-		{
-			const int idx = GetNodeId(GridPosition{ column, row});
-			AddNodeAtIndex(CreateNode(GetNodePos(idx)));
-		}
-	}
+    // Create all nodes
+    for(int row = 0; row < m_NrOfRows; ++row)
+    {
+        for(int column = 0; column < m_NrOfColumns; ++column)
+        {
+            const int idx = GetNodeId(GridPosition{ column, row });
+            AddNodeAtIndex(CreateNode(GetNodePos(idx)));
+        }
+    }
 
-	// Create connections in each valid direction on each node
-	for (int row = 0; row < m_NrOfRows; ++row)
-		for (int column = 0; column < m_NrOfColumns; ++column)
-			AddConnectionsToAdjacentCells(GridPosition{column, row});
-
+    // Create connections in each valid direction on each node
+    for(int row = 0; row < m_NrOfRows; ++row)
+    {
+        for(int column = 0; column < m_NrOfColumns; ++column)
+        {
+            AddConnectionsToAdjacentCells(GridPosition{ column, row });
+        }
+    }
 }
 
-void GridGraph::AddConnectionsInDirections(int idx, GridPosition position, const std::vector<glm::vec2>& directions)
+void GridGraph::AddConnectionsInDirections(int idx, const GridPosition position,
+                                           const std::vector<glm::vec2>& directions)
 {
-	for (const glm::vec2& d : directions)
-	{
-		const int neighborColumn = position.Column + static_cast<int>(d.x);
-		const int neighborRow = position.Row + static_cast<int>(d.y);
+    for(const glm::vec2& direction : directions)
+    {
+        const int neighborColumn = position.Column + static_cast<int>(direction.x);
+        const int neighborRow    = position.Row + static_cast<int>(direction.y);
 
-		if (IsWithinBounds(GridPosition{neighborColumn, neighborRow}))
-		{
-			const int neighborIdx = neighborRow * m_NrOfColumns + neighborColumn;
-			const float connectionCost = CalculateConnectionCost(idx, neighborIdx);
+        if(IsWithinBounds(GridPosition{ neighborColumn, neighborRow }))
+        {
+            const int neighborIdx      = neighborRow * m_NrOfColumns + neighborColumn;
+            const float connectionCost = CalculateConnectionCost(idx, neighborIdx);
 
-		    // Extra check for different terrain types
-			if (!Graph::ConnectionExists(idx, neighborIdx) && connectionCost < m_MaximumConnectionCost)
-			{
-				AddConnection(std::make_unique<GraphConnection>(idx, neighborIdx, connectionCost));
-			}
-		}
-	}
-
+            // Extra check for different terrain types
+            if(!Graph::ConnectionExists(idx, neighborIdx) && connectionCost < m_MaximumConnectionCost)
+            {
+                AddConnection(std::make_unique<GraphConnection>(idx, neighborIdx, connectionCost));
+            }
+        }
+    }
 }
 
-float GridGraph::CalculateConnectionCost(int fromIdx, int toIdx) const
+float GridGraph::CalculateConnectionCost(const int fromIdx, const int toIdx) const
 {
-	float cost = m_DefaultCostStraight;
+    float cost = m_DefaultCostStraight;
 
-	const glm::vec2 fromPos = Graph::GetNode(fromIdx)->GetPosition();
-	const glm::vec2 toPos = Graph::GetNode(toIdx)->GetPosition();
+    const glm::vec2 fromPos = Graph::GetNode(fromIdx)->GetPosition();
+    const glm::vec2 toPos   = Graph::GetNode(toIdx)->GetPosition();
 
-	if (static_cast<int>(fromPos.y) != static_cast<int>(toPos.y) &&
-		static_cast<int>(fromPos.x) != static_cast<int>(toPos.x))
-	{
-		cost = m_DefaultCostDiagonal;
-	}
+    if(static_cast<int>(fromPos.y) != static_cast<int>(toPos.y) &&
+        static_cast<int>(fromPos.x) != static_cast<int>(toPos.x))
+    {
+        cost = m_DefaultCostDiagonal;
+    }
 
-	if (m_uCostCalculator != nullptr)
-		cost *= m_uCostCalculator->CalculateConnectionCost(static_cast<const Graph*>(this), fromIdx, toIdx);
+    if(m_uCostCalculator != nullptr)
+        cost *= m_uCostCalculator->CalculateConnectionCost(static_cast<const Graph*>(this), fromIdx, toIdx);
 
 
-	return cost;
+    return cost;
 }
 

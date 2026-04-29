@@ -9,7 +9,7 @@ namespace bae
 {
     class GameObject;
 
-    class SpriteComponent : public TextureComponent
+    class SpriteComponent final : public TextureComponent
     {
     public:
         // we should use a setting's struct to initialize the variables first, to make it more organized
@@ -17,23 +17,22 @@ namespace bae
                                  int nrColumns, int nrSprites, const glm::ivec2& srcOffset = {});
 
 
-        virtual void Render() const override;
+        void Render() const override;
 
 
-        SDL_FRect GetDstRect() const { return m_DstRect; };
-        void SetDstRect(const SDL_FRect& dstRect) { m_DstRect = dstRect; };
+        [[nodiscard]] SDL_FRect GetDstRect() const { return m_DstRect; }
+        void SetDstRect(const SDL_FRect& dstRect) { m_DstRect = dstRect; }
 
-        SDL_FRect GetCurrentSpriteRect() const;
+        [[nodiscard]] SDL_FRect GetCurrentSpriteRect() const;
 
-        SDL_FRect GetSrcRect() const { return m_SrcRect; };
-        void SetSrcRect(const SDL_FRect& srcRect) { m_SrcRect = srcRect; };
+        [[nodiscard]] SDL_FRect GetSrcRect() const { return m_SrcRect; }
+        void SetSrcRect(const SDL_FRect& srcRect) { m_SrcRect = srcRect; }
 
         void PreviousSprite();
         void NextSprite();
 
 
         int m_Index{};
-
 
         bool m_bUseParentLocation{ true };
         bool m_bUseParentRotation{ true };
@@ -42,7 +41,7 @@ namespace bae
         bool m_bIsCenteredAtPosition{ true };
 
     private:
-        glm::ivec2 m_SrcOffset{};
+        glm::vec2 m_SrcOffset{};
 
         SDL_FRect m_SrcRect;
         SDL_FRect m_DstRect;

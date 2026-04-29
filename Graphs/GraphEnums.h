@@ -3,7 +3,7 @@
 
 namespace bae::Graphs
 {
-	constexpr int InvalidNodeID = -1;
+    constexpr int InvalidNodeID = -1;
 }
 
 

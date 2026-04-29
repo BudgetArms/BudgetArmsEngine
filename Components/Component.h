@@ -21,27 +21,13 @@ namespace bae
         Component& operator=(Component&& other)      = delete;
 
 
-        virtual void Update()
-        {
-        };
+        virtual void Update() {}
+        virtual void FixedUpdate() {}
+        virtual void LateUpdate() {}
+        virtual void Render() const {}
+        virtual void RenderGUI() {}
 
-        virtual void FixedUpdate()
-        {
-        };
-
-        virtual void LateUpdate()
-        {
-        };
-
-        virtual void Render() const
-        {
-        };
-
-        virtual void RenderGUI()
-        {
-        };
-
-        [[nodiscard]] virtual GameObject* GetOwner() { return m_Owner; };
+        [[nodiscard]] virtual GameObject* GetOwner() { return m_Owner; }
 
     protected:
         GameObject* m_Owner;

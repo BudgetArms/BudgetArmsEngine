@@ -6,12 +6,11 @@
 #include "Core/Utils.h"
 #include "Singletons/GameTime.h"
 #include "Wrappers/Font.h"
-#include "Wrappers/Texture2D.h"
 
 
 using namespace bae;
 
-FpsTextComponent::FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font, SDL_Color color) :
+FpsTextComponent::FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font, const SDL_Color color) :
     TextComponent(owner, "FPS: xxx", std::move(font))
 {
     SetColor(color);

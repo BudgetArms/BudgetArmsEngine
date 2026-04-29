@@ -10,7 +10,7 @@
 //Function pointer type to heuristic function
 namespace bae::Graphs
 {
-	typedef float(*Heuristic)(float, float);
+    typedef float (*Heuristic)(float, float);
 }
 
 /* --- UTILITIES --- */

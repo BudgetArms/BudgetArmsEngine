@@ -15,8 +15,8 @@ namespace bae
         static IAudioQueue& GetAudioQueue() { return *m_sAudioQueueInstance; }
 
         template<typename AudioClipType,
-                 typename = std::enable_if_t<std::is_base_of_v<bae::AudioClip, AudioClipType> &&
-                     !std::is_same_v<bae::AudioClip, AudioClipType>>>
+                 typename = std::enable_if_t<std::is_base_of_v<AudioClip, AudioClipType> &&
+                     !std::is_same_v<AudioClip, AudioClipType>>>
         static void RegisterAudioQueue()
         {
             m_sAudioQueueInstance = std::make_unique<AudioQueue<AudioClipType>>();

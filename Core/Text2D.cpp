@@ -2,6 +2,7 @@
 
 #include <SDL3_ttf/SDL_ttf.h>
 
+#include "HelperFunctions.h"
 #include "Core/Renderer.h"
 #include "Managers/ResourceManager.h"
 
@@ -11,7 +12,6 @@ using namespace bae;
 
 Text2D::Text2D(const std::string& text, std::shared_ptr<Font> font, const SDL_Color& color) :
     m_bIsCenteredAtPosition{ false },
-    m_Position{},
     m_Rotation{},
     m_Scale{ 1.f, 1.f },
     m_bNeedsUpdate{ true },
@@ -34,13 +34,15 @@ void Text2D::Update()
         const auto surface = TTF_RenderText_Blended(m_uFont->GetFont(), m_Text.c_str(), m_Text.length(), m_Color);
         if(!surface)
         {
-            throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
+            throw std::runtime_error(
+                FUNCTION_NAME + std::string(" Failed to render text/font, Error: ") + SDL_GetError());
         }
 
         auto texture = SDL_CreateTextureFromSurface(Renderer::GetInstance().GetSDLRenderer(), surface);
         if(!texture)
         {
-            throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
+            throw std::runtime_error(
+                FUNCTION_NAME + std::string(" Failed to create texture from surface, Error: ") + SDL_GetError());
         }
 
         SDL_DestroySurface(surface);
@@ -54,8 +56,8 @@ void Text2D::Render() const
 {
     if(m_uTextTexture)
     {
-        Renderer::GetInstance().RenderTexture(*m_uTextTexture, m_bIsCenteredAtPosition, m_Position, m_Rotation,
-                                              m_Scale);
+        Renderer::GetInstance().RenderTexture(*m_uTextTexture, m_bIsCenteredAtPosition,
+                                              m_Position, m_Rotation, m_Scale);
     }
 }
 
