@@ -75,6 +75,7 @@ add_library(${ENGINE_NAME} STATIC
     "Sounds/SoundSystem.h"
 
     "Wrappers/Audio.cpp"
+    "Wrappers/AudioTrack.cpp"
     "Wrappers/Controller.cpp"
     "Wrappers/Font.cpp"
     "Wrappers/Keyboard.cpp"

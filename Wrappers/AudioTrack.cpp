@@ -5,15 +5,13 @@
 
 #include <SDL3_mixer/SDL_mixer.h>
 
-#include "../Core/HelperFunctions.h"
+#include "Core/HelperFunctions.h"
 #include "Core/ServiceLocator.h"
 
 
 bae::AudioTrack::AudioTrack()
 {
     MIX_Mixer* const mixer = ServiceLocator::GetSoundSystem().GetMixer();
-    // Todo: remove test code
-    *mixer = nullptr;
 
     m_Track = MIX_CreateTrack(mixer);
     if(!m_Track)

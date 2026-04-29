@@ -176,32 +176,50 @@ void bae::AudioQueue<AudioClipType>::ProcessSoundEvent(const SoundEventData& eve
         break;
         case SoundEventType::Stop:
         {
-            audioClip->Stop();
+            if(audioClip)
+            {
+                audioClip->Stop();
+            }
         }
         break;
         case SoundEventType::Resume:
         {
-            audioClip->Resume();
+            if(audioClip)
+            {
+                audioClip->Resume();
+            }
         }
         break;
         case SoundEventType::Pause:
         {
-            audioClip->Pause();
+            if(audioClip)
+            {
+                audioClip->Pause();
+            }
         }
         break;
         case SoundEventType::Mute:
         {
-            audioClip->Mute();
+            if(audioClip)
+            {
+                audioClip->Mute();
+            }
         }
         break;
         case SoundEventType::UnMute:
         {
-            audioClip->UnMute();
+            if(audioClip)
+            {
+                audioClip->UnMute();
+            }
         }
         break;
         case SoundEventType::SetVolume:
         {
-            audioClip->SetVolume(eventData.Volume);
+            if(audioClip)
+            {
+                audioClip->SetVolume(eventData.Volume);
+            }
         }
         break;
         case SoundEventType::StopAll:
