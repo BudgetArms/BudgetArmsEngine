@@ -15,7 +15,7 @@ using namespace bae;
 
 
 TextComponent::TextComponent(GameObject& owner, const std::string& text, std::shared_ptr<Font> font,
-                             const SDL_Color color) :
+                             const Utils::Color& color) :
     Component{ owner },
     m_NeedsUpdate{ true },
     m_Text{ text },
@@ -37,7 +37,8 @@ void TextComponent::Update()
 {
     if(m_NeedsUpdate)
     {
-        const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Text.length(), m_Color);
+        const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Text.length(),
+                                                 m_Color.GetSDLColor());
         if(!surf)
         {
             throw std::runtime_error(
@@ -87,7 +88,7 @@ void TextComponent::SetText(const std::string& text)
 }
 
 
-SDL_Color TextComponent::GetColor()
+Utils::Color TextComponent::GetColor()
 {
     if(m_NeedsUpdate)
     {
@@ -97,7 +98,7 @@ SDL_Color TextComponent::GetColor()
     return m_Color;
 }
 
-void TextComponent::SetColor(const SDL_Color& color)
+void TextComponent::SetColor(const Utils::Color& color)
 {
     m_Color       = color;
     m_NeedsUpdate = true;

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Components/TextComponent.h"
+#include "Core/Utils.h"
 
 
 namespace bae
@@ -11,8 +12,9 @@ namespace bae
     class FpsTextComponent final : public TextComponent
     {
     public:
-        explicit FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font = nullptr,
-                                  SDL_Color color                               = SDL_Color{ 0, 0, 0, 255 });
+        explicit FpsTextComponent(GameObject& owner,
+                                  std::shared_ptr<Font> font = nullptr,
+                                  const Utils::Color& color  = Utils::Color::White);
         ~FpsTextComponent() override = default;
 
         FpsTextComponent(const FpsTextComponent& other)            = delete;

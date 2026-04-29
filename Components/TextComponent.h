@@ -3,10 +3,9 @@
 #include <memory>
 #include <string>
 
-#include <SDL3/SDL_pixels.h>
-
 #include "Components/TransformComponent.h"
 #include "Core/GameObject.h"
+#include "Core/Utils.h"
 
 
 namespace bae
@@ -17,8 +16,8 @@ namespace bae
     class TextComponent : public Component
     {
     public:
-        TextComponent(GameObject& owner, const std::string& text, std::shared_ptr<Font> font = nullptr,
-                      SDL_Color color = SDL_Color{ 255, 255, 255, 255 });
+        TextComponent(GameObject& owner, const std::string& text,
+                      std::shared_ptr<Font> font = nullptr, const Utils::Color& color = Utils::Color::White);
         ~TextComponent() override;
 
         TextComponent(const TextComponent& other)            = delete;
@@ -33,8 +32,8 @@ namespace bae
         std::string GetText();
         void SetText(const std::string& text);
 
-        SDL_Color GetColor();
-        void SetColor(const SDL_Color& color);
+        Utils::Color GetColor();
+        void SetColor(const Utils::Color& color);
 
         [[nodiscard]] Font* GetFont() const { return m_Font.get(); }
         void SetFont(std::shared_ptr<Font> font);
@@ -45,7 +44,7 @@ namespace bae
     private:
         bool m_NeedsUpdate;
         std::string m_Text;
-        SDL_Color m_Color;
+        Utils::Color m_Color;
         std::shared_ptr<Font> m_Font;
 
     protected:
