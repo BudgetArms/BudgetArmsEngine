@@ -30,6 +30,9 @@ TextComponent::TextComponent(GameObject& owner, const std::string& text, std::sh
     m_Font = std::move(font);
 }
 
+TextComponent::~TextComponent() = default;
+
+
 void TextComponent::Update()
 {
     if(m_NeedsUpdate)

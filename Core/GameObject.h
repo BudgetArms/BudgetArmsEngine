@@ -11,7 +11,6 @@
 
 namespace bae
 {
-    class Texture2D;
     class Component;
     class TransformComponent;
 

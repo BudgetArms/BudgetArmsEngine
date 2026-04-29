@@ -3,6 +3,7 @@
 #include "Core/GameObject.h"
 #include "Core/Renderer.h"
 #include "Managers/ResourceManager.h"
+#include "Wrappers/Texture2D.h"
 
 
 using namespace bae;

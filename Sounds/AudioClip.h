@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Sounds/SoundSystem.h"
+#include "Wrappers/AudioTrack.h"
 
 
 namespace bae

@@ -5,6 +5,7 @@
 
 namespace bae
 {
+    class Texture2D;
     class GameObject;
 
     class TextureComponent : public Component
