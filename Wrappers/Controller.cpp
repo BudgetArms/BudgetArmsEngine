@@ -20,10 +20,10 @@ public:
 
 
     #else
-    void ProcessInput(int) = default;
-    void ClearCommands()   = default;
+    void ProcessInput(int) {};
+    void ClearCommands() {};
 
-    void AddControllerCommands(std::unique_ptr<Command>, unsigned int, InputManager::ButtonState) = default;
+    void AddControllerCommands(std::unique_ptr<Command>, unsigned int, InputManager::ButtonState) {};
 
     [[nodiscard]] bool IsButtonUp(unsigned int) const { return false; };
     [[nodiscard]] bool IsButtonDown(unsigned int) const { return false; };

@@ -242,7 +242,9 @@ float GridGraph::CalculateConnectionCost(const int fromIdx, const int toIdx) con
     }
 
     if(m_uCostCalculator != nullptr)
+    {
         cost *= m_uCostCalculator->CalculateConnectionCost(static_cast<const Graph*>(this), fromIdx, toIdx);
+    }
 
 
     return cost;

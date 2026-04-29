@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Graphs/Graph.h"
 #include "Graphs/GraphNode.h"
 
 
@@ -12,7 +13,7 @@ namespace bae::Graphs
         virtual ~ConnectionCostCalculator() = default;
 
 
-        virtual float CalculateConnectionCost(const Graph* pGraph, int fromNodeId, int toNodeId) const = 0;
+        virtual float CalculateConnectionCost(const bae::Graphs::Graph* pGraph, int fromNodeId, int toNodeId) const = 0;
     };
 }
 
