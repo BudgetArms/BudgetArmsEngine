@@ -35,9 +35,14 @@ It comes with a LoggingSoundSystem to make debugging sound problems easier. <br>
 However, due to Mixer types being deeply integrated into other structures AudioTrack/AudioQueue/AudioClip, implementing
 another sound library would be a pain. <br>
 
+This will change since the SdlAudioQueue will be moved into the SdlSoundSystem completely, like it should have been from
+the beginning. <br>
+
 ## Todo's
 
 - Update Sound system (port from SDL2_Mixer to SDL3_Mixer)
 - Improve Sound handling (now uses ActiveSoundID, which is an ID for each playing sound).
 - Remove ImGui & Steamworks support, since they should be implemented at the Game Level.
-
+- Change the Audioqueue only when the sound system changes
+- Create SoundId from SDMB hash
+- Remove AudioQueue from ServiceLocator and implement it into SdlSoundSystem
