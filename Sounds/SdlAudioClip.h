@@ -24,9 +24,9 @@ namespace bae
 
 
         [[nodiscard]] bool IsPlaying() const override;
-
         [[nodiscard]] bool IsPaused() const override;
         [[nodiscard]] bool IsMuted() const override;
+        [[nodiscard]] bool IsStopped() const override;
 
 
         [[nodiscard]] float GetVolume() const override;

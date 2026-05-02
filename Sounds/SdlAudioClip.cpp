@@ -33,6 +33,7 @@ public:
 
     [[nodiscard]] bool IsPaused() const;
     [[nodiscard]] bool IsMuted() const;
+    [[nodiscard]] bool IsStopped() const;
 
 
     [[nodiscard]] float GetVolume() const;
@@ -46,12 +47,15 @@ public:
     std::mutex m_Mutex;
 
 private:
+    static void SDLCALL TrackFinishedCallBack(void* isStoppedData, MIX_Track*);
+
     SoundID m_SoundId{};
     ActiveSoundID m_ActiveSoundID{};
     AudioTrack m_Track{};
 
     float m_Volume{ 1.f };
     bool m_bIsMuted{ false };
+    bool m_bIsStopped{ false };
 };
 
 
@@ -64,7 +68,10 @@ SdlAudioClip::SdlAudioClip(ActiveSoundID activeId, SoundID soundId) :
     m_Pimpl = std::make_unique<Impl>(activeId, soundId);
 }
 
-SdlAudioClip::~SdlAudioClip() = default;
+SdlAudioClip::~SdlAudioClip()
+{
+    std::cout << FUNCTION_NAME << '\n';
+};
 
 
 bool SdlAudioClip::Play()
@@ -125,6 +132,12 @@ bool SdlAudioClip::IsMuted() const
     return m_Pimpl->IsMuted();
 }
 
+bool SdlAudioClip::IsStopped() const
+{
+    std::lock_guard lock{ m_Pimpl->m_Mutex };
+    return m_Pimpl->IsStopped();
+}
+
 
 float SdlAudioClip::GetVolume() const
 {
@@ -172,17 +185,47 @@ SdlAudioClip::Impl::Impl(const ActiveSoundID activeSoundId, const SoundID soundI
     m_ActiveSoundID = activeSoundId;
     m_SoundId       = soundId;
 
+    const Audio* audio = ServiceLocator::GetSoundSystem().GetAudio(soundId);
+    if(!audio)
+    {
+        std::cout << FUNCTION_NAME << " Failed to get valid audio from SoundID: " << soundId.ID << '\n';
+        return;
+    }
+
+    bool success = MIX_SetTrackAudio(m_Track.GetTrack(), audio->GetAudio());
+    if(!success)
+    {
+        std::cout << FUNCTION_NAME << " Failed to set Audio on Track, Error:" << SDL_GetError() << '\n';
+        return;
+    }
+
+    success = MIX_SetTrackStoppedCallback(m_Track.GetTrack(), TrackFinishedCallBack, &m_bIsStopped);
+    if(!success)
+    {
+        std::cout << FUNCTION_NAME << " Failed to create Track Stopped Callback, Error:" << SDL_GetError() << '\n';
+        return;
+    }
+
 
     m_Volume = 1.0f;
     SetVolume(m_Volume);
 }
 
-SdlAudioClip::Impl::~Impl() = default;
+SdlAudioClip::Impl::~Impl()
+{
+    std::cout << FUNCTION_NAME << " Destroyed AudioClip" << '\n';
+}
 
 
 bool SdlAudioClip::Impl::Play()
 {
-    MIX_PlayTrack(m_Track.GetTrack(), 0);
+    auto track         = m_Track.GetTrack();
+    const bool success = MIX_PlayTrack(track, 0);
+    if(!success)
+    {
+        std::cout << FUNCTION_NAME << " Failed to play sound, Error: " << SDL_GetError() << '\n';
+        return false;
+    }
 
     if(m_bIsMuted)
     {
@@ -194,10 +237,7 @@ bool SdlAudioClip::Impl::Play()
 
 void SdlAudioClip::Impl::Stop() const
 {
-    if(IsPlaying())
-    {
-        MIX_StopTrack(m_Track.GetTrack(), 0);
-    }
+    MIX_StopTrack(m_Track.GetTrack(), 0);
 }
 
 
@@ -241,6 +281,11 @@ bool SdlAudioClip::Impl::IsMuted() const
     return m_bIsMuted;
 }
 
+bool SdlAudioClip::Impl::IsStopped() const
+{
+    return m_bIsStopped;
+}
+
 
 float SdlAudioClip::Impl::GetVolume() const
 {
@@ -272,6 +317,12 @@ AudioTrack& SdlAudioClip::Impl::GetAudioTrack()
     return m_Track;
 }
 
+
+void __cdecl SdlAudioClip::Impl::TrackFinishedCallBack(void* isStoppedData, MIX_Track*)
+{
+    bool* const isStopped = static_cast<bool*>(isStoppedData);
+    *isStopped            = true;
+}
 
 #pragma endregion
 

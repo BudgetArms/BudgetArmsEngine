@@ -26,6 +26,7 @@ namespace bae
         [[nodiscard]] virtual bool IsPlaying() const = 0;
         [[nodiscard]] virtual bool IsPaused() const = 0;
         [[nodiscard]] virtual bool IsMuted() const = 0;
+        [[nodiscard]] virtual bool IsStopped() const = 0;
 
         [[nodiscard]] virtual float GetVolume() const = 0;
         virtual void SetVolume(float volume) = 0;

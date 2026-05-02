@@ -1,12 +1,8 @@
 ﻿#include "SdlSoundSystem.h"
 
-#if _DEBUG
-// ReSharper disable once CppUnusedIncludeDirective
-#if __has_include(<vld.h>)
+#if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>
 #endif
-#endif
-
 
 #include <filesystem>
 #include <iostream>
@@ -219,12 +215,6 @@ SdlSoundSystem::Impl::~Impl()
     ServiceLocator::RegisterAudioQueue<NullAudioClip>();
 
     m_LoadedAudio.clear();
-
-    // TODO: update
-    if(SDL_WasInit(SDL_INIT_AUDIO))
-    {
-        SDL_QuitSubSystem(SDL_INIT_AUDIO);
-    }
 }
 
 

@@ -70,12 +70,13 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
 
     if(!SDL_InitSubSystem(SDL_INIT_VIDEO))
     {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed to Initialize SDL, Error: ") + SDL_GetError());
+        throw std::runtime_error(
+            FUNCTION_NAME + std::string(" Failed to Initialize SDL Video SubSystem, Error: ") + SDL_GetError());
     }
 
 
     // Disabled VLD, because MMDevApi.dll leaking (only on my system for some reason)
-    #if defined(_DEBUG) && __has_include(<vld.h>)
+    #if _DEBUG && __has_include(<vld.h>)
     VLDDisable();
     #endif
 
@@ -102,7 +103,7 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
         }
     }
 
-    #if defined(_DEBUG) && __has_include(<vld.h>)
+    #if _DEBUG && __has_include(<vld.h>)
     VLDEnable();
     #endif
 

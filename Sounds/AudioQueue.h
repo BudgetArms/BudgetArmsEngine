@@ -97,6 +97,7 @@ const bae::AudioClip* bae::AudioQueue<AudioClipType>::GetAudioClip(const ActiveS
 }
 
 
+// TODO: use cd (condition variable)
 template<typename AudioClipType>
 void bae::AudioQueue<AudioClipType>::AudioThreadLoop()
 {
@@ -130,7 +131,7 @@ void bae::AudioQueue<AudioClipType>::ProcessSoundEvent(const SoundEventData& eve
     }
 
     const bool isAudioClipNeeded = IsAudioClipNeededForSoundEventType(eventData.Type);
-    if(!isAudioClipNeeded && !audioClip && eventData.Type != SoundEventType::Play)
+    if(isAudioClipNeeded && !audioClip && eventData.Type != SoundEventType::Play)
     {
         throw std::runtime_error(FUNCTION_NAME + std::string(" Failed, Audio clip not found but needed in SoundEvent"));
         return;
@@ -176,50 +177,32 @@ void bae::AudioQueue<AudioClipType>::ProcessSoundEvent(const SoundEventData& eve
         break;
         case SoundEventType::Stop:
         {
-            if(audioClip)
-            {
-                audioClip->Stop();
-            }
+            audioClip->Stop();
         }
         break;
         case SoundEventType::Resume:
         {
-            if(audioClip)
-            {
-                audioClip->Resume();
-            }
+            audioClip->Resume();
         }
         break;
         case SoundEventType::Pause:
         {
-            if(audioClip)
-            {
-                audioClip->Pause();
-            }
+            audioClip->Pause();
         }
         break;
         case SoundEventType::Mute:
         {
-            if(audioClip)
-            {
-                audioClip->Mute();
-            }
+            audioClip->Mute();
         }
         break;
         case SoundEventType::UnMute:
         {
-            if(audioClip)
-            {
-                audioClip->UnMute();
-            }
+            audioClip->UnMute();
         }
         break;
         case SoundEventType::SetVolume:
         {
-            if(audioClip)
-            {
-                audioClip->SetVolume(eventData.Volume);
-            }
+            audioClip->SetVolume(eventData.Volume);
         }
         break;
         case SoundEventType::StopAll:
@@ -325,16 +308,16 @@ void bae::AudioQueue<AudioClipType>::CleanUpFinishedSounds()
 {
     for(const auto& [activeSoundID, uAudioClip] : m_ActiveAudio)
     {
-        if(!uAudioClip->IsPlaying())
+        if(uAudioClip->IsStopped())
         {
-            std::cout << "AudioQueueLogger::CleanUp SoundID: " << activeSoundID.ID << '\n';
+            std::cout << FUNCTION_NAME << " Cleaning up SoundID: " << activeSoundID.ID << '\n';
         }
     }
 
     std::erase_if(m_ActiveAudio,
                   [](auto& activeAudio)
                   {
-                      return !activeAudio.second->IsPlaying();
+                      return activeAudio.second->IsStopped();
                   }
     );
 }
