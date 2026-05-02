@@ -46,3 +46,4 @@ the beginning. <br>
 - Change the Audioqueue only when the sound system changes
 - Create SoundId from SDMB hash
 - Remove AudioQueue from ServiceLocator and implement it into SdlSoundSystem
+- Change All Singleton Code: eg. Singleton::GetInstance().Function(); to Singleton::Function();
