@@ -38,6 +38,11 @@ another sound library would be a pain. <br>
 This will change since the SdlAudioQueue will be moved into the SdlSoundSystem completely, like it should have been from
 the beginning. <br>
 
+During the process of merging the SdlSoundSystem and the AudioQueue (previously templated), I noticed that the
+AudioQueue should most likely be completely removed. However, due to my extreme stubbornness I doubt that will ever
+happen. <br>
+My desire to add new features to and improve the sound system is hindering my productivity to finish anything.
+
 ## Todo's
 
 - Update Sound system (port from SDL2_Mixer to SDL3_Mixer)
@@ -46,4 +51,5 @@ the beginning. <br>
 - Change the Audioqueue only when the sound system changes
 - Create SoundId from SDMB hash
 - Remove AudioQueue from ServiceLocator and implement it into SdlSoundSystem
-- Change All Singleton Code: eg. Singleton::GetInstance().Function(); to Singleton::Function();
+- Change All Singleton Code: e.g. Singleton::GetInstance().Function(); to Singleton::Function();
+- Do all Todo's in SdlAudioSystem
