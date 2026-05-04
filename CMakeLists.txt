@@ -66,7 +66,6 @@ add_library(${ENGINE_NAME} STATIC
     "Singletons/Singleton.h"
 
     "Sounds/AudioClip.h"
-    "Sounds/AudioQueue.h"
     "Sounds/LoggingSoundSystem.cpp"
     "Sounds/NullAudioClip.h"
     "Sounds/NullSoundSystem.h"

@@ -14,64 +14,17 @@ namespace bae
 
     struct ActiveSoundID
     {
+        explicit ActiveSoundID(const int id) :
+            ID{ id }
+        {
+        };
+
         int ID{ -1 };
 
         static ActiveSoundID GenerateActiveSoundID()
         {
-            return ActiveSoundID{ .ID = GetRandomNumber() };
+            return ActiveSoundID(GetRandomNumber());
         }
-    };
-
-    enum class SoundEventType
-    {
-        Play,
-        Stop,
-        Resume,
-        Pause,
-        Mute,
-        UnMute,
-        SetVolume,
-        StopAll,
-        ResumeAll,
-        PauseAll,
-        MuteAll,
-        UnMuteAll,
-        SetVolumeAll,
-    };
-
-    [[nodiscard]] constexpr bool IsAudioClipNeededForSoundEventType(const SoundEventType eventType)
-    {
-        // Todo: check how normal this include is, because it looks pretty fucked, but it makes
-
-        switch(eventType)
-        {
-            case SoundEventType::Play:
-            case SoundEventType::Stop:
-            case SoundEventType::Resume:
-            case SoundEventType::Pause:
-            case SoundEventType::Mute:
-            case SoundEventType::UnMute:
-            case SoundEventType::SetVolume:
-                return true;
-
-            case SoundEventType::StopAll:
-            case SoundEventType::ResumeAll:
-            case SoundEventType::PauseAll:
-            case SoundEventType::MuteAll:
-            case SoundEventType::UnMuteAll:
-            case SoundEventType::SetVolumeAll:
-                return false;
-        }
-
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! This line should never be reached"));
-    }
-
-    struct SoundEventData
-    {
-        SoundEventType Type{};
-        SoundID SoundID{ -1 };
-        ActiveSoundID ActiveSoundID{ -1 };
-        float Volume{ 1 };
     };
 
 
@@ -80,7 +33,7 @@ namespace bae
         return lhs.ID == rhs.ID;
     }
 
-    inline bool operator==(const ActiveSoundID& lhs, const ActiveSoundID& rhs)
+    constexpr bool operator==(const ActiveSoundID& lhs, const ActiveSoundID& rhs)
     {
         return lhs.ID == rhs.ID;
     }
