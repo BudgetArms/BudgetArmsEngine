@@ -14,36 +14,42 @@ namespace bae
         explicit LoggingSoundSystem(std::unique_ptr<SoundSystem> soundSystem);
         ~LoggingSoundSystem() override;
 
-        SoundID LoadSound(const std::string& path) override;
+        [[nodiscard]] SoundID LoadSound(const std::string& path) override;
 
-        ActiveSoundID Play(SoundID soundId, float volume) override;
+        [[nodiscard]] ActiveSoundID Play(SoundID soundId) override;
+
         void Stop(ActiveSoundID activeSoundId) override;
-
         void Resume(ActiveSoundID activeSoundId) override;
         void Pause(ActiveSoundID activeSoundId) override;
-
         void Mute(ActiveSoundID activeSoundId) override;
         void UnMute(ActiveSoundID activeSoundId) override;
+        void Loop(ActiveSoundID activeSoundId) override;
+        void UnLoop(ActiveSoundID activeSoundId) override;
 
-        bool IsLoaded(SoundID soundId) override;
-        bool IsPlaying(ActiveSoundID activeSoundId) override;
-
-        bool IsPaused(ActiveSoundID activeSoundId) override;
-        bool IsMuted(ActiveSoundID activeSoundId) override;
-
-        float GetVolume(ActiveSoundID activeSoundId) override;
-        void SetVolume(ActiveSoundID activeSoundId, float volume) override;
+        void StopSounds(SoundID soundId) override;
+        void ResumeSounds(SoundID soundId) override;
+        void PauseSounds(SoundID soundId) override;
+        void MuteSounds(SoundID soundId) override;
+        void UnMuteSounds(SoundID soundId) override;
 
         void ResumeAllSounds() override;
         void PauseAllSounds() override;
         void StopAllSounds() override;
         void MuteAllSounds() override;
         void UnMuteAllSounds() override;
-
         void SetVolumeAllSounds(float volume) override;
 
-        Audio* GetAudio(SoundID soundId) override;
-        MIX_Mixer* GetMixer() override;
+
+        [[nodiscard]] bool IsLoaded(SoundID soundId) override;
+        [[nodiscard]] bool IsPlaying(ActiveSoundID activeSoundId) override;
+        [[nodiscard]] bool IsPaused(ActiveSoundID activeSoundId) override;
+        [[nodiscard]] bool IsMuted(ActiveSoundID activeSoundId) override;
+        [[nodiscard]] float GetVolume(ActiveSoundID activeSoundId) override;
+        void SetVolume(ActiveSoundID activeSoundId, float volume) override;
+
+
+        [[nodiscard]] Audio* GetAudio(SoundID soundId) override;
+        [[nodiscard]] MIX_Mixer* GetMixer() override;
 
     private:
         std::unique_ptr<SoundSystem> m_RealSoundSystem;
