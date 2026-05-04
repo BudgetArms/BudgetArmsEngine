@@ -20,6 +20,8 @@ namespace bae
         void Pause() override {}
         void Mute() override {}
         void UnMute() override {}
+        void Loop() override {}
+        void UnLoop() override {}
 
         [[nodiscard]] bool IsPlaying() const override { return false; }
         [[nodiscard]] bool IsPaused() const override { return false; }

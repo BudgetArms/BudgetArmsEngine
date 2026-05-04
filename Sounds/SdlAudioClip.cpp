@@ -1,6 +1,7 @@
 ﻿#include "SdlAudioClip.h"
 
 #include <algorithm>
+#include <iostream>
 #include <mutex>
 
 #include <SDL3_mixer/SDL_mixer.h>
@@ -20,7 +21,10 @@ public:
 
 
     bool Play();
-    void Stop() const;
+    void Stop();
+
+    void Loop();
+    void UnLoop();
 
     void Resume() const;
     void Pause() const;
@@ -47,14 +51,15 @@ public:
     std::mutex m_Mutex;
 
 private:
-    static void SDLCALL TrackFinishedCallBack(void* isStoppedData, MIX_Track*);
+    static void SDLCALL TrackFinishedCallBack(void* data, MIX_Track*);
 
-    SoundID m_SoundId{};
-    ActiveSoundID m_ActiveSoundID{};
+    SoundID m_SoundId{ -1 };
+    ActiveSoundID m_ActiveSoundID{ -1 };
     AudioTrack m_Track{};
 
     float m_Volume{ 1.f };
     bool m_bIsMuted{ false };
+    bool m_bIsLooped{ false };
     bool m_bIsStopped{ false };
 };
 
@@ -84,6 +89,18 @@ void SdlAudioClip::Stop()
 {
     std::lock_guard lock{ m_Pimpl->m_Mutex };
     m_Pimpl->Stop();
+}
+
+void SdlAudioClip::Loop()
+{
+    std::lock_guard lock{ m_Pimpl->m_Mutex };
+    m_Pimpl->Loop();
+}
+
+void SdlAudioClip::UnLoop()
+{
+    std::lock_guard lock{ m_Pimpl->m_Mutex };
+    m_Pimpl->UnLoop();
 }
 
 
@@ -199,13 +216,13 @@ SdlAudioClip::Impl::Impl(const ActiveSoundID activeSoundId, const SoundID soundI
         return;
     }
 
-    success = MIX_SetTrackStoppedCallback(m_Track.GetTrack(), TrackFinishedCallBack, &m_bIsStopped);
+
+    success = MIX_SetTrackStoppedCallback(m_Track.GetTrack(), TrackFinishedCallBack, this);
     if(!success)
     {
         std::cout << FUNCTION_NAME << " Failed to create Track Stopped Callback, Error:" << SDL_GetError() << '\n';
         return;
     }
-
 
     m_Volume = 1.0f;
     SetVolume(m_Volume);
@@ -235,9 +252,23 @@ bool SdlAudioClip::Impl::Play()
     return true;
 }
 
-void SdlAudioClip::Impl::Stop() const
+void SdlAudioClip::Impl::Stop()
 {
+    m_bIsStopped = true;
+
+    // TODO: remove the line below to check if it still works
+    // This shouldn't be necessary due to AudioQueue
     MIX_StopTrack(m_Track.GetTrack(), 0);
+}
+
+void SdlAudioClip::Impl::Loop()
+{
+    m_bIsLooped = true;
+}
+
+void SdlAudioClip::Impl::UnLoop()
+{
+    m_bIsLooped = false;
 }
 
 
@@ -318,10 +349,29 @@ AudioTrack& SdlAudioClip::Impl::GetAudioTrack()
 }
 
 
-void __cdecl SdlAudioClip::Impl::TrackFinishedCallBack(void* isStoppedData, MIX_Track*)
+void __cdecl SdlAudioClip::Impl::TrackFinishedCallBack(void* data, MIX_Track*)
 {
-    bool* const isStopped = static_cast<bool*>(isStoppedData);
-    *isStopped            = true;
+    const auto pImpl = static_cast<Impl*>(data);
+    if(!pImpl)
+    {
+        std::cout << FUNCTION_NAME << " Failed! data couldn't be casted to Impl*" << '\n';
+        return;
+    }
+
+    if(pImpl->m_bIsLooped)
+    {
+        // This might seem stupid to do, since we could set the properties during MIX_PlayTrack
+        // to make it looped, but I want to have the ability to loop/unloop a track any time I want.
+        const bool success = MIX_PlayTrack(pImpl->m_Track.GetTrack(), 0);
+        if(!success)
+        {
+            std::cout << FUNCTION_NAME << " Failed to loop/replay the same track, Error: " << SDL_GetError() << '\n';
+        }
+
+        return;
+    }
+
+    pImpl->m_bIsStopped = true;
 }
 
 #pragma endregion

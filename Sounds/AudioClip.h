@@ -15,12 +15,12 @@ namespace bae
         // return indicates success creation
         virtual bool Play() = 0;
         virtual void Stop() = 0;
-
         virtual void Resume() = 0;
         virtual void Pause() = 0;
-
         virtual void Mute() = 0;
         virtual void UnMute() = 0;
+        virtual void Loop() = 0;
+        virtual void UnLoop() = 0;
 
 
         [[nodiscard]] virtual bool IsPlaying() const = 0;

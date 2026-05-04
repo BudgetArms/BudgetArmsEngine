@@ -15,12 +15,12 @@ namespace bae
 
         bool Play() override;
         void Stop() override;
-
         void Resume() override;
         void Pause() override;
-
         void Mute() override;
         void UnMute() override;
+        void Loop() override;
+        void UnLoop() override;
 
 
         [[nodiscard]] bool IsPlaying() const override;
