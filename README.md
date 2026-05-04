@@ -43,13 +43,17 @@ AudioQueue should most likely be completely removed. However, due to my extreme 
 happen. <br>
 My desire to add new features to and improve the sound system is hindering my productivity to finish anything.
 
+The wrapper classes that are Mixer related (Audio & AudioTrack) should be hidden in Pimpl of SdlSoundSystem or removed.
+If it's hidden in Pimpl, then it should be renamed to make people know it's Mixer specific, because
+Audio/AudioClip/AudioTrack all sound very broad, and neither do they indicate that they are all Mixer specific <br>
+
 ## Todo's
 
-- Update Sound system (port from SDL2_Mixer to SDL3_Mixer)
-- Improve Sound handling (now uses ActiveSoundID, which is an ID for each playing sound).
-- Remove ImGui & Steamworks support, since they should be implemented at the Game Level.
-- Change the Audioqueue only when the sound system changes
-- Create SoundId from SDMB hash
-- Remove AudioQueue from ServiceLocator and implement it into SdlSoundSystem
-- Change All Singleton Code: e.g. Singleton::GetInstance().Function(); to Singleton::Function();
-- Do all Todo's in SdlAudioSystem
+- Update Sound system (port from SDL2_Mixer to SDL3_Mixer) ✅
+- Improve Sound handling (now uses ActiveSoundID, which is an ID for each playing sound)
+- Remove ImGui & Steamworks support, since they should be implemented at the Game Level
+- Change the Audioqueue only when the sound system changes ✅ Audioqueue is now only for the Sdl (Mixer) SoundSystem
+- Create SoundId from SDMB hash (will not do this due to time constraints)
+- Remove AudioQueue from ServiceLocator and implement it into SdlSoundSystem ✅ only in the Sdl (Mixer) SoundSystem
+- Change Singleton Code, Singleton::GetInstance().Foo() ⇒ Singleton::Foo()
+- Remove Audio/Mixer related Getters from SoundSystem, since those are wrappers for Mixer types. 
