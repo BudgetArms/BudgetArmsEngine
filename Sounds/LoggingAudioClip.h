@@ -10,8 +10,8 @@
 namespace bae
 {
     template<typename RealAudioClipType,
-             typename = std::enable_if_t<std::is_base_of_v<bae::AudioClip, RealAudioClipType> &&
-                 !std::is_same_v<bae::AudioClip, RealAudioClipType>>>
+             typename = std::enable_if_t<std::is_base_of_v<AudioClip, RealAudioClipType> &&
+                 !std::is_same_v<AudioClip, RealAudioClipType>>>
     class LoggingAudioClip : public AudioClip
     {
     public:
@@ -68,7 +68,7 @@ namespace bae
 
         bool IsPlaying() const override
         {
-            // // this is disabled because it's called constantly
+            // This is disabled because it's called constantly
             //std::cout << FUNCTION_NAME << '\n';
             return m_RealAudioClip->IsPlaying();
         };

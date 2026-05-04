@@ -37,21 +37,12 @@ namespace bae::Utils
         {
         }
 
-        inline constexpr Color(const Color& other, const float a) :
+        constexpr Color(const Color& other, const float a) :
             Color(other.R, other.G, other.B, a)
         {
         }
 
-        constexpr SDL_Color GetSDLColor() const
-        {
-            return SDL_Color
-            {
-                static_cast<Uint8>(255.f * std::clamp(R, 0.f, 1.f)),
-                static_cast<Uint8>(255.f * std::clamp(G, 0.f, 1.f)),
-                static_cast<Uint8>(255.f * std::clamp(B, 0.f, 1.f)),
-                static_cast<Uint8>(255.f * std::clamp(A, 0.f, 1.f))
-            };
-        }
+        [[nodiscard]] constexpr SDL_Color GetSDLColor() const;
 
         float R{};
         float G{};
@@ -73,6 +64,17 @@ namespace bae::Utils
         static const Color DarkGray;
         static const Color Transparent;
     };
+
+    constexpr SDL_Color Color::GetSDLColor() const
+    {
+        return SDL_Color
+        {
+            static_cast<Uint8>(255.f * std::clamp(R, 0.f, 1.f)),
+            static_cast<Uint8>(255.f * std::clamp(G, 0.f, 1.f)),
+            static_cast<Uint8>(255.f * std::clamp(B, 0.f, 1.f)),
+            static_cast<Uint8>(255.f * std::clamp(A, 0.f, 1.f))
+        };
+    }
 
     // inline's are needed to prevent linker error(s)
     inline constexpr Color Color::White       = Color(1.f, 1.f, 1.f);

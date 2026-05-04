@@ -21,7 +21,8 @@ LoggingSoundSystem::LoggingSoundSystem(std::unique_ptr<SoundSystem> soundSystem)
     }
     else
     {
-        const std::string className = typeid(*soundSystem).name();
+        [[maybe_unused]] SoundSystem* baseSoundSystem = soundSystem.get();
+        const std::string className                   = typeid(baseSoundSystem).name();
         std::cout << className << '\n';
 
         m_RealSoundSystem = std::move(soundSystem);
@@ -198,7 +199,7 @@ void LoggingSoundSystem::SetVolume(const ActiveSoundID activeSoundId, const floa
     m_RealSoundSystem->SetVolume(activeSoundId, volume);
 }
 
-Audio* LoggingSoundSystem::GetAudio(SoundID soundId)
+Audio* LoggingSoundSystem::GetAudio(const SoundID soundId)
 {
     std::cout << FUNCTION_NAME << " SoundId: " << soundId.ID << '\n';
     return m_RealSoundSystem->GetAudio(soundId);

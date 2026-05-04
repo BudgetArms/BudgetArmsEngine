@@ -154,10 +154,10 @@ void bae::BudgetEngine::RunOneFrame()
     // only one update would be done, resulting into him teleporting through the wall
     // while here you just do many small updates, that will result in him not teleporting (as much).
     // and for networking, with the syncing of player movement/position & desync, etc.
-    while(m_AccumulatedTime >= GameTime::GetInstance().GetFixedTimeStep())
+    while(m_AccumulatedTime >= GameTime::GetFixedTimeStep())
     {
         SceneManager::GetInstance().FixedUpdate();
-        m_AccumulatedTime -= GameTime::GetInstance().GetFixedTimeStep();
+        m_AccumulatedTime -= GameTime::GetFixedTimeStep();
     }
 
     SceneManager::GetInstance().Update();

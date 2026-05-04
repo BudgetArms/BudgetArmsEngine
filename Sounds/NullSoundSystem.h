@@ -26,11 +26,11 @@ namespace bae
         void Loop(ActiveSoundID) override {}
         void UnLoop(ActiveSoundID) override {}
 
-        void StopSounds(SoundID) override {};
-        void ResumeSounds(SoundID) override {};
-        void PauseSounds(SoundID) override {};
-        void MuteSounds(SoundID) override {};
-        void UnMuteSounds(SoundID) override {};
+        void StopSounds(SoundID) override {}
+        void ResumeSounds(SoundID) override {}
+        void PauseSounds(SoundID) override {}
+        void MuteSounds(SoundID) override {}
+        void UnMuteSounds(SoundID) override {}
 
         void ResumeAllSounds() override {}
         void PauseAllSounds() override {}
@@ -48,8 +48,8 @@ namespace bae
         void SetVolume(ActiveSoundID, float) override {}
 
 
-        [[nodiscard]] Audio* GetAudio(SoundID) override { return nullptr; };
-        [[nodiscard]] MIX_Mixer* GetMixer() override { return nullptr; };
+        [[nodiscard]] Audio* GetAudio(SoundID) override { return nullptr; }
+        [[nodiscard]] MIX_Mixer* GetMixer() override { return nullptr; }
     };
 }
 

@@ -156,7 +156,7 @@ bool Controller::Impl::IsButtonUp(const unsigned int button) const
     const auto buttonChanges            = m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons;
     const auto buttonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
 
-    return (buttonsReleasedThisFrame & button);
+    return buttonsReleasedThisFrame & button;
 }
 
 bool Controller::Impl::IsButtonDown(const unsigned int button) const
@@ -164,12 +164,12 @@ bool Controller::Impl::IsButtonDown(const unsigned int button) const
     const auto buttonChanges           = m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons;
     const auto buttonsPressedThisFrame = buttonChanges & m_CurrentState.Gamepad.wButtons;
 
-    return (buttonsPressedThisFrame & button);
+    return buttonsPressedThisFrame & button;
 }
 
 bool Controller::Impl::IsButtonPressed(const unsigned int button) const
 {
-    return (m_CurrentState.Gamepad.wButtons & button);
+    return m_CurrentState.Gamepad.wButtons & button;
 }
 
 

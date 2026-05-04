@@ -76,7 +76,7 @@ SdlAudioClip::SdlAudioClip(ActiveSoundID activeId, SoundID soundId) :
 SdlAudioClip::~SdlAudioClip()
 {
     std::cout << FUNCTION_NAME << '\n';
-};
+}
 
 
 bool SdlAudioClip::Play()
@@ -90,19 +90,6 @@ void SdlAudioClip::Stop()
     std::lock_guard lock{ m_Pimpl->m_Mutex };
     m_Pimpl->Stop();
 }
-
-void SdlAudioClip::Loop()
-{
-    std::lock_guard lock{ m_Pimpl->m_Mutex };
-    m_Pimpl->Loop();
-}
-
-void SdlAudioClip::UnLoop()
-{
-    std::lock_guard lock{ m_Pimpl->m_Mutex };
-    m_Pimpl->UnLoop();
-}
-
 
 void SdlAudioClip::Resume()
 {
@@ -127,6 +114,19 @@ void SdlAudioClip::UnMute()
 {
     std::lock_guard lock{ m_Pimpl->m_Mutex };
     m_Pimpl->UnMute();
+}
+
+
+void SdlAudioClip::Loop()
+{
+    std::lock_guard lock{ m_Pimpl->m_Mutex };
+    m_Pimpl->Loop();
+}
+
+void SdlAudioClip::UnLoop()
+{
+    std::lock_guard lock{ m_Pimpl->m_Mutex };
+    m_Pimpl->UnLoop();
 }
 
 
@@ -236,7 +236,7 @@ SdlAudioClip::Impl::~Impl()
 
 bool SdlAudioClip::Impl::Play()
 {
-    auto track         = m_Track.GetTrack();
+    const auto track   = m_Track.GetTrack();
     const bool success = MIX_PlayTrack(track, 0);
     if(!success)
     {

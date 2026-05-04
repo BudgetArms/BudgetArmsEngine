@@ -17,7 +17,7 @@ namespace bae
         explicit ActiveSoundID(const int id) :
             ID{ id }
         {
-        };
+        }
 
         int ID{ -1 };
 

@@ -120,7 +120,8 @@ void SpriteComponent::NextSprite()
         return;
     }
 
-    m_Index = ++m_Index % m_NrSprites;
+    ++m_Index;
+    m_Index %= m_NrSprites;
 }
 
 
