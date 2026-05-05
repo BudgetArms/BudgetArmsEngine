@@ -83,7 +83,7 @@ add_library(${ENGINE_NAME} STATIC
 )
 
 
-if(STEAMWORKS_AVAILABLE)
+if(STEAMWORKS_ENABLED)
     target_sources(${ENGINE_NAME} PRIVATE
         "Core/Achievement.cpp"
         "Managers/AchievementManager.h"
@@ -103,7 +103,7 @@ else()
 endif()
 
 
-if(STEAMWORKS_AVAILABLE)
+if(STEAMWORKS_ENABLED)
     target_compile_definitions(${ENGINE_NAME} PRIVATE
         "STEAMWORKS_ENABLED"
     )
@@ -440,7 +440,7 @@ if(WIN32)
     )
 endif()
 
-if(STEAMWORKS_AVAILABLE)
+if(STEAMWORKS_ENABLED)
     target_link_libraries(${ENGINE_NAME} PUBLIC
         Steamworks::Steamworks
     )
@@ -477,7 +477,7 @@ if(WIN32)
     endforeach()
 
 
-    if(STEAMWORKS_AVAILABLE)
+    if(STEAMWORKS_ENABLED)
 
         # Copy Steamworks dll
         add_custom_command(
