@@ -32,7 +32,7 @@ add_library(${ENGINE_NAME} STATIC
     "Core/ServiceLocator.cpp"
     "Core/Scene.cpp" "Core/Scene.h"
     "Core/State.h"
-    "Core/Subject.h"
+    "Core/Subject.cpp"
     "Core/Text2D.cpp"
     "Core/Utils.cpp"
 

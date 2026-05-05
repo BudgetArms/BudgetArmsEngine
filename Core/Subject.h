@@ -9,43 +9,26 @@
 
 namespace bae
 {
+    class GameObject;
+
     class Subject
     {
     public:
-        explicit Subject(bae::GameObject& subjectGameObject) :
-            m_GameObject{ &subjectGameObject }
-        {
-        }
+        explicit Subject(GameObject& subjectGameObject);
 
         ~Subject() = default;
 
-        void AddObserver(Observer* observer)
-        {
-            m_Observers.push_back(observer);
-        }
+        void AddObserver(Observer* observer);
+        void RemoveObserver(Observer* observer);
 
-        void RemoveObserver(Observer* observer)
-        {
-            std::erase(m_Observers, observer);
-        }
-
-        GameObject* GetGameObject() const
-        {
-            return m_GameObject;
-        }
+        [[nodiscard]] GameObject* GetGameObject() const;
 
     private:
-        bae::GameObject* m_GameObject{};
+        GameObject* m_GameObject{};
         std::vector<Observer*> m_Observers;
 
     protected:
-        void NotifyObservers(const EventType event)
-        {
-            for(Observer* observer : m_Observers)
-            {
-                observer->Notify(event, this);
-            }
-        }
+        void NotifyObservers(EventType event);
     };
 }
 

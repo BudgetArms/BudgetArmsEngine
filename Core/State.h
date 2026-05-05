@@ -13,6 +13,9 @@ namespace bae
         virtual void OnEnter() = 0;
         virtual void OnExit() = 0;
 
+        virtual void OnResume() {};
+        virtual void OnSuspend() {};
+
         virtual void Update() = 0;
     };
 }
