@@ -10,6 +10,8 @@
 #include <ranges>
 #include <string>
 #include <unordered_map>
+#include <stop_token>
+#include <thread>
 
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
