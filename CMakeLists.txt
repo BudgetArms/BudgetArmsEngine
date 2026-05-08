@@ -205,10 +205,14 @@ else()
             set(SDL3TTF_USE_SYSTEM_FREETYPE ON)
             set(SDL3TTF_VENDORED OFF)
             set(SDLTTF_PLUTOSVG OFF)
+
             add_compile_options(-sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1)
-            add_compile_options(-pthread)
+            add_compile_options(-pthread -sPTHREAD_POOL_SIZE=4 -sPROXY_TO_PTHREAD)
+            add_compile_options(-fexceptions -sDISABLE_EXCEPTION_CATCHING=0)
+
             add_link_options(-sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1)
-            add_link_options(-pthread)
+            add_link_options(-pthread -sPTHREAD_POOL_SIZE=4 -sPROXY_TO_PTHREAD)
+            add_link_options(-fexceptions -sDISABLE_EXCEPTION_CATCHING=0)
         endif()
 
         FetchContent_MakeAvailable(SDL3_ttf)

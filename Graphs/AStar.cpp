@@ -1,5 +1,6 @@
 ﻿#include "AStar.h"
 
+#include <algorithm>
 #include <list>
 
 #include "Graphs/Graph.h"
