@@ -50,10 +50,13 @@ Audio/AudioClip/AudioTrack all sound very broad, and neither do they indicate th
 ## Todo's
 
 - Update Sound system (port from SDL2_Mixer to SDL3_Mixer) ✅
-- Improve Sound handling (now uses ActiveSoundID, which is an ID for each playing sound)
+- Improve Sound handling (now uses ActiveSoundID, which is an ID for each playing sound)  ✅ Now you can use SoundID for
+  control
 - Remove ImGui & Steamworks support, since they should be implemented at the Game Level
 - Change the Audioqueue only when the sound system changes ✅ Audioqueue is now only for the Sdl (Mixer) SoundSystem
-- Create SoundId from SDMB hash (will not do this due to time constraints)
+- Create SoundId from SDMB hash (will not do this due to time constraints) ⏸️
 - Remove AudioQueue from ServiceLocator and implement it into SdlSoundSystem ✅ only in the Sdl (Mixer) SoundSystem
-- Change Singleton Code, Singleton::GetInstance().Foo() ⇒ Singleton::Foo()
-- Remove Audio/Mixer related Getters from SoundSystem, since those are wrappers for Mixer types. 
+- Change Singleton Code, Singleton::GetInstance().Foo() ⇒ Singleton::Foo() ✅
+- Remove Audio/Mixer related Getters from SoundSystem, since those are wrappers for Mixer types.
+- Add an EventManager to handle the EventQueue
+- Change from using (enum class) EventType for Observer/Subject & Event Queue to SDBM hash
