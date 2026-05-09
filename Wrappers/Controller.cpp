@@ -18,8 +18,8 @@ public:
     [[nodiscard]] bool IsButtonDown(unsigned int button) const;
     [[nodiscard]] bool IsButtonPressed(unsigned int button) const;
 
-
     #else
+
     void ProcessInput(int) {};
     void ClearCommands() {};
 
@@ -52,37 +52,33 @@ Controller::~Controller() = default;
 
 void Controller::ProcessInput() const
 {
-    if(m_Pimpl)
-    {
-        m_Pimpl->ProcessInput(m_ControllerIndex);
-    }
+    m_Pimpl->ProcessInput(m_ControllerIndex);
 }
 
 void Controller::ClearCommands() const
 {
-    if(m_Pimpl)
-    {
-        m_Pimpl->ClearCommands();
-    }
+    m_Pimpl->ClearCommands();
 }
 
 void Controller::AddControllerCommands(std::unique_ptr<Command> command, const unsigned int button,
                                        const InputManager::ButtonState activationState) const
 {
-    if(m_Pimpl)
-    {
-        m_Pimpl->AddControllerCommands(std::move(command), button, activationState);
-    }
+    m_Pimpl->AddControllerCommands(std::move(command), button, activationState);
+}
+
+bool Controller::IsButtonUp(unsigned int button) const
+{
+    return m_Pimpl->IsButtonUp(button);
+}
+
+bool Controller::IsButtonDown(unsigned int button) const
+{
+    return m_Pimpl->IsButtonDown(button);
 }
 
 bool Controller::IsButtonPressed(const unsigned int button) const
 {
-    if(m_Pimpl)
-    {
-        return m_Pimpl->IsButtonPressed(button);
-    }
-
-    return false;
+    return m_Pimpl->IsButtonPressed(button);
 }
 
 
@@ -106,6 +102,12 @@ void Controller::Impl::ProcessInput(const int controllerIndex)
     const auto buttonsPressedThisFrame  = buttonChanges & m_CurrentState.Gamepad.wButtons;
     const auto buttonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
 
+    // Remove Invalid Commands
+    std::erase_if(m_ControllerCommands, [](auto& controllerCommand)
+    {
+        const auto& [command, button, state] = controllerCommand;
+        return !command->IsValid();
+    });
 
     for(const auto& [command, button, state] : m_ControllerCommands)
     {

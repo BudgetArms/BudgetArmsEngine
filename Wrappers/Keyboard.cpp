@@ -21,7 +21,6 @@ public:
     void AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button,
                              InputManager::ButtonState activationState);
 
-
     [[nodiscard]] bool IsButtonDown(unsigned int button) const;
     [[nodiscard]] bool IsButtonUp(unsigned int button) const;
     [[nodiscard]] bool IsButtonPressed(unsigned int button) const;
@@ -60,12 +59,12 @@ void Keyboard::AddKeyboardCommands(std::unique_ptr<Command> command, const unsig
 
 bool Keyboard::IsButtonUp(const unsigned int button) const
 {
-    return m_Pimpl->IsButtonPressed(button);
+    return m_Pimpl->IsButtonUp(button);
 }
 
 bool Keyboard::IsButtonDown(const unsigned int button) const
 {
-    return m_Pimpl->IsButtonPressed(button);
+    return m_Pimpl->IsButtonDown(button);
 }
 
 bool Keyboard::IsButtonPressed(const unsigned int button) const
@@ -105,6 +104,12 @@ void Keyboard::Impl::ProcessInput()
         }
     }
 
+    // Remove Invalid Commands
+    std::erase_if(m_KeyboardCommands, [](auto& keyboardCommand)
+    {
+        const auto& [command, button, state] = keyboardCommand;
+        return !command->IsValid();
+    });
 
     for(const auto& [command, button, state] : m_KeyboardCommands)
     {

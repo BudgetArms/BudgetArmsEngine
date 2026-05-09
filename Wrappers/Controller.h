@@ -31,8 +31,10 @@ namespace bae
         void AddControllerCommands(std::unique_ptr<Command>, unsigned int button,
                                    InputManager::ButtonState activationState) const;
 
-
+        [[nodiscard]] bool IsButtonUp(unsigned int button) const;
+        [[nodiscard]] bool IsButtonDown(unsigned int button) const;
         [[nodiscard]] bool IsButtonPressed(unsigned int button) const;
+
         [[nodiscard]] int GetControllerIndex() const { return m_ControllerIndex; }
 
     private:

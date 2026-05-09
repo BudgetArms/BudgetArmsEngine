@@ -60,12 +60,12 @@ void Mouse::AddMouseCommands(std::unique_ptr<Command> command, const unsigned in
 
 bool Mouse::IsButtonUp(const unsigned int button) const
 {
-    return m_Pimpl->IsButtonPressed(button);
+    return m_Pimpl->IsButtonUp(button);
 }
 
 bool Mouse::IsButtonDown(const unsigned int button) const
 {
-    return m_Pimpl->IsButtonPressed(button);
+    return m_Pimpl->IsButtonDown(button);
 }
 
 bool Mouse::IsButtonPressed(const unsigned int button) const
@@ -93,6 +93,12 @@ void Mouse::Impl::ProcessInput()
     m_CurrentButtonsDown[SDL_BUTTON_X1]     = (mouseState & SDL_BUTTON_MASK(SDL_BUTTON_X1)) != 0;
     m_CurrentButtonsDown[SDL_BUTTON_X2]     = (mouseState & SDL_BUTTON_MASK(SDL_BUTTON_X2)) != 0;
 
+    // Remove Invalid Commands
+    std::erase_if(m_MouseCommands, [](auto& mouseCommand)
+    {
+        const auto& [command, button, state] = mouseCommand;
+        return !command->IsValid();
+    });
 
     for(const auto& [command, button, state] : m_MouseCommands)
     {
