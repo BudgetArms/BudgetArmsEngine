@@ -16,6 +16,7 @@ namespace bae
 
 
         virtual void Execute() = 0;
+        [[nodiscard]] virtual bool IsValid() const { return true; }
     };
 }
 

@@ -24,6 +24,8 @@ namespace bae
 
         void Execute() override = 0;
 
+        [[nodiscard]] bool IsValid() const override { return !m_Actor->IsMarkedForDeletion(); }
+
     private:
         GameObject* m_Actor;
 
