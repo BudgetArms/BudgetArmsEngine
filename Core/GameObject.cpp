@@ -4,10 +4,10 @@
 #include <iostream>
 #include <string>
 
-#include "Core/Renderer.h"
-
+#include "HelperFunctions.h"
 #include "Components/Component.h"
 #include "Components/TransformComponent.h"
+#include "Core/Renderer.h"
 
 
 using namespace bae;
@@ -32,13 +32,14 @@ GameObject::~GameObject()
     // if it gets deleted with being marked for deletion && it's the project closing; assert
     if(!m_MarkedForDeletion)
     {
-        const std::string errorMessage{
-            "GameObject: " + m_Name +
-            ", Destructor, Object should not be destroyed, because it's not marked for destruction\n"
-        };
+        const std::string errorMessage = std::string(FUNCTION_NAME) + " Failed to Delete GameObject \"" + m_Name +
+                "\" is not marked for destruction\n";
+
         std::cout << errorMessage;
         assert(false && errorMessage.c_str());
     }
+
+    std::cout << FUNCTION_NAME << " Name: " << m_Name << '\n';
 }
 
 void GameObject::Update() const
