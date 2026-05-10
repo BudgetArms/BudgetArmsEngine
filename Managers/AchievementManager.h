@@ -27,7 +27,7 @@ namespace bae
         }
 
 
-        void Notify(EventType event, Subject* subject) override
+        void Notify(const EventType event, Subject* subject) override
         {
             for(const auto& achievement : m_Achievements)
             {
@@ -37,7 +37,7 @@ namespace bae
         }
 
     private:
-        friend class Singleton<AchievementManager>;
+        friend class Singleton;
         AchievementManager() = default;
 
         std::vector<std::unique_ptr<Achievement>> m_Achievements;
