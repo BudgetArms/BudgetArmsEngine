@@ -23,6 +23,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "HelperFunctions.h"
+#include "ServiceLocator.h"
 
 #ifdef STEAMWORKS_ENABLED
 #pragma warning (push)
@@ -116,7 +117,7 @@ bae::BudgetEngine::~BudgetEngine()
 {
     std::cout << FUNCTION_NAME << '\n';
     Renderer::GetInstance().Destroy();
-    MIX_Quit();
+    ServiceLocator::RegisterSoundSystem(std::make_unique<NullSoundSystem>());
     SDL_DestroyWindow(g_Window);
     g_Window = nullptr;
 

@@ -829,7 +829,15 @@ SdlSoundSystem::Impl::Impl() :
 
 SdlSoundSystem::Impl::~Impl()
 {
+    m_AudioQueue = nullptr;
+
+    MIX_DestroyMixer(m_Mixer);
+    m_Mixer = nullptr;
+
+    m_LoadedSoundIDs.clear();
     m_LoadedAudio.clear();
+
+    MIX_Quit();
 }
 
 
