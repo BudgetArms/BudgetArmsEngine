@@ -114,10 +114,13 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
 
 bae::BudgetEngine::~BudgetEngine()
 {
+    std::cout << FUNCTION_NAME << '\n';
     Renderer::GetInstance().Destroy();
     MIX_Quit();
     SDL_DestroyWindow(g_Window);
     g_Window = nullptr;
+
+    std::cout << FUNCTION_NAME << " Quiting SDL" << '\n';
     SDL_Quit();
 }
 

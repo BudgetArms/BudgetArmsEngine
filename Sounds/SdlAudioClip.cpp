@@ -230,7 +230,7 @@ SdlAudioClip::Impl::Impl(const ActiveSoundID activeSoundId, const SoundID soundI
 
 SdlAudioClip::Impl::~Impl()
 {
-    std::cout << FUNCTION_NAME << " Destroyed AudioClip" << '\n';
+    std::cout << FUNCTION_NAME << " Destroyed AudioClip, ActiveSoundID: " << m_ActiveSoundID.ID << '\n';
 }
 
 
