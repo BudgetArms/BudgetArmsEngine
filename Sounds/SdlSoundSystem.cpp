@@ -4,14 +4,15 @@
 #include <vld.h>
 #endif
 
+#include <cassert>
 #include <filesystem>
 #include <iostream>
 #include <memory>
 #include <ranges>
-#include <string>
-#include <unordered_map>
 #include <stop_token>
+#include <string>
 #include <thread>
+#include <unordered_map>
 
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
@@ -150,6 +151,7 @@ namespace bae
 
         std::mutex m_Mutex;
         std::condition_variable m_ConditionVariable;
+        bool m_bIsShuttingDown = false;
 
         static constexpr int m_SoundEventBufferSize{ 15 };
         bool m_bAreAllSoundsMuted{ false };
@@ -169,12 +171,18 @@ AudioQueue::AudioQueue() :
 
 AudioQueue::~AudioQueue()
 {
+    std::cout << FUNCTION_NAME << '\n';
     m_AudioThread.request_stop();
+    m_ConditionVariable.notify_all();
+
+    std::lock_guard lock(m_Mutex);
 
     for(const auto& uAudioClip : m_ActiveAudio | std::views::values)
     {
         uAudioClip->Stop();
     }
+
+    CleanUpFinishedSounds();
 
     m_ActiveAudio.clear();
 }
@@ -182,7 +190,15 @@ AudioQueue::~AudioQueue()
 void AudioQueue::SendSoundEvent(const SoundEventData& soundEvent)
 {
     std::lock_guard lock(m_Mutex);
+
+    // ignore request if audio is shutting down
+    if(m_bIsShuttingDown)
+    {
+        return;
+    }
+
     m_SoundEventBuffer.Push(soundEvent);
+    m_ConditionVariable.notify_one();
 }
 
 const AudioClip* AudioQueue::GetAudioClip(const ActiveSoundID activeSoundId)
@@ -204,7 +220,7 @@ void AudioQueue::AudioThreadLoop(const std::stop_token& stopToken)
         std::unique_lock lock(m_Mutex);
         m_ConditionVariable.wait(lock, [this, stopToken]
         {
-            return !stopToken.stop_requested() || !m_SoundEventBuffer.IsEmpty();
+            return stopToken.stop_requested() || !m_SoundEventBuffer.IsEmpty();
         });
 
         if(stopToken.stop_requested())
@@ -212,11 +228,15 @@ void AudioQueue::AudioThreadLoop(const std::stop_token& stopToken)
             return;
         }
 
-        // Go through the whole event buffer
         while(!m_SoundEventBuffer.IsEmpty())
         {
             SoundEventData eventData{};
             m_SoundEventBuffer.Pop(eventData);
+
+            if(stopToken.stop_requested())
+            {
+                return;
+            }
 
             lock.unlock();
 
@@ -225,6 +245,7 @@ void AudioQueue::AudioThreadLoop(const std::stop_token& stopToken)
             lock.lock();
         }
 
+        // After all SoundEvents are done, clean any finished sounds
         CleanUpFinishedSounds();
     }
 }
@@ -251,7 +272,7 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
 
     if(eventData.SoundID.ID == -1 && IsValidSoundIDNeededForSoundEventType(eventData.Type))
     {
-        std::cout << FUNCTION_NAME << " Failed! SoundId is invalid but needed in SoundEvent" << '\n';
+        std::cout << FUNCTION_NAME << " Failed! SoundId is invalid (-1) but needed in SoundEvent" << '\n';
         return;
     }
 
@@ -548,12 +569,11 @@ void AudioQueue::CleanUpFinishedSounds()
 
 constexpr bool AudioQueue::IsAudioClipNeededForSoundEventType(const SoundEventType& eventType)
 {
-    // Todo: check how normal this include is, because it feel pretty shitty to do this, but it makes sense
-    // I already know a way to improve this, but then I need to rewrite a big part of the SoundEventData structure
-
     switch(eventType)
     {
         case SoundEventType::PlaySound:
+            return false;
+
         case SoundEventType::StopSound:
         case SoundEventType::ResumeSound:
         case SoundEventType::PauseSound:
@@ -579,7 +599,11 @@ constexpr bool AudioQueue::IsAudioClipNeededForSoundEventType(const SoundEventTy
             return false;
     }
 
-    throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! This line should never be reached"));
+    const std::string errorMessage = std::string(FUNCTION_NAME) + " Failed! This line should never be reached" + '\n';
+
+    std::cout << errorMessage;
+    assert(false && errorMessage.c_str());
+    return true;
 }
 
 constexpr bool AudioQueue::IsValidSoundIDNeededForSoundEventType(const SoundEventType& eventType)
@@ -615,7 +639,11 @@ constexpr bool AudioQueue::IsValidSoundIDNeededForSoundEventType(const SoundEven
             return false;
     }
 
-    throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! This line should never be reached"));
+    const std::string errorMessage = std::string(FUNCTION_NAME) + " Failed! This line should never be reached" + '\n';
+
+    std::cout << errorMessage;
+    assert(false && errorMessage.c_str());
+    return true;
 }
 
 
@@ -1150,7 +1178,6 @@ float SdlSoundSystem::Impl::GetVolume(const ActiveSoundID activeSoundId) const
         return 0.f;
     }
 
-    // TODO: lock here
     const auto pAudioClip = m_AudioQueue->GetAudioClip(activeSoundId);
     if(!pAudioClip)
     {
