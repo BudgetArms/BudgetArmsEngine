@@ -27,29 +27,28 @@ namespace bae
 
         bool Initialize(uint32_t appId = 0);
         void Shutdown();
-        void Update();
+        void Update() const;
 
-        bool UnlockAchievement(const std::string& achievementId);
-        bool IsAchievementUnlocked(const std::string& achievementId);
-        void ResetAllAchievements();
+        [[nodiscard]] bool UnlockAchievement(const std::string& achievementId) const;
+        [[nodiscard]] bool IsAchievementUnlocked(const std::string& achievementId) const;
+        void ResetAllAchievements() const;
 
-        bool SetStat(const std::string& statName, int32_t value);
-        bool SetStat(const std::string& statName, float value);
-        bool GetStat(const std::string& statName, int32_t& outValue);
-        bool GetStat(const std::string& statName, float& outValue);
+        bool GetStat(const std::string& statName, int32_t& outValue) const;
+        bool GetStat(const std::string& statName, float& outValue) const;
+        bool SetStat(const std::string& statName, int32_t value) const;
+        bool SetStat(const std::string& statName, float value) const;
 
         void UploadScore(const std::string& leaderboardName, int32_t score) const;
 
-        [[nodiscard]] std::string GetPlayerName();
-        [[nodiscard]] uint64_t GetSteamID();
+        [[nodiscard]] std::string GetPlayerName() const;
+        [[nodiscard]] uint64_t GetSteamID() const;
 
         [[nodiscard]] bool IsInitialized() const { return m_bInitialized; }
         [[nodiscard]] bool IsSteamRunning() const;
 
     private:
-        friend class Singleton<SteamManager>;
+        friend class Singleton;
         SteamManager() = default;
-
 
         bool m_bInitialized{ false };
     };

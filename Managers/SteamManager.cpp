@@ -28,7 +28,9 @@ bool SteamManager::Initialize(uint32_t appId)
 
     std::cout << "Steam Initialize" << '\n';
     m_bInitialized = true;
-    // this is now done automatically
+
+    // TODO: check if this is true
+    // This should now be done automatically
     // SteamUserStats()->RequestCurrentStats();
 
     return true;
@@ -45,16 +47,16 @@ void SteamManager::Shutdown()
     m_bInitialized = false;
 }
 
-void SteamManager::Update()
+void SteamManager::Update() const
 {
     if(m_bInitialized)
     {
-        SteamAPI_RunCallbacks();
+        // SteamAPI_RunCallbacks();
     }
 }
 
 
-bool SteamManager::UnlockAchievement(const std::string& achievementId)
+bool SteamManager::UnlockAchievement(const std::string& achievementId) const
 {
     if(!m_bInitialized)
     {
@@ -70,7 +72,7 @@ bool SteamManager::UnlockAchievement(const std::string& achievementId)
     return false;
 }
 
-bool SteamManager::IsAchievementUnlocked(const std::string& achievementId)
+bool SteamManager::IsAchievementUnlocked(const std::string& achievementId) const
 {
     if(!m_bInitialized)
     {
@@ -84,7 +86,7 @@ bool SteamManager::IsAchievementUnlocked(const std::string& achievementId)
     return achieved;
 }
 
-void SteamManager::ResetAllAchievements() // Debug only
+void SteamManager::ResetAllAchievements() const // Debug only
 {
     if(!m_bInitialized)
     {
@@ -96,27 +98,7 @@ void SteamManager::ResetAllAchievements() // Debug only
     SteamUserStats()->StoreStats();
 }
 
-bool SteamManager::SetStat(const std::string& statName, int32_t value)
-{
-    if(!m_bInitialized)
-    {
-        return false;
-    }
-
-    return SteamUserStats()->SetStat(statName.c_str(), value);
-}
-
-bool SteamManager::SetStat(const std::string& statName, float value)
-{
-    if(!m_bInitialized)
-    {
-        return false;
-    }
-
-    return SteamUserStats()->SetStat(statName.c_str(), value);
-}
-
-bool SteamManager::GetStat(const std::string& statName, int32_t& outValue)
+bool SteamManager::GetStat(const std::string& statName, int32_t& outValue) const
 {
     if(!m_bInitialized)
     {
@@ -126,7 +108,7 @@ bool SteamManager::GetStat(const std::string& statName, int32_t& outValue)
     return SteamUserStats()->GetStat(statName.c_str(), &outValue);
 }
 
-bool SteamManager::GetStat(const std::string& statName, float& outValue)
+bool SteamManager::GetStat(const std::string& statName, float& outValue) const
 {
     if(!m_bInitialized)
     {
@@ -134,6 +116,26 @@ bool SteamManager::GetStat(const std::string& statName, float& outValue)
     }
 
     return SteamUserStats()->GetStat(statName.c_str(), &outValue);
+}
+
+bool SteamManager::SetStat(const std::string& statName, int32_t value) const
+{
+    if(!m_bInitialized)
+    {
+        return false;
+    }
+
+    return SteamUserStats()->SetStat(statName.c_str(), value);
+}
+
+bool SteamManager::SetStat(const std::string& statName, float value) const
+{
+    if(!m_bInitialized)
+    {
+        return false;
+    }
+
+    return SteamUserStats()->SetStat(statName.c_str(), value);
 }
 
 // Todo: this got changed
@@ -146,7 +148,7 @@ void SteamManager::UploadScore(const std::string&, int32_t) const
     }
 }
 
-std::string SteamManager::GetPlayerName()
+std::string SteamManager::GetPlayerName() const
 {
     if(!m_bInitialized)
     {
@@ -156,7 +158,7 @@ std::string SteamManager::GetPlayerName()
     return SteamFriends()->GetPersonaName();
 }
 
-uint64_t SteamManager::GetSteamID()
+uint64_t SteamManager::GetSteamID() const
 {
     if(!m_bInitialized)
     {
