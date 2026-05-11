@@ -254,19 +254,27 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
 {
     SdlAudioClip* audioClip = nullptr;
 
-    // TODO: use algorithms??
-    if(const auto it = m_ActiveAudio.find(eventData.ActiveSoundID); it != m_ActiveAudio.end())
+    const auto it = std::ranges::find_if(m_ActiveAudio,
+                                         [&eventData](auto& activeAudio)
+                                         {
+                                             const auto& [activeSoundID, uAudioClip] = activeAudio;
+                                             if(activeSoundID.ID == eventData.ActiveSoundID.ID && uAudioClip)
+                                             {
+                                                 return true;
+                                             }
+
+                                             return false;
+                                         });
+    if(it != m_ActiveAudio.end())
     {
-        if(it->second)
-        {
-            audioClip = it->second.get();
-        }
+        audioClip = it->second.get();
     }
 
     const bool isAudioClipNeeded = IsAudioClipNeededForSoundEventType(eventData.Type);
-    if(isAudioClipNeeded && !audioClip && eventData.Type != SoundEventType::PlaySound)
+    if(isAudioClipNeeded && !audioClip)
     {
-        std::cout << FUNCTION_NAME << " Failed! Audio clip not found but needed in SoundEvent" << '\n';
+        std::cout << FUNCTION_NAME << " Failed! Audio clip not found but needed in SoundEvent, ActiveSoundID: " <<
+                eventData.ActiveSoundID.ID << '\n';
         return;
     }
 
@@ -394,58 +402,62 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
 
         case SoundEventType::StopSounds:
         {
-            // TODO: I could used std::ranges::for_each here
-            for(const std::unique_ptr<SdlAudioClip>& currentAudioClip : m_ActiveAudio | std::views::values)
-            {
-                if(currentAudioClip->GetSoundId() == eventData.SoundID)
-                {
-                    currentAudioClip->Stop();
-                }
-            }
+            std::ranges::for_each(m_ActiveAudio | std::views::values,
+                                  [&](const auto& currentAudioClip)
+                                  {
+                                      if(currentAudioClip->GetSoundId() == eventData.SoundID)
+                                      {
+                                          currentAudioClip->Stop();
+                                      }
+                                  });
         }
         break;
         case SoundEventType::ResumeSounds:
         {
-            for(const std::unique_ptr<SdlAudioClip>& currentAudioClip : m_ActiveAudio | std::views::values)
-            {
-                if(currentAudioClip->GetSoundId() == eventData.SoundID)
-                {
-                    currentAudioClip->Resume();
-                }
-            }
+            std::ranges::for_each(m_ActiveAudio | std::views::values,
+                                  [&](const auto& currentAudioClip)
+                                  {
+                                      if(currentAudioClip->GetSoundId() == eventData.SoundID)
+                                      {
+                                          currentAudioClip->Resume();
+                                      }
+                                  });
         }
         break;
         case SoundEventType::PauseSounds:
         {
-            for(const std::unique_ptr<SdlAudioClip>& currentAudioClip : m_ActiveAudio | std::views::values)
-            {
-                if(currentAudioClip->GetSoundId() == eventData.SoundID)
-                {
-                    currentAudioClip->Pause();
-                }
-            }
+            std::ranges::for_each(m_ActiveAudio | std::views::values,
+                                  [&](const auto& currentAudioClip)
+                                  {
+                                      if(currentAudioClip->GetSoundId() == eventData.SoundID)
+                                      {
+                                          currentAudioClip->Pause();
+                                      }
+                                  });
         }
         break;
         case SoundEventType::MuteSounds:
         {
-            for(const std::unique_ptr<SdlAudioClip>& currentAudioClip : m_ActiveAudio | std::views::values)
-            {
-                if(currentAudioClip->GetSoundId() == eventData.SoundID)
-                {
-                    currentAudioClip->Mute();
-                }
-            }
+            std::ranges::for_each(m_ActiveAudio | std::views::values,
+                                  [&](const auto& currentAudioClip)
+                                  {
+                                      if(currentAudioClip->GetSoundId() == eventData.SoundID)
+                                      {
+                                          currentAudioClip->Mute();
+                                      }
+                                  });
         }
         break;
         case SoundEventType::UnMuteSounds:
         {
-            for(const std::unique_ptr<SdlAudioClip>& currentAudioClip : m_ActiveAudio | std::views::values)
-            {
-                if(currentAudioClip->GetSoundId() == eventData.SoundID)
-                {
-                    currentAudioClip->UnMute();
-                }
-            }
+            std::ranges::for_each(m_ActiveAudio | std::views::values,
+                                  [&](const auto& currentAudioClip)
+                                  {
+                                      if(currentAudioClip->GetSoundId() == eventData.SoundID)
+                                      {
+                                          currentAudioClip->UnMute();
+                                      }
+                                  });
         }
         break;
 
@@ -550,20 +562,20 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
 
 void AudioQueue::CleanUpFinishedSounds()
 {
-    for(const auto& [activeSoundID, uAudioClip] : m_ActiveAudio)
-    {
-        if(uAudioClip->IsStopped())
-        {
-            std::cout << FUNCTION_NAME << " Cleaning up SoundID: " << activeSoundID.ID << '\n';
-        }
-    }
+    constexpr auto functionName = std::string_view(FUNCTION_NAME);
 
     std::erase_if(m_ActiveAudio,
-                  [](auto& activeAudio)
+                  [&functionName](const auto& activeAudio)
                   {
-                      return activeAudio.second->IsStopped();
-                  }
-    );
+                      const auto& [activeSoundID, uAudioClip] = activeAudio;
+                      if(uAudioClip->IsStopped())
+                      {
+                          std::cout << functionName << " Cleaning up ActiveSoundID: " << activeSoundID.ID << '\n';
+
+                          return true;
+                      }
+                      return false;
+                  });
 }
 
 
