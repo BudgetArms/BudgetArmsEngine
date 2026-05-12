@@ -11,7 +11,7 @@ namespace bae
     class AudioTrack final
     {
     public:
-        explicit AudioTrack();
+        explicit AudioTrack(MIX_Mixer* mixer);
         ~AudioTrack();
 
         AudioTrack(const AudioTrack&)             = delete;

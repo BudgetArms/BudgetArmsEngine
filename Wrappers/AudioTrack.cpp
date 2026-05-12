@@ -7,12 +7,11 @@
 
 #include "Core/HelperFunctions.h"
 #include "Core/ServiceLocator.h"
+#include "Sounds/MixerSoundSystem.h"
 
 
-bae::AudioTrack::AudioTrack()
+bae::AudioTrack::AudioTrack(MIX_Mixer* mixer)
 {
-    MIX_Mixer* const mixer = ServiceLocator::GetSoundSystem().GetMixer();
-
     m_Track = MIX_CreateTrack(mixer);
     if(!m_Track)
     {

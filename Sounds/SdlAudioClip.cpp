@@ -16,7 +16,7 @@ using namespace bae;
 class SdlAudioClip::Impl
 {
 public:
-    Impl(ActiveSoundID activeSoundId, SoundID soundId);
+    Impl(ActiveSoundID activeSoundId, SoundID soundId, MIX_Mixer* mixer, const Audio* audio);
     ~Impl();
 
 
@@ -45,7 +45,7 @@ public:
 
     [[nodiscard]] SoundID GetSoundId() const;
     [[nodiscard]] ActiveSoundID GetActiveSoundId() const;
-    [[nodiscard]] AudioTrack& GetAudioTrack();
+    [[nodiscard]] AudioTrack& GetAudioTrack() const;
 
 
     std::mutex m_Mutex;
@@ -55,7 +55,7 @@ private:
 
     SoundID m_SoundId{ -1 };
     ActiveSoundID m_ActiveSoundID{ -1 };
-    AudioTrack m_Track{};
+    std::unique_ptr<AudioTrack> m_Track{};
 
     float m_Volume{ 1.f };
     bool m_bIsMuted{ false };
@@ -67,10 +67,10 @@ private:
 #pragma region SdlAudioClip | NOT PIMPL
 
 
-SdlAudioClip::SdlAudioClip(ActiveSoundID activeId, SoundID soundId) :
+SdlAudioClip::SdlAudioClip(ActiveSoundID activeId, SoundID soundId, MIX_Mixer* mixer, const Audio* audio) :
     AudioClip(activeId, soundId)
 {
-    m_Pimpl = std::make_unique<Impl>(activeId, soundId);
+    m_Pimpl = std::make_unique<Impl>(activeId, soundId, mixer, audio);
 }
 
 SdlAudioClip::~SdlAudioClip()
@@ -194,22 +194,22 @@ AudioTrack& SdlAudioClip::GetAudioTrack()
 #pragma region SdlAudioClip | PIMPL
 
 
-SdlAudioClip::Impl::Impl(const ActiveSoundID activeSoundId, const SoundID soundId) :
-    m_Track{ AudioTrack() }
+SdlAudioClip::Impl::Impl(const ActiveSoundID activeSoundId, const SoundID soundId,
+                         MIX_Mixer* mixer, const Audio* audio) :
+    m_Track{ std::make_unique<AudioTrack>(mixer) }
 {
     std::lock_guard lock(m_Mutex);
 
     m_ActiveSoundID = activeSoundId;
     m_SoundId       = soundId;
 
-    const Audio* audio = ServiceLocator::GetSoundSystem().GetAudio(soundId);
     if(!audio)
     {
         std::cout << FUNCTION_NAME << " Failed to get valid audio from SoundID: " << soundId.ID << '\n';
         return;
     }
 
-    bool success = MIX_SetTrackAudio(m_Track.GetTrack(), audio->GetAudio());
+    bool success = MIX_SetTrackAudio(m_Track->GetTrack(), audio->GetAudio());
     if(!success)
     {
         std::cout << FUNCTION_NAME << " Failed to set Audio on Track, Error:" << SDL_GetError() << '\n';
@@ -217,7 +217,7 @@ SdlAudioClip::Impl::Impl(const ActiveSoundID activeSoundId, const SoundID soundI
     }
 
 
-    success = MIX_SetTrackStoppedCallback(m_Track.GetTrack(), TrackFinishedCallBack, this);
+    success = MIX_SetTrackStoppedCallback(m_Track->GetTrack(), TrackFinishedCallBack, this);
     if(!success)
     {
         std::cout << FUNCTION_NAME << " Failed to create Track Stopped Callback, Error:" << SDL_GetError() << '\n';
@@ -236,7 +236,7 @@ SdlAudioClip::Impl::~Impl()
 
 bool SdlAudioClip::Impl::Play()
 {
-    const auto track   = m_Track.GetTrack();
+    const auto track   = m_Track->GetTrack();
     const bool success = MIX_PlayTrack(track, 0);
     if(!success)
     {
@@ -258,7 +258,7 @@ void SdlAudioClip::Impl::Stop()
 
     // TODO: remove the line below to check if it still works
     // This shouldn't be necessary due to AudioQueue
-    MIX_StopTrack(m_Track.GetTrack(), 0);
+    MIX_StopTrack(m_Track->GetTrack(), 0);
 }
 
 void SdlAudioClip::Impl::Loop()
@@ -274,37 +274,37 @@ void SdlAudioClip::Impl::UnLoop()
 
 void SdlAudioClip::Impl::Resume() const
 {
-    MIX_ResumeTrack(m_Track.GetTrack());
+    MIX_ResumeTrack(m_Track->GetTrack());
 }
 
 void SdlAudioClip::Impl::Pause() const
 {
-    MIX_PauseTrack(m_Track.GetTrack());
+    MIX_PauseTrack(m_Track->GetTrack());
 }
 
 
 void SdlAudioClip::Impl::Mute()
 {
     m_bIsMuted = true;
-    MIX_SetTrackGain(m_Track.GetTrack(), 0.0f);
+    MIX_SetTrackGain(m_Track->GetTrack(), 0.0f);
 }
 
 void SdlAudioClip::Impl::UnMute()
 {
     m_bIsMuted = false;
-    MIX_SetTrackGain(m_Track.GetTrack(), m_Volume);
+    MIX_SetTrackGain(m_Track->GetTrack(), m_Volume);
 }
 
 
 bool SdlAudioClip::Impl::IsPlaying() const
 {
-    return MIX_TrackPlaying(m_Track.GetTrack());
+    return MIX_TrackPlaying(m_Track->GetTrack());
 }
 
 
 bool SdlAudioClip::Impl::IsPaused() const
 {
-    return MIX_TrackPaused(m_Track.GetTrack());
+    return MIX_TrackPaused(m_Track->GetTrack());
 }
 
 bool SdlAudioClip::Impl::IsMuted() const
@@ -329,7 +329,7 @@ void SdlAudioClip::Impl::SetVolume(const float volume)
 
     if(!IsMuted())
     {
-        MIX_SetTrackGain(m_Track.GetTrack(), m_Volume);
+        MIX_SetTrackGain(m_Track->GetTrack(), m_Volume);
     }
 }
 
@@ -343,9 +343,9 @@ ActiveSoundID SdlAudioClip::Impl::GetActiveSoundId() const
     return m_ActiveSoundID;
 }
 
-AudioTrack& SdlAudioClip::Impl::GetAudioTrack()
+AudioTrack& SdlAudioClip::Impl::GetAudioTrack() const
 {
-    return m_Track;
+    return *m_Track;
 }
 
 
@@ -362,7 +362,7 @@ void __cdecl SdlAudioClip::Impl::TrackFinishedCallBack(void* data, MIX_Track*)
     {
         // This might seem stupid to do, since we could set the properties during MIX_PlayTrack
         // to make it looped, but I want to have the ability to loop/unloop a track any time I want.
-        const bool success = MIX_PlayTrack(pImpl->m_Track.GetTrack(), 0);
+        const bool success = MIX_PlayTrack(pImpl->m_Track->GetTrack(), 0);
         if(!success)
         {
             std::cout << FUNCTION_NAME << " Failed to loop/replay the same track, Error: " << SDL_GetError() << '\n';

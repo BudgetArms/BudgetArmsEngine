@@ -12,7 +12,7 @@ namespace bae
     class Audio final
     {
     public:
-        explicit Audio(const std::string& fullPath);
+        explicit Audio(const std::string& fullPath, MIX_Mixer* mixer);
         ~Audio();
 
         Audio(const Audio&)             = delete;

@@ -10,7 +10,7 @@ namespace bae
     class SdlAudioClip final : public AudioClip
     {
     public:
-        SdlAudioClip(ActiveSoundID activeId, SoundID soundId);
+        SdlAudioClip(ActiveSoundID activeId, SoundID soundId, MIX_Mixer* mixer, const Audio* audio);
         ~SdlAudioClip() override; // empty, needed for Pimpl
 
         bool Play() override;
