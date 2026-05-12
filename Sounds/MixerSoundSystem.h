@@ -11,11 +11,11 @@ namespace bae
 {
     class AudioTrack;
 
-    class SdlSoundSystem final : public SoundSystem
+    class MixerSoundSystem final : public SoundSystem
     {
     public:
-        SdlSoundSystem();
-        ~SdlSoundSystem() override;
+        MixerSoundSystem();
+        ~MixerSoundSystem() override;
 
 
         [[nodiscard]] SoundID LoadSound(const std::string& path) override;

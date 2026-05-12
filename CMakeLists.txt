@@ -70,7 +70,7 @@ add_library(${ENGINE_NAME} STATIC
     "Sounds/NullAudioClip.h"
     "Sounds/NullSoundSystem.h"
     "Sounds/SdlAudioClip.cpp"
-    "Sounds/SdlSoundSystem.cpp"
+    "Sounds/MixerSoundSystem.cpp"
     "Sounds/SoundSystem.h"
 
     "Wrappers/Audio.cpp"

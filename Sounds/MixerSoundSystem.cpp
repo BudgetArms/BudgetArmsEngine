@@ -1,4 +1,4 @@
-﻿#include "SdlSoundSystem.h"
+﻿#include "MixerSoundSystem.h"
 
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>
@@ -31,7 +31,7 @@ namespace bae
     class AudioQueue;
 }
 
-class SdlSoundSystem::Impl
+class MixerSoundSystem::Impl
 {
 public:
     Impl();
@@ -662,155 +662,155 @@ constexpr bool AudioQueue::IsValidSoundIDNeededForSoundEventType(const SoundEven
 #pragma region SdlSoundSystem | NOT PIMPL
 
 
-SdlSoundSystem::SdlSoundSystem()  = default;
-SdlSoundSystem::~SdlSoundSystem() = default;
+MixerSoundSystem::MixerSoundSystem()  = default;
+MixerSoundSystem::~MixerSoundSystem() = default;
 
 
-SoundID SdlSoundSystem::LoadSound(const std::string& path)
+SoundID MixerSoundSystem::LoadSound(const std::string& path)
 {
     return m_Pimpl->LoadSound(path);
 }
 
 
-ActiveSoundID SdlSoundSystem::Play(const SoundID soundId)
+ActiveSoundID MixerSoundSystem::Play(const SoundID soundId)
 {
     return m_Pimpl->Play(soundId);
 }
 
-void SdlSoundSystem::Stop(const ActiveSoundID activeSoundId)
+void MixerSoundSystem::Stop(const ActiveSoundID activeSoundId)
 {
     m_Pimpl->Stop(activeSoundId);
 }
 
 
-void SdlSoundSystem::Resume(const ActiveSoundID activeSoundId)
+void MixerSoundSystem::Resume(const ActiveSoundID activeSoundId)
 {
     m_Pimpl->Resume(activeSoundId);
 }
 
-void SdlSoundSystem::Pause(const ActiveSoundID activeSoundId)
+void MixerSoundSystem::Pause(const ActiveSoundID activeSoundId)
 {
     m_Pimpl->Pause(activeSoundId);
 }
 
 
-void SdlSoundSystem::Mute(const ActiveSoundID activeSoundId)
+void MixerSoundSystem::Mute(const ActiveSoundID activeSoundId)
 {
     m_Pimpl->Mute(activeSoundId);
 }
 
-void SdlSoundSystem::UnMute(const ActiveSoundID activeSoundId)
+void MixerSoundSystem::UnMute(const ActiveSoundID activeSoundId)
 {
     m_Pimpl->UnMute(activeSoundId);
 }
 
-void SdlSoundSystem::Loop(const ActiveSoundID activeSoundId)
+void MixerSoundSystem::Loop(const ActiveSoundID activeSoundId)
 {
     m_Pimpl->Loop(activeSoundId);
 }
 
-void SdlSoundSystem::UnLoop(const ActiveSoundID activeSoundId)
+void MixerSoundSystem::UnLoop(const ActiveSoundID activeSoundId)
 {
     m_Pimpl->UnLoop(activeSoundId);
 }
 
 
-void SdlSoundSystem::StopSounds(const SoundID soundId)
+void MixerSoundSystem::StopSounds(const SoundID soundId)
 {
     m_Pimpl->StopSounds(soundId);
 }
 
-void SdlSoundSystem::ResumeSounds(const SoundID soundId)
+void MixerSoundSystem::ResumeSounds(const SoundID soundId)
 {
     m_Pimpl->ResumeSounds(soundId);
 }
 
-void SdlSoundSystem::PauseSounds(const SoundID soundId)
+void MixerSoundSystem::PauseSounds(const SoundID soundId)
 {
     m_Pimpl->PauseSounds(soundId);
 }
 
-void SdlSoundSystem::MuteSounds(const SoundID soundId)
+void MixerSoundSystem::MuteSounds(const SoundID soundId)
 {
     m_Pimpl->MuteSounds(soundId);
 }
 
-void SdlSoundSystem::UnMuteSounds(const SoundID soundId)
+void MixerSoundSystem::UnMuteSounds(const SoundID soundId)
 {
     m_Pimpl->UnMuteSounds(soundId);
 }
 
 
-void SdlSoundSystem::ResumeAllSounds()
+void MixerSoundSystem::ResumeAllSounds()
 {
     m_Pimpl->ResumeAllSounds();
 }
 
-void SdlSoundSystem::PauseAllSounds()
+void MixerSoundSystem::PauseAllSounds()
 {
     m_Pimpl->PauseAllSounds();
 }
 
-void SdlSoundSystem::StopAllSounds()
+void MixerSoundSystem::StopAllSounds()
 {
     m_Pimpl->StopAllSounds();
 }
 
-void SdlSoundSystem::MuteAllSounds()
+void MixerSoundSystem::MuteAllSounds()
 {
     m_Pimpl->MuteAllSounds();
 }
 
-void SdlSoundSystem::UnMuteAllSounds()
+void MixerSoundSystem::UnMuteAllSounds()
 {
     m_Pimpl->UnMuteAllSounds();
 }
 
-void SdlSoundSystem::SetVolumeAllSounds(const float volume)
+void MixerSoundSystem::SetVolumeAllSounds(const float volume)
 {
     m_Pimpl->SetVolumeAllSounds(volume);
 }
 
 
-bool SdlSoundSystem::IsLoaded(const SoundID soundId)
+bool MixerSoundSystem::IsLoaded(const SoundID soundId)
 {
     return m_Pimpl->IsLoaded(soundId);
 }
 
-bool SdlSoundSystem::IsPlaying(const ActiveSoundID activeSoundId)
+bool MixerSoundSystem::IsPlaying(const ActiveSoundID activeSoundId)
 {
     return m_Pimpl->IsPlaying(activeSoundId);
 }
 
 
-bool SdlSoundSystem::IsPaused(const ActiveSoundID activeSoundId)
+bool MixerSoundSystem::IsPaused(const ActiveSoundID activeSoundId)
 {
     return m_Pimpl->IsPaused(activeSoundId);
 }
 
-bool SdlSoundSystem::IsMuted(const ActiveSoundID activeSoundId)
+bool MixerSoundSystem::IsMuted(const ActiveSoundID activeSoundId)
 {
     return m_Pimpl->IsMuted(activeSoundId);
 }
 
 
-float SdlSoundSystem::GetVolume(const ActiveSoundID activeSoundId)
+float MixerSoundSystem::GetVolume(const ActiveSoundID activeSoundId)
 {
     return m_Pimpl->GetVolume(activeSoundId);
 }
 
-void SdlSoundSystem::SetVolume(const ActiveSoundID activeSoundId, const float volume)
+void MixerSoundSystem::SetVolume(const ActiveSoundID activeSoundId, const float volume)
 {
     m_Pimpl->SetVolume(activeSoundId, volume);
 }
 
 
-Audio* SdlSoundSystem::GetAudio(const SoundID soundId)
+Audio* MixerSoundSystem::GetAudio(const SoundID soundId)
 {
     return m_Pimpl->GetAudio(soundId);
 }
 
-MIX_Mixer* SdlSoundSystem::GetMixer()
+MIX_Mixer* MixerSoundSystem::GetMixer()
 {
     return m_Pimpl->GetMixer();
 }
@@ -822,7 +822,7 @@ MIX_Mixer* SdlSoundSystem::GetMixer()
 #pragma region SdlSoundSystem | PIMPL
 
 
-SdlSoundSystem::Impl::Impl() :
+MixerSoundSystem::Impl::Impl() :
     m_AudioQueue{ std::make_unique<AudioQueue>() }
 {
     if(!MIX_Init())
@@ -839,7 +839,7 @@ SdlSoundSystem::Impl::Impl() :
     }
 }
 
-SdlSoundSystem::Impl::~Impl()
+MixerSoundSystem::Impl::~Impl()
 {
     m_AudioQueue = nullptr;
 
@@ -853,7 +853,7 @@ SdlSoundSystem::Impl::~Impl()
 }
 
 
-SoundID SdlSoundSystem::Impl::LoadSound(const std::string& path)
+SoundID MixerSoundSystem::Impl::LoadSound(const std::string& path)
 {
     if(!std::filesystem::exists(path))
     {
@@ -878,7 +878,7 @@ SoundID SdlSoundSystem::Impl::LoadSound(const std::string& path)
 }
 
 
-ActiveSoundID SdlSoundSystem::Impl::Play(const SoundID soundId)
+ActiveSoundID MixerSoundSystem::Impl::Play(const SoundID soundId)
 {
     const auto it = m_LoadedAudio.find(soundId);
     if(it == m_LoadedAudio.end())
@@ -908,7 +908,7 @@ ActiveSoundID SdlSoundSystem::Impl::Play(const SoundID soundId)
     return data.ActiveSoundID;
 }
 
-void SdlSoundSystem::Impl::Stop(const ActiveSoundID activeSoundId) const
+void MixerSoundSystem::Impl::Stop(const ActiveSoundID activeSoundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -927,7 +927,7 @@ void SdlSoundSystem::Impl::Stop(const ActiveSoundID activeSoundId) const
 }
 
 
-void SdlSoundSystem::Impl::Resume(const ActiveSoundID activeSoundId) const
+void MixerSoundSystem::Impl::Resume(const ActiveSoundID activeSoundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -945,7 +945,7 @@ void SdlSoundSystem::Impl::Resume(const ActiveSoundID activeSoundId) const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::Pause(const ActiveSoundID activeSoundId) const
+void MixerSoundSystem::Impl::Pause(const ActiveSoundID activeSoundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -964,7 +964,7 @@ void SdlSoundSystem::Impl::Pause(const ActiveSoundID activeSoundId) const
 }
 
 
-void SdlSoundSystem::Impl::Mute(const ActiveSoundID activeSoundId) const
+void MixerSoundSystem::Impl::Mute(const ActiveSoundID activeSoundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -981,7 +981,7 @@ void SdlSoundSystem::Impl::Mute(const ActiveSoundID activeSoundId) const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::UnMute(const ActiveSoundID activeSoundId) const
+void MixerSoundSystem::Impl::UnMute(const ActiveSoundID activeSoundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -999,7 +999,7 @@ void SdlSoundSystem::Impl::UnMute(const ActiveSoundID activeSoundId) const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::Loop(const ActiveSoundID activeSoundId) const
+void MixerSoundSystem::Impl::Loop(const ActiveSoundID activeSoundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1016,7 +1016,7 @@ void SdlSoundSystem::Impl::Loop(const ActiveSoundID activeSoundId) const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::UnLoop(const ActiveSoundID activeSoundId) const
+void MixerSoundSystem::Impl::UnLoop(const ActiveSoundID activeSoundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1033,7 +1033,7 @@ void SdlSoundSystem::Impl::UnLoop(const ActiveSoundID activeSoundId) const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::StopSounds(const SoundID soundId) const
+void MixerSoundSystem::Impl::StopSounds(const SoundID soundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1050,7 +1050,7 @@ void SdlSoundSystem::Impl::StopSounds(const SoundID soundId) const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::ResumeSounds(const SoundID soundId) const
+void MixerSoundSystem::Impl::ResumeSounds(const SoundID soundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1067,7 +1067,7 @@ void SdlSoundSystem::Impl::ResumeSounds(const SoundID soundId) const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::PauseSounds(const SoundID soundId) const
+void MixerSoundSystem::Impl::PauseSounds(const SoundID soundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1084,7 +1084,7 @@ void SdlSoundSystem::Impl::PauseSounds(const SoundID soundId) const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::MuteSounds(const SoundID soundId) const
+void MixerSoundSystem::Impl::MuteSounds(const SoundID soundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1101,7 +1101,7 @@ void SdlSoundSystem::Impl::MuteSounds(const SoundID soundId) const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::UnMuteSounds(const SoundID soundId) const
+void MixerSoundSystem::Impl::UnMuteSounds(const SoundID soundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1119,7 +1119,7 @@ void SdlSoundSystem::Impl::UnMuteSounds(const SoundID soundId) const
 }
 
 
-bool SdlSoundSystem::Impl::IsLoaded(const SoundID soundId) const
+bool MixerSoundSystem::Impl::IsLoaded(const SoundID soundId) const
 {
     if(!m_LoadedAudio.contains(soundId))
     {
@@ -1129,7 +1129,7 @@ bool SdlSoundSystem::Impl::IsLoaded(const SoundID soundId) const
     return true;
 }
 
-bool SdlSoundSystem::Impl::IsPlaying(const ActiveSoundID activeSoundId) const
+bool MixerSoundSystem::Impl::IsPlaying(const ActiveSoundID activeSoundId) const
 {
     // this is special bc we are sending request, and you can't immediately get a response back
     // OR
@@ -1151,7 +1151,7 @@ bool SdlSoundSystem::Impl::IsPlaying(const ActiveSoundID activeSoundId) const
 }
 
 
-bool SdlSoundSystem::Impl::IsPaused(const ActiveSoundID activeSoundId) const
+bool MixerSoundSystem::Impl::IsPaused(const ActiveSoundID activeSoundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1170,7 +1170,7 @@ bool SdlSoundSystem::Impl::IsPaused(const ActiveSoundID activeSoundId) const
     return pAudioClip->IsPaused();
 }
 
-bool SdlSoundSystem::Impl::IsMuted(const ActiveSoundID activeSoundId) const
+bool MixerSoundSystem::Impl::IsMuted(const ActiveSoundID activeSoundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1190,7 +1190,7 @@ bool SdlSoundSystem::Impl::IsMuted(const ActiveSoundID activeSoundId) const
 }
 
 
-float SdlSoundSystem::Impl::GetVolume(const ActiveSoundID activeSoundId) const
+float MixerSoundSystem::Impl::GetVolume(const ActiveSoundID activeSoundId) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1208,7 +1208,7 @@ float SdlSoundSystem::Impl::GetVolume(const ActiveSoundID activeSoundId) const
     return pAudioClip->GetVolume();
 }
 
-void SdlSoundSystem::Impl::SetVolume(const ActiveSoundID activeSoundId, const float volume) const
+void MixerSoundSystem::Impl::SetVolume(const ActiveSoundID activeSoundId, const float volume) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1227,7 +1227,7 @@ void SdlSoundSystem::Impl::SetVolume(const ActiveSoundID activeSoundId, const fl
 }
 
 
-void SdlSoundSystem::Impl::ResumeAllSounds() const
+void MixerSoundSystem::Impl::ResumeAllSounds() const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1243,7 +1243,7 @@ void SdlSoundSystem::Impl::ResumeAllSounds() const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::PauseAllSounds() const
+void MixerSoundSystem::Impl::PauseAllSounds() const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1260,7 +1260,7 @@ void SdlSoundSystem::Impl::PauseAllSounds() const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::StopAllSounds() const
+void MixerSoundSystem::Impl::StopAllSounds() const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1277,7 +1277,7 @@ void SdlSoundSystem::Impl::StopAllSounds() const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::MuteAllSounds() const
+void MixerSoundSystem::Impl::MuteAllSounds() const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1294,7 +1294,7 @@ void SdlSoundSystem::Impl::MuteAllSounds() const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::UnMuteAllSounds() const
+void MixerSoundSystem::Impl::UnMuteAllSounds() const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1310,7 +1310,7 @@ void SdlSoundSystem::Impl::UnMuteAllSounds() const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-void SdlSoundSystem::Impl::SetVolumeAllSounds(const float volume) const
+void MixerSoundSystem::Impl::SetVolumeAllSounds(const float volume) const
 {
     if(m_LoadedAudio.empty())
     {
@@ -1327,7 +1327,7 @@ void SdlSoundSystem::Impl::SetVolumeAllSounds(const float volume) const
     m_AudioQueue->SendSoundEvent(data);
 }
 
-Audio* SdlSoundSystem::Impl::GetAudio(const SoundID soundId)
+Audio* MixerSoundSystem::Impl::GetAudio(const SoundID soundId)
 {
     if(m_LoadedAudio.empty())
     {
@@ -1345,7 +1345,7 @@ Audio* SdlSoundSystem::Impl::GetAudio(const SoundID soundId)
     return it->second.get();
 }
 
-MIX_Mixer* SdlSoundSystem::Impl::GetMixer() const
+MIX_Mixer* MixerSoundSystem::Impl::GetMixer() const
 {
     return m_Mixer;
 }
