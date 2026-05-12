@@ -20,6 +20,7 @@
 #include "SdlAudioClip.h"
 #include "Core/HelperFunctions.h"
 #include "Core/RingBuffer.h"
+#include "Core/ServiceLocator.h"
 #include "Sounds/AudioClip.h"
 #include "Wrappers/Audio.h"
 
@@ -40,7 +41,7 @@ public:
 
     [[nodiscard]] SoundID LoadSound(const std::string& path);
 
-    ActiveSoundID Play(SoundID soundId);
+    ActiveSoundID Play(SoundID soundId) const;
 
 
     void Stop(ActiveSoundID activeSoundId) const;
@@ -78,11 +79,9 @@ public:
 
 private:
     std::unordered_map<std::string, SoundID> m_LoadedSoundIDs{};
-    std::unordered_map<SoundID, std::unique_ptr<Audio>> m_LoadedAudio{};
-
     std::unique_ptr<AudioQueue> m_AudioQueue{};
 
-    MIX_Mixer* m_Mixer{};
+    int m_SoundIdValue{};
 };
 
 
@@ -131,6 +130,9 @@ namespace bae
         void SendSoundEvent(const SoundEventData& soundEvent);
         const AudioClip* GetAudioClip(ActiveSoundID activeSoundId);
 
+        bool IsAudioLoaded(SoundID soundId);
+        void AddAudio(SoundID soundId, const std::string& path);
+
     private:
         void AudioThreadLoop(const std::stop_token& stopToken);
 
@@ -140,18 +142,29 @@ namespace bae
         [[nodiscard]] static constexpr bool IsAudioClipNeededForSoundEventType(const SoundEventType& eventType);
         [[nodiscard]] static constexpr bool IsValidSoundIDNeededForSoundEventType(const SoundEventType& eventType);
 
+        bool IsAudioLoadedUnLocked(SoundID soundId);
+
+        Audio* GetAudio(SoundID soundId);
 
         RingBuffer<SoundEventData> m_SoundEventBuffer;
         std::unordered_map<ActiveSoundID, std::unique_ptr<SdlAudioClip>> m_ActiveAudio;
 
         std::jthread m_AudioThread;
 
-        std::mutex m_Mutex;
+        std::mutex m_MainThreadMutex{};
+        std::mutex m_LoadedAudioMutex{};
+        std::mutex m_SoundBufferMutex{};
+        std::mutex m_ActiveAudioMutex{};
+
         std::condition_variable m_ConditionVariable;
-        bool m_bIsShuttingDown = false;
+        bool m_bIsShuttingDown{ false };
 
         static constexpr int m_SoundEventBufferSize{ 15 };
         bool m_bAreAllSoundsMuted{ false };
+
+        std::unordered_map<SoundID, std::unique_ptr<Audio>> m_LoadedAudio{};
+
+        MIX_Mixer* m_Mixer{};
     };
 }
 
@@ -159,6 +172,19 @@ AudioQueue::AudioQueue() :
     m_SoundEventBuffer{ m_SoundEventBufferSize }
 {
     std::cout << "Initialized AudioQueue\n";
+
+    if(!MIX_Init())
+    {
+        std::cout << FUNCTION_NAME << " Failed to initialize Mixer, Error: " << SDL_GetError() << '\n';
+        return;
+    }
+
+    m_Mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
+    if(!m_Mixer)
+    {
+        std::cout << FUNCTION_NAME << " Failed to create mixer, Error: " << SDL_GetError() << '\n';
+        return;
+    }
 
     m_AudioThread = std::jthread([this](const std::stop_token& stopToken)
     {
@@ -172,7 +198,10 @@ AudioQueue::~AudioQueue()
     m_AudioThread.request_stop();
     m_ConditionVariable.notify_all();
 
-    std::lock_guard lock(m_Mutex);
+    std::lock_guard mainLock(m_MainThreadMutex);
+    std::lock_guard activeAudioLock(m_ActiveAudioMutex);
+    std::lock_guard soundBufferLock(m_SoundBufferMutex);
+    std::lock_guard loadedAudioLock(m_LoadedAudioMutex);
 
     for(const auto& uAudioClip : m_ActiveAudio | std::views::values)
     {
@@ -181,12 +210,17 @@ AudioQueue::~AudioQueue()
 
     CleanUpFinishedSounds();
 
+
     m_ActiveAudio.clear();
+    m_LoadedAudio.clear();
+
+    MIX_DestroyMixer(m_Mixer);
+    m_Mixer = nullptr;
 }
 
 void AudioQueue::SendSoundEvent(const SoundEventData& soundEvent)
 {
-    std::lock_guard lock(m_Mutex);
+    std::lock_guard lock(m_SoundBufferMutex);
 
     // ignore request if audio is shutting down
     if(m_bIsShuttingDown)
@@ -200,7 +234,7 @@ void AudioQueue::SendSoundEvent(const SoundEventData& soundEvent)
 
 const AudioClip* AudioQueue::GetAudioClip(const ActiveSoundID activeSoundId)
 {
-    std::lock_guard lock(m_Mutex);
+    std::lock_guard lock(m_ActiveAudioMutex);
     if(const auto it = m_ActiveAudio.find(activeSoundId); it != m_ActiveAudio.end())
     {
         return it->second.get();
@@ -209,12 +243,40 @@ const AudioClip* AudioQueue::GetAudioClip(const ActiveSoundID activeSoundId)
     return nullptr;
 }
 
+bool AudioQueue::IsAudioLoaded(const SoundID soundId)
+{
+    std::lock_guard lock(m_LoadedAudioMutex);
+    return IsAudioLoadedUnLocked(soundId);
+}
+
+bool AudioQueue::IsAudioLoadedUnLocked(const SoundID soundId)
+{
+    const auto it = m_LoadedAudio.find(soundId);
+    if(it == m_LoadedAudio.end())
+    {
+        return false;
+    }
+
+    if(const auto& audio = it->second; !audio)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void AudioQueue::AddAudio(SoundID soundId, const std::string& path)
+{
+    std::lock_guard lock(m_LoadedAudioMutex);
+    m_LoadedAudio.insert({ soundId, std::make_unique<Audio>(path, m_Mixer) });
+}
+
 
 void AudioQueue::AudioThreadLoop(const std::stop_token& stopToken)
 {
     while(!stopToken.stop_requested())
     {
-        std::unique_lock lock(m_Mutex);
+        std::unique_lock lock(m_MainThreadMutex);
         m_ConditionVariable.wait(lock, [this, stopToken]
         {
             return stopToken.stop_requested() || !m_SoundEventBuffer.IsEmpty();
@@ -225,24 +287,19 @@ void AudioQueue::AudioThreadLoop(const std::stop_token& stopToken)
             return;
         }
 
-        while(!m_SoundEventBuffer.IsEmpty())
+        while(!stopToken.stop_requested() && !m_SoundEventBuffer.IsEmpty())
         {
+            std::unique_lock soundBufferLock(m_SoundBufferMutex);
             SoundEventData eventData{};
             m_SoundEventBuffer.Pop(eventData);
+            soundBufferLock.unlock();
 
-            if(stopToken.stop_requested())
-            {
-                return;
-            }
-
-            lock.unlock();
-
+            std::lock_guard activeSoundLock(m_ActiveAudioMutex);
             ProcessSoundEvent(eventData);
-
-            lock.lock();
         }
 
         // After all SoundEvents are done, clean any finished sounds
+        std::lock_guard activeAudioLock(m_ActiveAudioMutex);
         CleanUpFinishedSounds();
     }
 }
@@ -298,7 +355,9 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
                 return;
             }
 
-            auto uAudioClip = std::make_unique<SdlAudioClip>(eventData.ActiveSoundID, eventData.SoundID);
+            const Audio* audio = GetAudio(eventData.SoundID);
+            auto uAudioClip    = std::make_unique<
+                SdlAudioClip>(eventData.ActiveSoundID, eventData.SoundID, m_Mixer, audio);
 
             if(!uAudioClip->Play())
             {
@@ -575,6 +634,23 @@ void AudioQueue::CleanUpFinishedSounds()
                   });
 }
 
+Audio* AudioQueue::GetAudio(const SoundID soundId)
+{
+    std::lock_guard lock(m_LoadedAudioMutex);
+    if(!IsAudioLoadedUnLocked(soundId))
+    {
+        return nullptr;
+    }
+
+    const auto it = m_LoadedAudio.find(soundId);
+    if(it == m_LoadedAudio.end())
+    {
+        return nullptr;
+    }
+
+    return it->second.get();
+}
+
 
 constexpr bool AudioQueue::IsAudioClipNeededForSoundEventType(const SoundEventType& eventType)
 {
@@ -802,17 +878,6 @@ void MixerSoundSystem::SetVolume(const ActiveSoundID activeSoundId, const float 
 }
 
 
-Audio* MixerSoundSystem::GetAudio(const SoundID soundId)
-{
-    return m_Pimpl->GetAudio(soundId);
-}
-
-MIX_Mixer* MixerSoundSystem::GetMixer()
-{
-    return m_Pimpl->GetMixer();
-}
-
-
 #pragma endregion
 
 
@@ -822,29 +887,13 @@ MIX_Mixer* MixerSoundSystem::GetMixer()
 MixerSoundSystem::Impl::Impl() :
     m_AudioQueue{ std::make_unique<AudioQueue>() }
 {
-    if(!MIX_Init())
-    {
-        std::cout << FUNCTION_NAME << " Failed to initialize Mixer, Error: " << SDL_GetError() << '\n';
-        return;
-    }
-
-    m_Mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
-    if(!m_Mixer)
-    {
-        std::cout << FUNCTION_NAME << " Failed to create mixer, Error: " << SDL_GetError() << '\n';
-        return;
-    }
 }
 
 MixerSoundSystem::Impl::~Impl()
 {
     m_AudioQueue = nullptr;
 
-    MIX_DestroyMixer(m_Mixer);
-    m_Mixer = nullptr;
-
     m_LoadedSoundIDs.clear();
-    m_LoadedAudio.clear();
 
     MIX_Quit();
 }
@@ -865,28 +914,21 @@ SoundID MixerSoundSystem::Impl::LoadSound(const std::string& path)
     }
 
     // Set before inserting so the soundId starts from 0, and not from 1
-    SoundID soundId{ .ID = static_cast<int>(m_LoadedAudio.size()) };
+    SoundID soundId{ .ID = m_SoundIdValue };
+    ++m_SoundIdValue;
 
     // load audio chunk
     m_LoadedSoundIDs.insert(std::pair(path, soundId));
-    m_LoadedAudio.insert(std::pair(soundId, std::make_unique<Audio>(path)));
+    m_AudioQueue->AddAudio(soundId, path);
 
     return soundId;
 }
 
 
-ActiveSoundID MixerSoundSystem::Impl::Play(const SoundID soundId)
+ActiveSoundID MixerSoundSystem::Impl::Play(const SoundID soundId) const
 {
-    const auto it = m_LoadedAudio.find(soundId);
-    if(it == m_LoadedAudio.end())
+    if(!m_AudioQueue->IsAudioLoaded(soundId))
     {
-        std::cout << FUNCTION_NAME << " Failed! Sound is not loaded, soundId: " << soundId.ID << '\n';
-        return ActiveSoundID{ -1 };
-    }
-
-    if(const auto& audio = it->second; !audio)
-    {
-        std::cout << FUNCTION_NAME << " Failed! Audio is nullptr, SoundId: " << soundId.ID << '\n';
         return ActiveSoundID{ -1 };
     }
 
@@ -907,13 +949,6 @@ ActiveSoundID MixerSoundSystem::Impl::Play(const SoundID soundId)
 
 void MixerSoundSystem::Impl::Stop(const ActiveSoundID activeSoundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return;
-    }
-
-
     const SoundEventData data
     {
         .Type          = SoundEventType::StopSound,
@@ -926,13 +961,6 @@ void MixerSoundSystem::Impl::Stop(const ActiveSoundID activeSoundId) const
 
 void MixerSoundSystem::Impl::Resume(const ActiveSoundID activeSoundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return;
-    }
-
-
     const SoundEventData data
     {
         .Type          = SoundEventType::ResumeSound,
@@ -944,13 +972,6 @@ void MixerSoundSystem::Impl::Resume(const ActiveSoundID activeSoundId) const
 
 void MixerSoundSystem::Impl::Pause(const ActiveSoundID activeSoundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return;
-    }
-
-
     const SoundEventData data
     {
         .Type          = SoundEventType::PauseSound,
@@ -963,12 +984,6 @@ void MixerSoundSystem::Impl::Pause(const ActiveSoundID activeSoundId) const
 
 void MixerSoundSystem::Impl::Mute(const ActiveSoundID activeSoundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type          = SoundEventType::MuteSound,
@@ -980,13 +995,6 @@ void MixerSoundSystem::Impl::Mute(const ActiveSoundID activeSoundId) const
 
 void MixerSoundSystem::Impl::UnMute(const ActiveSoundID activeSoundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return;
-    }
-
-
     const SoundEventData data
     {
         .Type          = SoundEventType::UnMuteSound,
@@ -998,12 +1006,6 @@ void MixerSoundSystem::Impl::UnMute(const ActiveSoundID activeSoundId) const
 
 void MixerSoundSystem::Impl::Loop(const ActiveSoundID activeSoundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type          = SoundEventType::LoopSound,
@@ -1015,12 +1017,6 @@ void MixerSoundSystem::Impl::Loop(const ActiveSoundID activeSoundId) const
 
 void MixerSoundSystem::Impl::UnLoop(const ActiveSoundID activeSoundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type          = SoundEventType::UnLoopSound,
@@ -1032,12 +1028,6 @@ void MixerSoundSystem::Impl::UnLoop(const ActiveSoundID activeSoundId) const
 
 void MixerSoundSystem::Impl::StopSounds(const SoundID soundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, SoundID: " << soundId.ID << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type    = SoundEventType::StopSounds,
@@ -1049,12 +1039,6 @@ void MixerSoundSystem::Impl::StopSounds(const SoundID soundId) const
 
 void MixerSoundSystem::Impl::ResumeSounds(const SoundID soundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, SoundID: " << soundId.ID << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type    = SoundEventType::ResumeSounds,
@@ -1066,12 +1050,6 @@ void MixerSoundSystem::Impl::ResumeSounds(const SoundID soundId) const
 
 void MixerSoundSystem::Impl::PauseSounds(const SoundID soundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, SoundID: " << soundId.ID << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type    = SoundEventType::PauseSounds,
@@ -1083,12 +1061,6 @@ void MixerSoundSystem::Impl::PauseSounds(const SoundID soundId) const
 
 void MixerSoundSystem::Impl::MuteSounds(const SoundID soundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, SoundID: " << soundId.ID << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type    = SoundEventType::MuteSounds,
@@ -1100,12 +1072,6 @@ void MixerSoundSystem::Impl::MuteSounds(const SoundID soundId) const
 
 void MixerSoundSystem::Impl::UnMuteSounds(const SoundID soundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, SoundID: " << soundId.ID << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type    = SoundEventType::UnMuteSounds,
@@ -1118,12 +1084,7 @@ void MixerSoundSystem::Impl::UnMuteSounds(const SoundID soundId) const
 
 bool MixerSoundSystem::Impl::IsLoaded(const SoundID soundId) const
 {
-    if(!m_LoadedAudio.contains(soundId))
-    {
-        return false;
-    }
-
-    return true;
+    return m_AudioQueue->IsAudioLoaded(soundId);
 }
 
 bool MixerSoundSystem::Impl::IsPlaying(const ActiveSoundID activeSoundId) const
@@ -1131,11 +1092,6 @@ bool MixerSoundSystem::Impl::IsPlaying(const ActiveSoundID activeSoundId) const
     // this is special bc we are sending request, and you can't immediately get a response back
     // OR
     // we don't use the audio queue's thread and get the m_ActiveSound's or something like that, ...
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return false;
-    }
 
     const auto pAudioClip = m_AudioQueue->GetAudioClip(activeSoundId);
     if(!pAudioClip)
@@ -1150,13 +1106,6 @@ bool MixerSoundSystem::Impl::IsPlaying(const ActiveSoundID activeSoundId) const
 
 bool MixerSoundSystem::Impl::IsPaused(const ActiveSoundID activeSoundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return false;
-    }
-
-
     const auto pAudioClip = m_AudioQueue->GetAudioClip(activeSoundId);
     if(!pAudioClip)
     {
@@ -1169,13 +1118,6 @@ bool MixerSoundSystem::Impl::IsPaused(const ActiveSoundID activeSoundId) const
 
 bool MixerSoundSystem::Impl::IsMuted(const ActiveSoundID activeSoundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return false;
-    }
-
-
     const auto pAudioClip = m_AudioQueue->GetAudioClip(activeSoundId);
     if(!pAudioClip)
     {
@@ -1189,12 +1131,6 @@ bool MixerSoundSystem::Impl::IsMuted(const ActiveSoundID activeSoundId) const
 
 float MixerSoundSystem::Impl::GetVolume(const ActiveSoundID activeSoundId) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return 0.f;
-    }
-
     const auto pAudioClip = m_AudioQueue->GetAudioClip(activeSoundId);
     if(!pAudioClip)
     {
@@ -1207,12 +1143,6 @@ float MixerSoundSystem::Impl::GetVolume(const ActiveSoundID activeSoundId) const
 
 void MixerSoundSystem::Impl::SetVolume(const ActiveSoundID activeSoundId, const float volume) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type          = SoundEventType::SetVolumeSound,
@@ -1226,12 +1156,6 @@ void MixerSoundSystem::Impl::SetVolume(const ActiveSoundID activeSoundId, const 
 
 void MixerSoundSystem::Impl::ResumeAllSounds() const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded" << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type = SoundEventType::ResumeAll,
@@ -1242,13 +1166,6 @@ void MixerSoundSystem::Impl::ResumeAllSounds() const
 
 void MixerSoundSystem::Impl::PauseAllSounds() const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded" << '\n';
-        return;
-    }
-
-
     const SoundEventData data
     {
         .Type = SoundEventType::PauseAll,
@@ -1259,13 +1176,6 @@ void MixerSoundSystem::Impl::PauseAllSounds() const
 
 void MixerSoundSystem::Impl::StopAllSounds() const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded" << '\n';
-        return;
-    }
-
-
     const SoundEventData data
     {
         .Type = SoundEventType::StopAll,
@@ -1276,13 +1186,6 @@ void MixerSoundSystem::Impl::StopAllSounds() const
 
 void MixerSoundSystem::Impl::MuteAllSounds() const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded" << '\n';
-        return;
-    }
-
-
     const SoundEventData data
     {
         .Type = SoundEventType::MuteAll,
@@ -1293,12 +1196,6 @@ void MixerSoundSystem::Impl::MuteAllSounds() const
 
 void MixerSoundSystem::Impl::UnMuteAllSounds() const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded" << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type = SoundEventType::UnMuteAll,
@@ -1309,12 +1206,6 @@ void MixerSoundSystem::Impl::UnMuteAllSounds() const
 
 void MixerSoundSystem::Impl::SetVolumeAllSounds(const float volume) const
 {
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded" << '\n';
-        return;
-    }
-
     const SoundEventData data
     {
         .Type   = SoundEventType::SetVolumeAll,
@@ -1322,29 +1213,6 @@ void MixerSoundSystem::Impl::SetVolumeAllSounds(const float volume) const
     };
 
     m_AudioQueue->SendSoundEvent(data);
-}
-
-Audio* MixerSoundSystem::Impl::GetAudio(const SoundID soundId)
-{
-    if(m_LoadedAudio.empty())
-    {
-        std::cout << FUNCTION_NAME << " Failed! No Sounds are loaded, SoundID: " << soundId.ID << '\n';
-        return nullptr;
-    }
-
-    const auto it = m_LoadedAudio.find(soundId);
-    if(it == m_LoadedAudio.end())
-    {
-        std::cout << FUNCTION_NAME << " Failed! Audio not found, SoundID: " << soundId.ID << '\n';
-        return nullptr;
-    }
-
-    return it->second.get();
-}
-
-MIX_Mixer* MixerSoundSystem::Impl::GetMixer() const
-{
-    return m_Mixer;
 }
 
 
