@@ -9,11 +9,6 @@ namespace bae
     /**
      * Simple RAII wrapper for a MIX_Audio
      */
-    // TODO: Note that this could be a abstract class with templates, so that
-    // you could have Audio, and you would hide that implementation with Pimpl
-    // And then you could have XAudio, for another audio system
-    // And then SoundSystem or more specifically SdlSoundSystem::Impl uses MIX_Audio
-    // it could be in SoundSystem, if MIX_Audio was not tied to Mixer
     class Audio final
     {
     public:
