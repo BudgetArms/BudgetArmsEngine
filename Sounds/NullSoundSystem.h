@@ -46,10 +46,6 @@ namespace bae
         [[nodiscard]] bool IsMuted(ActiveSoundID) override { return false; }
         [[nodiscard]] float GetVolume(ActiveSoundID) override { return 0.f; }
         void SetVolume(ActiveSoundID, float) override {}
-
-
-        [[nodiscard]] Audio* GetAudio(SoundID) override { return nullptr; }
-        [[nodiscard]] MIX_Mixer* GetMixer() override { return nullptr; }
     };
 }
 

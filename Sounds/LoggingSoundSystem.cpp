@@ -199,16 +199,3 @@ void LoggingSoundSystem::SetVolume(const ActiveSoundID activeSoundId, const floa
     m_RealSoundSystem->SetVolume(activeSoundId, volume);
 }
 
-Audio* LoggingSoundSystem::GetAudio(const SoundID soundId)
-{
-    std::cout << FUNCTION_NAME << " SoundId: " << soundId.ID << '\n';
-    return m_RealSoundSystem->GetAudio(soundId);
-}
-
-MIX_Mixer* LoggingSoundSystem::GetMixer()
-{
-    std::cout << FUNCTION_NAME << '\n';
-    return m_RealSoundSystem->GetMixer();
-}
-
-

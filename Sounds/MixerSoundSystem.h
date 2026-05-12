@@ -51,10 +51,6 @@ namespace bae
         [[nodiscard]] float GetVolume(ActiveSoundID activeSoundId) override;
         void SetVolume(ActiveSoundID activeSoundId, float volume) override;
 
-
-        [[nodiscard]] Audio* GetAudio(SoundID soundId) override;
-        [[nodiscard]] MIX_Mixer* GetMixer() override;
-
     private:
         // Pimple implementation
         class Impl;

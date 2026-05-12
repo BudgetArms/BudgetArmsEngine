@@ -48,10 +48,6 @@ namespace bae
         [[nodiscard]] virtual bool IsMuted(ActiveSoundID activeSoundId) = 0;
         [[nodiscard]] virtual float GetVolume(ActiveSoundID activeSoundId) = 0;
         virtual void SetVolume(ActiveSoundID activeSoundId, float volume) = 0;
-
-        // TODO: Mixer code should be removed
-        [[nodiscard]] virtual Audio* GetAudio(SoundID soundId) = 0;
-        [[nodiscard]] virtual MIX_Mixer* GetMixer() = 0;
     };
 }
 

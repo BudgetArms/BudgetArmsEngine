@@ -76,9 +76,6 @@ public:
 
     void SetVolumeAllSounds(float volume) const;
 
-    [[nodiscard]] Audio* GetAudio(SoundID soundId);
-    [[nodiscard]] MIX_Mixer* GetMixer() const;
-
 private:
     std::unordered_map<std::string, SoundID> m_LoadedSoundIDs{};
     std::unordered_map<SoundID, std::unique_ptr<Audio>> m_LoadedAudio{};
