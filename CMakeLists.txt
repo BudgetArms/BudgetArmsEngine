@@ -287,6 +287,39 @@ else()
     endif()
 endif()
 
+#Add SoLoud
+find_package(SoLoud CONFIG QUIET)
+if(SoLoud_FOUND)
+    message("\n")
+    message("SoLoud package found")
+else()
+    message("\n")
+    message("SoLoud package NOT found, using FetchContent to get it")
+
+    FetchContent_Declare(
+        SoLoud
+        GIT_REPOSITORY "https://github.com/jarikomppa/soloud.git"
+        GIT_TAG "RELEASE_20200207"
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS FALSE
+    )
+    FetchContent_MakeAvailable(SoLoud)
+
+    file(GLOB SoLoud_Sources
+        "${soloud_SOURCE_DIR}/src/audiosource/*/*.c*"
+        "${soloud_SOURCE_DIR}/src/c_api/*.cpp"
+        "${soloud_SOURCE_DIR}/src/core/*.cpp"
+        "${soloud_SOURCE_DIR}/src/filter/*.cpp"
+        "${soloud_SOURCE_DIR}/src/backend/miniaudio/soloud_miniaudio.cpp"
+    )
+
+    add_library(SoLoud_Lib ${SoLoud_Sources})
+    target_compile_definitions(SoLoud_Lib PRIVATE WITH_MINIAUDIO)
+    target_include_directories(SoLoud_Lib PUBLIC "${soloud_SOURCE_DIR}/include")
+
+    add_library(SoLoud ALIAS SoLoud_Lib)
+
+endif()
 
 # Add imgui
 find_package(imgui CONFIG QUIET)
@@ -433,6 +466,8 @@ target_link_libraries(${ENGINE_NAME} PUBLIC
     SDL3_mixer::SDL3_mixer
 
     SDL3_gfx_Static
+
+    SoLoud
 
     imgui
     imgui_plot
