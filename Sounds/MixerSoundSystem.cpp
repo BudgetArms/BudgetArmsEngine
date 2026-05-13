@@ -41,7 +41,7 @@ public:
 
     [[nodiscard]] SoundID LoadSound(const std::string& path);
 
-    ActiveSoundID Play(SoundID soundId) const;
+    [[nodiscard]] ActiveSoundID Play(SoundID soundId) const;
 
 
     void Stop(ActiveSoundID activeSoundId) const;
@@ -53,7 +53,6 @@ public:
     void UnLoop(ActiveSoundID activeSoundId) const;
 
 
-    // SoundID
     void StopSounds(SoundID soundId) const;
     void ResumeSounds(SoundID soundId) const;
     void PauseSounds(SoundID soundId) const;
