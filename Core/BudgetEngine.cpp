@@ -76,11 +76,6 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
     }
 
 
-    // Disabled VLD, because MMDevApi.dll leaking (only on my system for some reason)
-    #if _DEBUG && __has_include(<vld.h>)
-    VLDDisable();
-    #endif
-
     g_Window = SDL_CreateWindow(
         window.Title.c_str(),
         window.Width,
@@ -103,10 +98,6 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
                 FUNCTION_NAME + std::string(" Failed to create SDL Window, Error: ") + SDL_GetError());
         }
     }
-
-    #if _DEBUG && __has_include(<vld.h>)
-    VLDEnable();
-    #endif
 
 
     Renderer::GetInstance().Init(g_Window);
