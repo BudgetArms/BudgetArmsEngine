@@ -21,6 +21,7 @@
 #include "Core/HelperFunctions.h"
 #include "Core/RingBuffer.h"
 #include "Core/ServiceLocator.h"
+#include "Managers/ResourceManager.h"
 #include "Sounds/AudioClip.h"
 #include "Wrappers/Audio.h"
 
@@ -900,14 +901,15 @@ MixerSoundSystem::Impl::~Impl()
 
 SoundID MixerSoundSystem::Impl::LoadSound(const std::string& path)
 {
-    if(!std::filesystem::exists(path))
+    const std::filesystem::path soundPath = ResourceManager::GetInstance().GetResourcesPath() / path.c_str();
+    if(!std::filesystem::exists(soundPath))
     {
-        std::cout << FUNCTION_NAME << " Failed! Audio Path not found, Path: " << path << '\n';
+        std::cout << FUNCTION_NAME << " Failed! File Not Found, Path: " << soundPath << '\n';
         return SoundID{};
     }
 
     // if already loaded
-    if(const auto it = m_LoadedSoundIDs.find(path); it != m_LoadedSoundIDs.end())
+    if(const auto it = m_LoadedSoundIDs.find(soundPath.string()); it != m_LoadedSoundIDs.end())
     {
         return it->second;
     }
@@ -917,8 +919,8 @@ SoundID MixerSoundSystem::Impl::LoadSound(const std::string& path)
     ++m_SoundIdValue;
 
     // load audio chunk
-    m_LoadedSoundIDs.insert(std::pair(path, soundId));
-    m_AudioQueue->AddAudio(soundId, path);
+    m_LoadedSoundIDs.insert(std::pair(soundPath.string(), soundId));
+    m_AudioQueue->AddAudio(soundId, soundPath.string());
 
     return soundId;
 }

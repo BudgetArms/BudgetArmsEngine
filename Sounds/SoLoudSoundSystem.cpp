@@ -266,6 +266,11 @@ SoundID SoLoudSoundSystem::Impl::LoadSound(const std::string& path)
     }
 
     const std::filesystem::path soundPath = ResourceManager::GetInstance().GetResourcesPath() / path.c_str();
+    if(!std::filesystem::exists(soundPath))
+    {
+        std::cout << FUNCTION_NAME << " Failed! File Not Found, Path: " << path << '\n';
+        return SoundID{};
+    }
 
     auto loadedAudio            = std::make_unique<SoLoud::Wav>();
     const SoLoud::result result = loadedAudio->load(soundPath.string().c_str());
