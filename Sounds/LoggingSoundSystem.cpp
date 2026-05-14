@@ -11,19 +11,19 @@ using namespace bae;
 
 LoggingSoundSystem::LoggingSoundSystem(std::unique_ptr<SoundSystem> soundSystem)
 {
-    std::cout << FUNCTION_NAME << " ";
+    std::cout << FUNCTION_NAME << "<";
 
     if(!soundSystem)
     {
-        std::cout << "NullSoundSystem" << '\n';
+        std::cout << "NullSoundSystem>" << '\n';
 
         m_RealSoundSystem = std::make_unique<NullSoundSystem>();
     }
     else
     {
         [[maybe_unused]] SoundSystem* baseSoundSystem = soundSystem.get();
-        const std::string className                   = typeid(baseSoundSystem).name();
-        std::cout << className << '\n';
+        const std::string className                   = typeid(*baseSoundSystem).name();
+        std::cout << className << ">" << '\n';
 
         m_RealSoundSystem = std::move(soundSystem);
     }
@@ -37,15 +37,26 @@ LoggingSoundSystem::~LoggingSoundSystem()
 
 SoundID LoggingSoundSystem::LoadSound(const std::string& path)
 {
-    std::cout << "LoggingSoundSystem: Loading Sound, path: " << path << '\n';
-    return m_RealSoundSystem->LoadSound(path);
+    std::cout << FUNCTION_NAME << " path: " << path << '\n';
+    const SoundID soundID = m_RealSoundSystem->LoadSound(path);
+    if(soundID.ID == -1)
+    {
+        std::cout << FUNCTION_NAME << " Failed to Load Sound, path: " << path << '\n';
+    }
+
+    return soundID;
 }
 
 
 ActiveSoundID LoggingSoundSystem::Play(const SoundID soundId)
 {
+    std::cout << FUNCTION_NAME << " SoundId: " << soundId.ID << '\n';
     const ActiveSoundID activeId = m_RealSoundSystem->Play(soundId);
-    std::cout << FUNCTION_NAME << " SoundId: " << soundId.ID << " ActiveSoundId: " << activeId.ID << '\n';
+    if(activeId.ID == -1)
+    {
+        std::cout << FUNCTION_NAME << " Failed to play sound, SoundID: " << soundId.ID << " ActiveSoundId: "
+                << activeId.ID << '\n';
+    }
     return activeId;
 }
 

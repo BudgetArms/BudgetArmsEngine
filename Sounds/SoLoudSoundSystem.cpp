@@ -272,7 +272,36 @@ SoundID SoLoudSoundSystem::Impl::LoadSound(const std::string& path)
 
     if(result != SoLoud::SOLOUD_ERRORS::SO_NO_ERROR)
     {
-        std::cout << FUNCTION_NAME << " Failed to load SoLoud::Wav: " << result << '\n';
+        std::cout << FUNCTION_NAME << " Failed to Load Sound, Error: ";
+
+        switch(result)
+        {
+            case SoLoud::INVALID_PARAMETER:
+                std::cout << "Invalid Parameter\n";
+                break;
+            case SoLoud::FILE_NOT_FOUND:
+                std::cout << "File Not Found\n";
+                break;
+            case SoLoud::FILE_LOAD_FAILED:
+                std::cout << "File Load Failed\n";
+                break;
+            case SoLoud::DLL_NOT_FOUND:
+                std::cout << "Dll Not Found\n";
+                break;
+            case SoLoud::OUT_OF_MEMORY:
+                std::cout << "Out Of Memory\n";
+                break;
+            case SoLoud::NOT_IMPLEMENTED:
+                std::cout << "Not Implemented\n";
+                break;
+            case SoLoud::UNKNOWN_ERROR:
+                std::cout << "Unknown Error\n";
+                break;
+            default:
+                std::cout << "Default\n";
+                break;
+        }
+
         return SoundID{ -1 };
     }
 
