@@ -19,7 +19,11 @@
 
 #include <glm/glm.hpp>
 #include <SDL3/SDL.h>
+
+#ifndef __EMSCRIPTEN__
 #include <SDL3_mixer/SDL_mixer.h>
+#endif
+
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "HelperFunctions.h"
@@ -191,10 +195,12 @@ void PrintSdlVersion()
     LogSdlVersion("Linked with SDL_ttf ", SDL_VERSIONNUM_MAJOR(ttfVersion), SDL_VERSIONNUM_MINOR(ttfVersion),
                   SDL_VERSIONNUM_MICRO(ttfVersion));
 
+    #ifndef __EMSCRIPTEN__
     LogSdlVersion("Compiled with SDL_mixer ", SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION,
                   SDL_MIXER_MICRO_VERSION);
     const int mixerVersion = MIX_Version();
     LogSdlVersion("Linked with SDL_mixer ", SDL_VERSIONNUM_MAJOR(mixerVersion), SDL_VERSIONNUM_MINOR(mixerVersion),
                   SDL_VERSIONNUM_MICRO(mixerVersion));
+    #endif
 }
 

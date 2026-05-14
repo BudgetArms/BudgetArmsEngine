@@ -69,13 +69,9 @@ add_library(${ENGINE_NAME} STATIC
     "Sounds/LoggingSoundSystem.cpp"
     "Sounds/NullAudioClip.h"
     "Sounds/NullSoundSystem.h"
-    "Sounds/SdlAudioClip.cpp"
-    "Sounds/MixerSoundSystem.cpp"
     "Sounds/SoLoudSoundSystem.cpp"
     "Sounds/SoundSystem.h"
 
-    "Wrappers/Audio.cpp"
-    "Wrappers/AudioTrack.cpp"
     "Wrappers/Controller.cpp"
     "Wrappers/Font.cpp"
     "Wrappers/Keyboard.cpp"
@@ -83,10 +79,20 @@ add_library(${ENGINE_NAME} STATIC
     "Wrappers/Texture2D.cpp"
 )
 
+if(NOT EMSCRIPTEN)
+    target_sources(${ENGINE_NAME} PRIVATE
+        "Sounds/SdlAudioClip.cpp"
+        "Sounds/MixerSoundSystem.cpp"
+
+        "Wrappers/Audio.cpp"
+        "Wrappers/AudioTrack.cpp"
+    )
+endif()
 
 if(STEAMWORKS_ENABLED)
     target_sources(${ENGINE_NAME} PRIVATE
         "Core/Achievement.cpp"
+
         "Managers/AchievementManager.h"
         "Managers/SteamManager.cpp"
     )
@@ -222,37 +228,39 @@ else()
 endif()
 
 
-# Add SDL3_mixer
-find_package(SDL3_mixer CONFIG QUIET)
-if(SDL3_mixer_FOUND)
-    message("\n")
-    message("SDL3_mixer package found")
-else()
-    message("\n")
-    message("SDL3_mixer package NOT found, using FetchContent to get it")
-
-    if(WIN32)
-        FetchContent_Declare(
-            SDL3_mixer
-            URL https://www.libsdl.org/projects/SDL_mixer/release/SDL3_mixer-devel-3.1.2-VC.zip
-            DOWNLOAD_NO_PROGRESS ON
-            DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
-        )
-        FetchContent_MakeAvailable(SDL3_mixer)
-
-        list(PREPEND CMAKE_PREFIX_PATH "${sdl3_mixer_SOURCE_DIR}")
-        find_package(SDL3_mixer CONFIG REQUIRED)
-
+if(NOT EMSCRIPTEN)
+    # Add SDL3_mixer
+    find_package(SDL3_mixer CONFIG QUIET)
+    if(SDL3_mixer_FOUND)
+        message("\n")
+        message("SDL3_mixer package found")
     else()
-        FetchContent_Declare(
-            SDL3_mixer
-            GIT_REPOSITORY "https://github.com/libsdl-org/SDL_mixer.git"
-            GIT_TAG "prerelease-3.1.2"
-            GIT_SHALLOW TRUE
-            GIT_PROGRESS TRUE
-        )
-        FetchContent_MakeAvailable(SDL3_mixer)
+        message("\n")
+        message("SDL3_mixer package NOT found, using FetchContent to get it")
 
+        if(WIN32)
+            FetchContent_Declare(
+                SDL3_mixer
+                URL https://www.libsdl.org/projects/SDL_mixer/release/SDL3_mixer-devel-3.1.2-VC.zip
+                DOWNLOAD_NO_PROGRESS ON
+                DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
+            )
+            FetchContent_MakeAvailable(SDL3_mixer)
+
+            list(PREPEND CMAKE_PREFIX_PATH "${sdl3_mixer_SOURCE_DIR}")
+            find_package(SDL3_mixer CONFIG REQUIRED)
+
+        else()
+            FetchContent_Declare(
+                SDL3_mixer
+                GIT_REPOSITORY "https://github.com/libsdl-org/SDL_mixer.git"
+                GIT_TAG "prerelease-3.1.2"
+                GIT_SHALLOW TRUE
+                GIT_PROGRESS TRUE
+            )
+            FetchContent_MakeAvailable(SDL3_mixer)
+
+        endif()
     endif()
 endif()
 
@@ -300,7 +308,7 @@ else()
     FetchContent_Declare(
         SoLoud
         GIT_REPOSITORY "https://github.com/jarikomppa/soloud.git"
-        GIT_TAG "RELEASE_20200207"
+        GIT_TAG master
         GIT_SHALLOW TRUE
         GIT_PROGRESS FALSE
     )
@@ -464,7 +472,6 @@ target_link_libraries(${ENGINE_NAME} PUBLIC
     glm::glm
     SDL3::SDL3
     SDL3_ttf::SDL3_ttf
-    SDL3_mixer::SDL3_mixer
 
     SDL3_gfx_Static
 
@@ -475,10 +482,17 @@ target_link_libraries(${ENGINE_NAME} PUBLIC
     nlohmann_json::nlohmann_json
 )
 
+
 if(WIN32)
     target_link_libraries(${ENGINE_NAME} PUBLIC
         ${XINPUT_LIB}
         ${VLD_LIBRARIES}
+    )
+endif()
+
+if(NOT EMSCRIPTEN)
+    target_link_libraries(${ENGINE_NAME} PUBLIC
+        SDL3_mixer::SDL3_mixer
     )
 endif()
 
