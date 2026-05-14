@@ -1,12 +1,14 @@
 #include "SoLoudSoundSystem.hpp"
 
 #include <algorithm>
-#include <cassert>
+#include <filesystem>
 #include <iostream>
 #include <optional>
 
 #include <soloud.h>
 #include <soloud_wav.h>
+
+#include "Managers/ResourceManager.h"
 
 
 using namespace bae;
@@ -263,8 +265,10 @@ SoundID SoLoudSoundSystem::Impl::LoadSound(const std::string& path)
         return it->second;
     }
 
+    const std::filesystem::path soundPath = ResourceManager::GetInstance().GetResourcesPath() / path.c_str();
+
     auto loadedAudio            = std::make_unique<SoLoud::Wav>();
-    const SoLoud::result result = loadedAudio->load(path.c_str());
+    const SoLoud::result result = loadedAudio->load(soundPath.string().c_str());
 
     if(result != SoLoud::SOLOUD_ERRORS::SO_NO_ERROR)
     {
@@ -410,8 +414,6 @@ void SoLoudSoundSystem::Impl::ResumeSounds(const SoundID soundId)
     {
         return;
     }
-
-    return;
 }
 
 
@@ -422,8 +424,6 @@ void SoLoudSoundSystem::Impl::PauseSounds(const SoundID soundId)
     {
         return;
     }
-
-    return;
 }
 
 
