@@ -1,6 +1,6 @@
-# BudgetArmsEngine (BAV)
+# BudgetArmsEngine (BAE)
 
-BAV is the result of improving the [Minigin Template]("https://github.com/avadae/minigin/"). <br>
+BAE is the result of improving the [Minigin Template]("https://github.com/avadae/minigin/"). <br>
 Minigin originally used SDL2, so I migrated from SDL2 and other SDL related libraries (Mixer & SDL3_gfx) to
 SDL3. <br>
 

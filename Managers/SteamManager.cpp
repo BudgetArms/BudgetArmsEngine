@@ -6,7 +6,7 @@
 using namespace bae;
 
 
-// Todo: Remove this from the BAV and into the Game Level
+// Todo: Remove this from the BAE and into the Game Level
 bool SteamManager::Initialize(uint32_t appId)
 {
     if(m_bInitialized)
