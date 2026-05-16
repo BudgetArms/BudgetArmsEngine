@@ -7,11 +7,11 @@
 #include <imgui_impl_sdlrenderer3.h>
 #include <glm/glm.hpp>
 
-#include "Core/Renderer.h"
-#include "Core/HelperFunctions.h"
-#include "Core/Utils.h"
-#include "Managers/SceneManager.h"
-#include "Wrappers/Texture2D.h"
+#include "Core/Renderer.hpp"
+#include "Core/HelperFunctions.hpp"
+#include "Core/Utils.hpp"
+#include "Managers/SceneManager.hpp"
+#include "Wrappers/Texture2D.hpp"
 
 
 namespace bu = bae::Utils;
@@ -119,12 +119,12 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, const bool bIsCenter
 
     if(m_bRenderPosition)
     {
-        bae::Utils::FillCircle(position, m_RenderPositionRadius, m_RenderPositionColor);
+        Utils::FillCircle(position, m_RenderPositionRadius, m_RenderPositionColor);
     }
 
     if(m_bRenderDstRect)
     {
-        bae::Utils::DrawRect(dst, m_RenderDstRectColor);
+        Utils::DrawRect(dst, m_RenderDstRectColor);
     }
 }
 
@@ -148,12 +148,12 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, const bool bIsCenter
 
     if(m_bRenderPosition)
     {
-        bae::Utils::FillCircle(position, m_RenderPositionRadius, m_RenderPositionColor);
+        Utils::FillCircle(position, m_RenderPositionRadius, m_RenderPositionColor);
     }
 
     if(m_bRenderDstRect)
     {
-        bae::Utils::DrawRect(dst, m_RenderDstRectColor);
+        Utils::DrawRect(dst, m_RenderDstRectColor);
     }
 }
 

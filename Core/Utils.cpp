@@ -1,4 +1,4 @@
-﻿#include "Utils.h"
+﻿#include "Utils.hpp"
 
 #include <algorithm>
 
@@ -6,7 +6,7 @@
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 
-#include "Core/Renderer.h"
+#include "Core/Renderer.hpp"
 
 
 bae::Utils::Window::Window(const std::string& title, const std::filesystem::path& resourceFolder, const int width,

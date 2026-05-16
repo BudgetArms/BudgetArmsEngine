@@ -1,6 +1,6 @@
-﻿#include "TransformComponent.h"
+﻿#include "TransformComponent.hpp"
 
-#include "Core/GameObject.h"
+#include "Core/GameObject.hpp"
 
 
 using namespace bae;

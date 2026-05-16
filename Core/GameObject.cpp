@@ -1,13 +1,13 @@
-﻿#include "GameObject.h"
+﻿#include "GameObject.hpp"
 
 #include <cassert>
 #include <iostream>
 #include <string>
 
-#include "HelperFunctions.h"
-#include "Components/Component.h"
-#include "Components/TransformComponent.h"
-#include "Core/Renderer.h"
+#include "HelperFunctions.hpp"
+#include "Components/Component.hpp"
+#include "Components/TransformComponent.hpp"
+#include "Core/Renderer.hpp"
 
 
 using namespace bae;

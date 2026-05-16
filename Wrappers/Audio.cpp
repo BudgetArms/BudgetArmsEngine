@@ -1,13 +1,13 @@
-﻿#include "Audio.h"
+﻿#include "Audio.hpp"
 
 #include <filesystem>
 #include <stdexcept>
 
 #include <SDL3_mixer/SDL_mixer.h>
 
-#include "Core/HelperFunctions.h"
-#include "Core/ServiceLocator.h"
-#include "Sounds/MixerSoundSystem.h"
+#include "Core/HelperFunctions.hpp"
+#include "Core/ServiceLocator.hpp"
+#include "Sounds/MixerSoundSystem.hpp"
 
 
 bae::Audio::Audio(const std::string& fullPath, MIX_Mixer* mixer)

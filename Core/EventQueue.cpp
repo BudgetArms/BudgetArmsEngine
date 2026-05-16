@@ -1,10 +1,10 @@
-﻿#include "EventQueue.h"
+﻿#include "EventQueue.hpp"
 
 #include <algorithm>
 #include <iostream>
 #include <ranges>
 
-#include "Core/EventListener.h"
+#include "Core/EventListener.hpp"
 
 
 using namespace bae;

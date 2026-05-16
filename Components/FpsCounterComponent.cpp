@@ -1,11 +1,11 @@
-﻿#include "FpsCounterComponent.h"
+﻿#include "FpsCounterComponent.hpp"
 
 #include <numbers>
 
-#include "Components/TextComponent.h"
-#include "Core/Utils.h"
-#include "Singletons/GameTime.h"
-#include "Wrappers/Font.h"
+#include "Components/TextComponent.hpp"
+#include "Core/Utils.hpp"
+#include "Singletons/GameTime.hpp"
+#include "Wrappers/Font.hpp"
 
 
 using namespace bae;

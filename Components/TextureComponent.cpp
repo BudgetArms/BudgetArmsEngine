@@ -1,9 +1,9 @@
-﻿#include "TextureComponent.h"
+﻿#include "TextureComponent.hpp"
 
-#include "Core/GameObject.h"
-#include "Core/Renderer.h"
-#include "Managers/ResourceManager.h"
-#include "Wrappers/Texture2D.h"
+#include "Core/GameObject.hpp"
+#include "Core/Renderer.hpp"
+#include "Managers/ResourceManager.hpp"
+#include "Wrappers/Texture2D.hpp"
 
 
 using namespace bae;

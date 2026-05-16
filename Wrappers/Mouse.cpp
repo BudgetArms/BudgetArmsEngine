@@ -1,4 +1,4 @@
-﻿#include "Mouse.h"
+﻿#include "Mouse.hpp"
 
 #include <ranges>
 #include <stdexcept>
@@ -7,7 +7,7 @@
 
 #include <SDL3/SDL.h>
 
-#include "Core/HelperFunctions.h"
+#include "Core/HelperFunctions.hpp"
 
 
 using namespace bae;

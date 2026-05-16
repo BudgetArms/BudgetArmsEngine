@@ -1,11 +1,11 @@
-﻿#include "AStar.h"
+﻿#include "AStar.hpp"
 
 #include <algorithm>
 #include <list>
 
-#include "Graphs/Graph.h"
-#include "Graphs/GraphConnection.h"
-#include "Graphs/GraphNode.h"
+#include "Graphs/Graph.hpp"
+#include "Graphs/GraphConnection.hpp"
+#include "Graphs/GraphNode.hpp"
 
 
 using namespace bae::Graphs;

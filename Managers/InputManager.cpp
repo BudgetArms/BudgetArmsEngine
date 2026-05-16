@@ -1,14 +1,14 @@
-﻿#include "InputManager.h"
+﻿#include "InputManager.hpp"
 #include <SDL3/SDL.h>
 
 #include <imgui_impl_sdl3.h>
 
-#include "Wrappers/Controller.h"
-#include "Wrappers/Keyboard.h"
-#include "Wrappers/Mouse.h"
+#include "Wrappers/Controller.hpp"
+#include "Wrappers/Keyboard.hpp"
+#include "Wrappers/Mouse.hpp"
 
 #ifdef STEAMWORKS_ENABLED
-#include "Managers/SteamManager.h"
+#include "Managers/SteamManager.hpp"
 #endif
 
 

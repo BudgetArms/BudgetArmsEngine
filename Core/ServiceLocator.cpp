@@ -1,6 +1,6 @@
-﻿#include "ServiceLocator.h"
+﻿#include "ServiceLocator.hpp"
 
-#include "Sounds/MixerSoundSystem.h"
+#include "Sounds/MixerSoundSystem.hpp"
 
 
 using namespace bae;

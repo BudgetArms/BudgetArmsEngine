@@ -1,11 +1,11 @@
-﻿#include "Texture2D.h"
+﻿#include "Texture2D.hpp"
 
 #include <stdexcept>
 
 #include <SDL3/SDL.h>
 
-#include "Core/HelperFunctions.h"
-#include "Core/Renderer.h"
+#include "Core/HelperFunctions.hpp"
+#include "Core/Renderer.hpp"
 
 
 bae::Texture2D::Texture2D(SDL_Texture* texture) :

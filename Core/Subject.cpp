@@ -1,6 +1,6 @@
-#include "Subject.h"
+#include "Subject.hpp"
 
-#include "GameObject.h"
+#include "GameObject.hpp"
 
 
 using namespace bae;

@@ -1,5 +1,5 @@
-﻿#include "Scene.h"
-#include "GameObject.h"
+﻿#include "Scene.hpp"
+#include "GameObject.hpp"
 
 #include <algorithm>
 

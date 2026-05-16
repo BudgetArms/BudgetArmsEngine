@@ -1,10 +1,10 @@
-﻿#include "GridGraph.h"
+﻿#include "GridGraph.hpp"
 
-#include "Core/Utils.h"
-#include "Graphs/ConnectionCostCalculator.h"
-#include "Graphs/Graph.h"
-#include "Graphs/GraphConnection.h"
-#include "Graphs/GraphEnums.h"
+#include "Core/Utils.hpp"
+#include "Graphs/ConnectionCostCalculator.hpp"
+#include "Graphs/Graph.hpp"
+#include "Graphs/GraphConnection.hpp"
+#include "Graphs/GraphEnums.hpp"
 
 
 using namespace bae::Graphs;

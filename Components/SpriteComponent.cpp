@@ -1,9 +1,9 @@
-﻿#include "SpriteComponent.h"
+﻿#include "SpriteComponent.hpp"
 
-#include "Core/GameObject.h"
-#include "Core/HelperFunctions.h"
-#include "Core/Renderer.h"
-#include "Managers/ResourceManager.h"
+#include "Core/GameObject.hpp"
+#include "Core/HelperFunctions.hpp"
+#include "Core/Renderer.hpp"
+#include "Managers/ResourceManager.hpp"
 
 
 using namespace bae;

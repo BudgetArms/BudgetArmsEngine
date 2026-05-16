@@ -8,7 +8,7 @@
 #include <soloud.h>
 #include <soloud_wav.h>
 
-#include "Managers/ResourceManager.h"
+#include "Managers/ResourceManager.hpp"
 
 
 using namespace bae;

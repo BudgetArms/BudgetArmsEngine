@@ -1,10 +1,11 @@
-﻿#include "Text2D.h"
+﻿#include "Text2D.hpp"
 
+#include <string>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "HelperFunctions.h"
-#include "Core/Renderer.h"
-#include "Managers/ResourceManager.h"
+#include "HelperFunctions.hpp"
+#include "Core/Renderer.hpp"
+#include "Managers/ResourceManager.hpp"
 
 
 using namespace bae;

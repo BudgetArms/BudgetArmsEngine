@@ -1,6 +1,6 @@
-﻿#include "SceneManager.h"
+﻿#include "SceneManager.hpp"
 
-#include "Core/Scene.h"
+#include "Core/Scene.hpp"
 
 
 bae::Scene& bae::SceneManager::CreateScene(const std::string& name)

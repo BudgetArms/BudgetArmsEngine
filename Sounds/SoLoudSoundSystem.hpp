@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "Sounds/SoundSystem.h"
+#include "Sounds/SoundSystem.hpp"
 
 
 namespace bae

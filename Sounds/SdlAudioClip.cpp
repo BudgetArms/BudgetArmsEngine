@@ -1,4 +1,4 @@
-﻿#include "SdlAudioClip.h"
+﻿#include "SdlAudioClip.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -6,8 +6,8 @@
 
 #include <SDL3_mixer/SDL_mixer.h>
 
-#include "Core/ServiceLocator.h"
-#include "Sounds/SoundSystem.h"
+#include "Core/ServiceLocator.hpp"
+#include "Sounds/SoundSystem.hpp"
 
 
 using namespace bae;

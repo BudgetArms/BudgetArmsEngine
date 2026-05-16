@@ -1,9 +1,9 @@
-﻿#include "LoggingSoundSystem.h"
+﻿#include "LoggingSoundSystem.hpp"
 
 #include <iostream>
 
-#include "Core/HelperFunctions.h"
-#include "Sounds/NullSoundSystem.h"
+#include "Core/HelperFunctions.hpp"
+#include "Sounds/NullSoundSystem.hpp"
 
 
 using namespace bae;

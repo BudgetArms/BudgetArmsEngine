@@ -26,8 +26,6 @@
 
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "HelperFunctions.h"
-#include "ServiceLocator.h"
 
 #ifdef STEAMWORKS_ENABLED
 #pragma warning (push)
@@ -42,16 +40,19 @@
 
 
 // BudgetArmsEngine includes
-#include "Core/BudgetEngine.h"
-#include "Core/EventQueue.h"
-#include "Core/Renderer.h"
-#include "Managers/InputManager.h"
-#include "Managers/ResourceManager.h"
-#include "Managers/SceneManager.h"
-#include "Singletons/GameTime.h"
+#include "Core/BudgetEngine.hpp"
+#include "Core/EventQueue.hpp"
+#include "Core/HelperFunctions.hpp"
+#include "Core/Renderer.hpp"
+#include "Core/ServiceLocator.hpp"
+#include "Core/Utils.hpp"
+#include "Managers/InputManager.hpp"
+#include "Managers/ResourceManager.hpp"
+#include "Managers/SceneManager.hpp"
+#include "Singletons/GameTime.hpp"
 
 #ifdef STEAMWORKS_ENABLED
-#include "Managers/SteamManager.h"
+#include "Managers/SteamManager.hpp"
 #endif
 
 

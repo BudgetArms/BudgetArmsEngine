@@ -1,0 +1,17 @@
+﻿#pragma once
+
+#include "Core/EventTypes.hpp"
+
+
+namespace bae
+{
+    class Subject;
+
+    class Observer
+    {
+    public:
+        virtual ~Observer() = default;
+        virtual void Notify(EventType event, Subject* subject) = 0;
+    };
+}
+

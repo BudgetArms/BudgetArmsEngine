@@ -1,4 +1,4 @@
-﻿#include "MixerSoundSystem.h"
+﻿#include "MixerSoundSystem.hpp"
 
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>
@@ -17,13 +17,13 @@
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
 
-#include "SdlAudioClip.h"
-#include "Core/HelperFunctions.h"
-#include "Core/RingBuffer.h"
-#include "Core/ServiceLocator.h"
-#include "Managers/ResourceManager.h"
-#include "Sounds/AudioClip.h"
-#include "Wrappers/Audio.h"
+#include "Core/HelperFunctions.hpp"
+#include "Core/RingBuffer.hpp"
+#include "Core/ServiceLocator.hpp"
+#include "Managers/ResourceManager.hpp"
+#include "Sounds/AudioClip.hpp"
+#include "Sounds/SdlAudioClip.hpp"
+#include "Wrappers/Audio.hpp"
 
 
 using namespace bae;

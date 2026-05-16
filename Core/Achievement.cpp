@@ -1,9 +1,9 @@
-﻿#include "Achievement.h"
+﻿#include "Achievement.hpp"
 
-#include "Core/EventTypes.h"
-#include "Core/Subject.h"
+#include "Core/EventTypes.hpp"
+#include "Core/Subject.hpp"
 
-#include "Managers/SteamManager.h"
+#include "Managers/SteamManager.hpp"
 
 using namespace bae;
 

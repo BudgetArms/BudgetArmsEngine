@@ -1,11 +1,11 @@
-﻿#include "Graph.h"
+﻿#include "Graph.hpp"
 
 #include <algorithm>
 #include <iostream>
 
-#include "Core/HelperFunctions.h"
-#include "Graphs/GraphConnection.h"
-#include "Graphs/GraphNode.h"
+#include "Core/HelperFunctions.hpp"
+#include "Graphs/GraphConnection.hpp"
+#include "Graphs/GraphNode.hpp"
 
 
 using namespace bae::Graphs;

@@ -2,9 +2,9 @@
 
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "Font.h"
+#include "Font.hpp"
 
-#include "Core/HelperFunctions.h"
+#include "Core/HelperFunctions.hpp"
 
 
 bae::Font::Font(const std::string& fullPath, const float size) : m_Font(nullptr)
