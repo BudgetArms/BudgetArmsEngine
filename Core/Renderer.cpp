@@ -35,6 +35,7 @@ void bae::Renderer::Init(SDL_Window* window)
     }
 
     // TODO: Remove ImGui related code
+    // This can be called after the BudgetEngine construction and before the BudgetEngine::Run
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     const bool success = ImGui_ImplSDL3_InitForSDLRenderer(m_Window, m_Renderer);
@@ -54,12 +55,15 @@ void bae::Renderer::Render() const
     SceneManager::GetInstance().Render();
 
     // Todo: Remove ImGui
+    // I think this could be implemented by using the RenderGUI in a scene
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
     SceneManager::GetInstance().RenderGUI();
 
+    // Maybe Scene::RenderGUI could go before the ImGui rendering, and then, this cann all go in
+    // a scene, so that ImGui isn't needed anymore in the Engine
     ImGui::Render();
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_Renderer);
 
@@ -68,6 +72,7 @@ void bae::Renderer::Render() const
 
 void bae::Renderer::Destroy()
 {
+    // This could be destroyed in a Component/GameObject
     ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();

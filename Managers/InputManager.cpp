@@ -33,6 +33,7 @@ bool InputManager::ProcessInput() const
         }
 
         #ifdef STEAMWORKS_ENABLED
+        // TODO: this can be achieved with a command
         if(e.key.key == SDLK_PERIOD)
         {
             SteamManager::GetInstance().ResetAllAchievements();
