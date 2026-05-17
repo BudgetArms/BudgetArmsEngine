@@ -12,7 +12,7 @@ namespace bae
     class Achievement final
     {
     public:
-        Achievement(const std::string& id, EventType event, std::function<bool(Subject*)> condition);
+        Achievement(const std::string& id, unsigned int eventHash, std::function<bool(Subject*)> condition);
         ~Achievement() = default;
 
         Achievement(const Achievement& other)            = delete;
@@ -21,11 +21,11 @@ namespace bae
         Achievement& operator=(Achievement&& other)      = delete;
 
 
-        void TryUnlock(EventType event, Subject* subject);
+        void TryUnlock(unsigned int eventHash, Subject* subject);
 
     private:
         std::string m_Id;
-        EventType m_Event;
+        unsigned int m_EventHash;
         std::function<bool(Subject*)> m_Condition;
         bool m_bUnlocked;
     };

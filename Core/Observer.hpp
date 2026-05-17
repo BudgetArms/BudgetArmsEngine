@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include "Core/EventTypes.hpp"
-
 
 namespace bae
 {
@@ -11,7 +9,7 @@ namespace bae
     {
     public:
         virtual ~Observer() = default;
-        virtual void Notify(EventType event, Subject* subject) = 0;
+        virtual void Notify(unsigned int eventHash, Subject* subject) = 0;
     };
 }
 

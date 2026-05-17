@@ -5,7 +5,6 @@
 #include "Core/Achievement.hpp"
 #include "Singletons/Singleton.hpp"
 
-#include "Core/EventTypes.hpp"
 #include "Core/Subject.hpp"
 
 
@@ -27,12 +26,12 @@ namespace bae
         }
 
 
-        void Notify(const EventType event, Subject* subject) override
+        void Notify(const unsigned int eventHash, Subject* subject) override
         {
             for(const auto& achievement : m_Achievements)
             {
                 if(achievement)
-                    achievement->TryUnlock(event, subject);
+                    achievement->TryUnlock(eventHash, subject);
             }
         }
 

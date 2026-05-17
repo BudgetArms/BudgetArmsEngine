@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "Core/EventTypes.hpp"
 #include "Core/GameObject.hpp"
 #include "Core/Observer.hpp"
 
@@ -28,7 +27,7 @@ namespace bae
         std::vector<Observer*> m_Observers;
 
     protected:
-        void NotifyObservers(EventType event);
+        void NotifyObservers(unsigned int eventHash);
     };
 }
 

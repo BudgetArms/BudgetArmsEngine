@@ -26,11 +26,11 @@ GameObject* Subject::GetGameObject() const
     return m_GameObject;
 }
 
-void Subject::NotifyObservers(const EventType event)
+void Subject::NotifyObservers(const unsigned int eventHash)
 {
     for(Observer* observer : m_Observers)
     {
-        observer->Notify(event, this);
+        observer->Notify(eventHash, this);
     }
 }
 

@@ -1,6 +1,5 @@
 ﻿#include "Achievement.hpp"
 
-#include "Core/EventTypes.hpp"
 #include "Core/Subject.hpp"
 
 #include "Managers/SteamManager.hpp"
@@ -8,18 +7,18 @@
 using namespace bae;
 
 
-Achievement::Achievement(const std::string& id, EventType event, std::function<bool(Subject*)> condition) :
+Achievement::Achievement(const std::string& id, const unsigned int eventHash, std::function<bool(Subject*)> condition) :
     m_Id{ id },
-    m_Event{ event },
+    m_EventHash{ eventHash },
     m_Condition{ std::move(condition) },
     m_bUnlocked{ false }
 {
 };
 
 
-void Achievement::TryUnlock(EventType event, Subject* subject)
+void Achievement::TryUnlock(const unsigned int eventHash, Subject* subject)
 {
-    if(m_bUnlocked || m_Event != event)
+    if(m_bUnlocked || m_EventHash != eventHash)
     {
         return;
     }
