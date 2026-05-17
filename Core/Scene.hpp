@@ -45,7 +45,7 @@ namespace bae
         void Remove(const std::shared_ptr<GameObject>& object);
 
 
-        std::string m_Name;
+        std::string m_Name{ "Default" };
         std::vector<std::shared_ptr<GameObject>> m_Objects{};
         std::vector<std::shared_ptr<GameObject>> m_ObjectsPendingAdd{};
     };

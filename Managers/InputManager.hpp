@@ -30,7 +30,7 @@ namespace bae
         InputManager operator=(const InputManager& other) = delete;
 
 
-        bool ProcessInput();
+        bool ProcessInput() const;
         void ClearCommands() const;
 
         void AddController(int controllerIndex);

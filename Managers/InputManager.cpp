@@ -17,7 +17,7 @@ using namespace bae;
 
 InputManager::~InputManager() = default;
 
-bool InputManager::ProcessInput()
+bool InputManager::ProcessInput() const
 {
     // uses SDL_PeekEvents, so not to consume events
     m_Keyboard->ProcessInput();
