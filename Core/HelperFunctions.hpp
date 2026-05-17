@@ -1,5 +1,7 @@
 ﻿#pragma once
+#include <cstdlib>
 #include <ctime>
+#include <string_view>
 
 #define FUNCTION_NAME __FUNCTION__
 
@@ -17,6 +19,18 @@ namespace bae
         }
 
         return std::rand();
+    }
+
+    // This is the real original SDBM function
+    // Not to be confused with the 'faster' version of the algorithm
+    constexpr unsigned int HashSDBM(const std::string_view stringView, const unsigned int hash = 0)
+    {
+        if(stringView.empty())
+        {
+            return hash;
+        }
+
+        return HashSDBM(stringView.substr(1), hash * 65599u + static_cast<unsigned char>(stringView[0]));
     }
 }
 
