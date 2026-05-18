@@ -13,12 +13,6 @@ namespace bae
     class AchievementManager final : public Singleton<AchievementManager>, public Observer
     {
     public:
-        ~AchievementManager() override = default;
-
-        AchievementManager(const AchievementManager& other)            = delete;
-        AchievementManager(AchievementManager&& other)                 = delete;
-        AchievementManager& operator=(const AchievementManager& other) = delete;
-        AchievementManager& operator=(AchievementManager&& other)      = delete;
 
         void AddAchievement(std::unique_ptr<Achievement> achievement)
         {
@@ -38,6 +32,7 @@ namespace bae
     private:
         friend class Singleton;
         AchievementManager() = default;
+        ~AchievementManager() override = default;
 
         std::vector<std::unique_ptr<Achievement>> m_Achievements;
     };

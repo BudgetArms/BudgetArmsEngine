@@ -15,8 +15,6 @@
 using namespace bae;
 
 
-InputManager::~InputManager() = default;
-
 bool InputManager::ProcessInput() const
 {
     // uses SDL_PeekEvents, so not to consume events
@@ -78,7 +76,6 @@ void InputManager::AddController(int controllerIndex)
     m_Controllers.emplace_back(std::make_unique<Controller>(controllerIndex));
 }
 
-
 Controller* InputManager::GetController(const int index) const
 {
     if(m_Controllers.empty())
@@ -94,6 +91,7 @@ Controller* InputManager::GetController(const int index) const
     return m_Controllers[index].get();
 }
 
+
 InputManager::InputManager() :
     m_Keyboard{ std::make_unique<Keyboard>() },
     m_Mouse{ std::make_unique<Mouse>() }
@@ -101,4 +99,6 @@ InputManager::InputManager() :
     m_Controllers.push_back(std::make_unique<Controller>(0));
 }
 
+// in source file bc forward declaration
+InputManager::~InputManager() = default;
 

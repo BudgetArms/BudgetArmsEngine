@@ -1,5 +1,10 @@
 ﻿#include "Controller.hpp"
 
+#if WIN32
+#include <Windows.h>
+#include <XInput.h>
+#endif
+
 
 using namespace bae;
 
@@ -66,12 +71,12 @@ void Controller::AddControllerCommands(std::unique_ptr<Command> command, const u
     m_Pimpl->AddControllerCommands(std::move(command), button, activationState);
 }
 
-bool Controller::IsButtonUp(unsigned int button) const
+bool Controller::IsButtonUp(const unsigned int button) const
 {
     return m_Pimpl->IsButtonUp(button);
 }
 
-bool Controller::IsButtonDown(unsigned int button) const
+bool Controller::IsButtonDown(const unsigned int button) const
 {
     return m_Pimpl->IsButtonDown(button);
 }
@@ -100,7 +105,7 @@ void Controller::Impl::ProcessInput(const int controllerIndex)
 
     const auto buttonChanges            = m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons;
     const auto buttonsPressedThisFrame  = buttonChanges & m_CurrentState.Gamepad.wButtons;
-    const auto buttonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
+    const auto buttonsReleasedThisFrame = buttonChanges & ~m_CurrentState.Gamepad.wButtons;
 
     // Remove Invalid Commands
     std::erase_if(m_ControllerCommands, [](auto& controllerCommand)
@@ -156,7 +161,7 @@ void Controller::Impl::AddControllerCommands(std::unique_ptr<Command> command, u
 bool Controller::Impl::IsButtonUp(const unsigned int button) const
 {
     const auto buttonChanges            = m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons;
-    const auto buttonsReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
+    const auto buttonsReleasedThisFrame = buttonChanges & ~m_CurrentState.Gamepad.wButtons;
 
     return buttonsReleasedThisFrame & button;
 }

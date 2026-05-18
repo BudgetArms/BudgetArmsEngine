@@ -6,8 +6,6 @@
 #include <SDL3_mixer/SDL_mixer.h>
 
 #include "Core/HelperFunctions.hpp"
-#include "Core/ServiceLocator.hpp"
-#include "Sounds/MixerSoundSystem.hpp"
 
 
 bae::Audio::Audio(const std::string& fullPath, MIX_Mixer* mixer)

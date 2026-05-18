@@ -22,15 +22,8 @@ namespace bae
             Pressed
         };
 
-        ~InputManager() override; // empty, because forward declaration :D
 
-        InputManager(const InputManager& other)           = delete;
-        InputManager(InputManager&& other)                = delete;
-        InputManager operator=(InputManager&& other)      = delete;
-        InputManager operator=(const InputManager& other) = delete;
-
-
-        bool ProcessInput() const;
+        [[nodiscard]] bool ProcessInput() const;
         void ClearCommands() const;
 
         void AddController(int controllerIndex);
@@ -41,6 +34,7 @@ namespace bae
     private:
         friend class Singleton;
         InputManager();
+        ~InputManager() override;
 
         std::vector<std::unique_ptr<Controller>> m_Controllers;
         std::unique_ptr<Keyboard> m_Keyboard;

@@ -37,16 +37,16 @@ namespace bae
         void SetFont(std::shared_ptr<Font> font);
 
 
-        bool m_bIsCenteredAtPosition;
-        glm::vec2 m_Position;
-        float m_Rotation;
-        glm::vec2 m_Scale;
+        bool m_bIsCenteredAtPosition{ false };
+        glm::vec2 m_Position{};
+        float m_Rotation{};
+        glm::vec2 m_Scale{ 1.f, 1.f };
 
     private:
         std::shared_ptr<Font> m_uFont;
         std::unique_ptr<Texture2D> m_uTextTexture;
 
-        bool m_bNeedsUpdate;
+        bool m_bNeedsUpdate{ true };
         std::string m_Text;
         SDL_Color m_Color;
     };

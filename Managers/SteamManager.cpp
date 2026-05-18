@@ -7,7 +7,7 @@ using namespace bae;
 
 
 // Todo: Remove this from the BAE and into the Game Level
-bool SteamManager::Initialize(uint32_t appId)
+bool SteamManager::Initialize(const uint32_t appId)
 {
     if(m_bInitialized)
     {
@@ -118,7 +118,7 @@ bool SteamManager::GetStat(const std::string& statName, float& outValue) const
     return SteamUserStats()->GetStat(statName.c_str(), &outValue);
 }
 
-bool SteamManager::SetStat(const std::string& statName, int32_t value) const
+bool SteamManager::SetStat(const std::string& statName, const int32_t value) const
 {
     if(!m_bInitialized)
     {
@@ -128,7 +128,7 @@ bool SteamManager::SetStat(const std::string& statName, int32_t value) const
     return SteamUserStats()->SetStat(statName.c_str(), value);
 }
 
-bool SteamManager::SetStat(const std::string& statName, float value) const
+bool SteamManager::SetStat(const std::string& statName, const float value) const
 {
     if(!m_bInitialized)
     {
@@ -138,7 +138,7 @@ bool SteamManager::SetStat(const std::string& statName, float value) const
     return SteamUserStats()->SetStat(statName.c_str(), value);
 }
 
-// Todo: this got changed
+// Todo: change this to update the score
 //void SteamManager::UploadScore(const std::string& leaderboardName, int32_t score)
 void SteamManager::UploadScore(const std::string&, int32_t) const
 {

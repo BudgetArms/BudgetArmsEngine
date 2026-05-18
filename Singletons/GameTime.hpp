@@ -10,12 +10,6 @@ namespace bae
     class GameTime final : public Singleton<GameTime>
     {
     public:
-        GameTime(const GameTime& other)            = delete;
-        GameTime(GameTime&& other)                 = delete;
-        GameTime& operator=(const GameTime& other) = delete;
-        GameTime& operator=(GameTime&& other)      = delete;
-
-
         void Update()
         {
             const auto currentTime = std::chrono::high_resolution_clock::now();

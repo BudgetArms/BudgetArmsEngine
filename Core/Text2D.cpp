@@ -12,11 +12,6 @@ using namespace bae;
 
 
 Text2D::Text2D(const std::string& text, std::shared_ptr<Font> font, const SDL_Color& color) :
-    m_bIsCenteredAtPosition{ false },
-    m_Position{},
-    m_Rotation{},
-    m_Scale{ 1.f, 1.f },
-    m_bNeedsUpdate{ true },
     m_Text{ text },
     m_Color{ color }
 {

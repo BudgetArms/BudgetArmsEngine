@@ -2,10 +2,6 @@
 
 #include <memory>
 
-#if WIN32
-#include <Windows.h>
-#include <XInput.h>
-#endif
 
 #include "Commands/Command.hpp"
 #include "Managers/InputManager.hpp"

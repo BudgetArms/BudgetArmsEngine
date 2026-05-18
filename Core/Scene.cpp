@@ -13,6 +13,8 @@ Scene::~Scene()
     {
         object->Destroy();
     }
+
+    m_Objects.clear();
 }
 
 void Scene::Update() const

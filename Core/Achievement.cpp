@@ -13,7 +13,7 @@ Achievement::Achievement(const std::string& id, const unsigned int eventHash, st
     m_Condition{ std::move(condition) },
     m_bUnlocked{ false }
 {
-};
+}
 
 
 void Achievement::TryUnlock(const unsigned int eventHash, Subject* subject)

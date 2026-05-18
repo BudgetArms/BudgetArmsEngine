@@ -17,14 +17,6 @@ namespace bae
     class SteamManager final : public Singleton<SteamManager>
     {
     public:
-        ~SteamManager() override = default;
-
-        SteamManager(const SteamManager& other)            = delete;
-        SteamManager(SteamManager&& other)                 = delete;
-        SteamManager& operator=(const SteamManager& other) = delete;
-        SteamManager& operator=(SteamManager&& other)      = delete;
-
-
         bool Initialize(uint32_t appId = 0);
         void Shutdown();
         void Update() const;
@@ -33,10 +25,10 @@ namespace bae
         [[nodiscard]] bool IsAchievementUnlocked(const std::string& achievementId) const;
         void ResetAllAchievements() const;
 
-        bool GetStat(const std::string& statName, int32_t& outValue) const;
-        bool GetStat(const std::string& statName, float& outValue) const;
-        bool SetStat(const std::string& statName, int32_t value) const;
-        bool SetStat(const std::string& statName, float value) const;
+        [[nodiscard]] bool GetStat(const std::string& statName, int32_t& outValue) const;
+        [[nodiscard]] bool GetStat(const std::string& statName, float& outValue) const;
+        [[nodiscard]] bool SetStat(const std::string& statName, int32_t value) const;
+        [[nodiscard]] bool SetStat(const std::string& statName, float value) const;
 
         void UploadScore(const std::string& leaderboardName, int32_t score) const;
 
@@ -48,7 +40,8 @@ namespace bae
 
     private:
         friend class Singleton;
-        SteamManager() = default;
+        SteamManager()           = default;
+        ~SteamManager() override = default;
 
         bool m_bInitialized{ false };
     };

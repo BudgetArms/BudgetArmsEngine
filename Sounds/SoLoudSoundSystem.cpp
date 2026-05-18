@@ -36,8 +36,8 @@ public:
 
 
     void StopSounds(SoundID soundId);
-    void ResumeSounds(SoundID soundId);
-    void PauseSounds(SoundID soundId);
+    static void ResumeSounds(SoundID) {} // cannot do this with SoLoud
+    static void PauseSounds(SoundID) {}  // cannot do this with SoLoud
     void MuteSounds(SoundID soundId);
     void UnMuteSounds(SoundID soundId);
 
@@ -351,7 +351,7 @@ ActiveSoundID SoLoudSoundSystem::Impl::Play(const SoundID soundId)
 
 void SoLoudSoundSystem::Impl::Stop(const ActiveSoundID activeSoundId)
 {
-    std::optional<SoLoud::handle> optHandle = GetHandle(activeSoundId);
+    const std::optional<SoLoud::handle> optHandle = GetHandle(activeSoundId);
     if(!optHandle.has_value())
     {
         return;
@@ -440,26 +440,6 @@ void SoLoudSoundSystem::Impl::StopSounds(const SoundID soundId)
 
     optSound.value()->stop();
 }
-
-void SoLoudSoundSystem::Impl::ResumeSounds(const SoundID soundId)
-{
-    const std::optional<SoLoud::Wav*> optSound = GetSoundsWav(soundId);
-    if(!optSound.has_value())
-    {
-        return;
-    }
-}
-
-
-void SoLoudSoundSystem::Impl::PauseSounds(const SoundID soundId)
-{
-    const std::optional<SoLoud::Wav*> optSound = GetSoundsWav(soundId);
-    if(!optSound.has_value())
-    {
-        return;
-    }
-}
-
 
 void SoLoudSoundSystem::Impl::MuteSounds(const SoundID soundId)
 {

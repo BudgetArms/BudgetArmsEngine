@@ -168,6 +168,7 @@ namespace bae
     };
 }
 
+
 AudioQueue::AudioQueue() :
     m_SoundEventBuffer{ m_SoundEventBufferSize }
 {
@@ -249,28 +250,11 @@ bool AudioQueue::IsAudioLoaded(const SoundID soundId)
     return IsAudioLoadedUnLocked(soundId);
 }
 
-bool AudioQueue::IsAudioLoadedUnLocked(const SoundID soundId)
-{
-    const auto it = m_LoadedAudio.find(soundId);
-    if(it == m_LoadedAudio.end())
-    {
-        return false;
-    }
-
-    if(const auto& audio = it->second; !audio)
-    {
-        return false;
-    }
-
-    return true;
-}
-
 void AudioQueue::AddAudio(SoundID soundId, const std::string& path)
 {
     std::lock_guard lock(m_LoadedAudioMutex);
     m_LoadedAudio.insert({ soundId, std::make_unique<Audio>(path, m_Mixer) });
 }
-
 
 void AudioQueue::AudioThreadLoop(const std::stop_token& stopToken)
 {
@@ -303,6 +287,7 @@ void AudioQueue::AudioThreadLoop(const std::stop_token& stopToken)
         CleanUpFinishedSounds();
     }
 }
+
 
 void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
 {
@@ -615,7 +600,6 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
     }
 }
 
-
 void AudioQueue::CleanUpFinishedSounds()
 {
     constexpr auto functionName = std::string_view(FUNCTION_NAME);
@@ -632,23 +616,6 @@ void AudioQueue::CleanUpFinishedSounds()
                       }
                       return false;
                   });
-}
-
-Audio* AudioQueue::GetAudio(const SoundID soundId)
-{
-    std::lock_guard lock(m_LoadedAudioMutex);
-    if(!IsAudioLoadedUnLocked(soundId))
-    {
-        return nullptr;
-    }
-
-    const auto it = m_LoadedAudio.find(soundId);
-    if(it == m_LoadedAudio.end())
-    {
-        return nullptr;
-    }
-
-    return it->second.get();
 }
 
 
@@ -729,6 +696,40 @@ constexpr bool AudioQueue::IsValidSoundIDNeededForSoundEventType(const SoundEven
     std::cout << errorMessage;
     assert(false && errorMessage.c_str());
     return true;
+}
+
+
+bool AudioQueue::IsAudioLoadedUnLocked(const SoundID soundId)
+{
+    const auto it = m_LoadedAudio.find(soundId);
+    if(it == m_LoadedAudio.end())
+    {
+        return false;
+    }
+
+    if(const auto& audio = it->second; !audio)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+Audio* AudioQueue::GetAudio(const SoundID soundId)
+{
+    std::lock_guard lock(m_LoadedAudioMutex);
+    if(!IsAudioLoadedUnLocked(soundId))
+    {
+        return nullptr;
+    }
+
+    const auto it = m_LoadedAudio.find(soundId);
+    if(it == m_LoadedAudio.end())
+    {
+        return nullptr;
+    }
+
+    return it->second.get();
 }
 
 
