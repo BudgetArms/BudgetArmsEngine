@@ -24,6 +24,15 @@ void bae::ResourceManager::Init(const std::filesystem::path& dataPath)
     }
 }
 
+void bae::ResourceManager::Destroy()
+{
+    m_LoadedFonts.clear();
+    m_LoadedTextures.clear();
+
+    TTF_Quit();
+}
+
+
 std::shared_ptr<bae::Texture2D> bae::ResourceManager::LoadTexture(const std::string& file)
 {
     const auto fullPath = m_ResourcesPath / file;

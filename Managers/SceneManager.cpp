@@ -3,6 +3,11 @@
 #include "Core/Scene.hpp"
 
 
+void bae::SceneManager::Destroy()
+{
+    m_Scenes.clear();
+}
+
 bae::Scene& bae::SceneManager::CreateScene(const std::string& name)
 {
     const auto& scene = std::shared_ptr<Scene>(new Scene(name));

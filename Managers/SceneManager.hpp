@@ -14,6 +14,8 @@ namespace bae
     class SceneManager final : public Singleton<SceneManager>
     {
     public:
+        void Destroy();
+
         Scene& CreateScene(const std::string& name);
 
         void Update() const;
