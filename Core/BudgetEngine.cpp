@@ -112,7 +112,10 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
 bae::BudgetEngine::~BudgetEngine()
 {
     std::cout << FUNCTION_NAME << '\n';
+    SceneManager::GetInstance().Destroy();
+
     Renderer::GetInstance().Destroy();
+    ResourceManager::GetInstance().Destroy();
     ServiceLocator::RegisterSoundSystem(std::make_unique<NullSoundSystem>());
     SDL_DestroyWindow(g_Window);
     g_Window = nullptr;
