@@ -9,10 +9,10 @@ namespace bae
         explicit Command() = default;
         virtual ~Command() = default;
 
-        Command(const Command& other)            = delete;
-        Command(Command&& other)                 = delete;
-        Command& operator=(const Command& other) = delete;
-        Command& operator=(Command&& other)      = delete;
+        Command(const Command&)            = delete;
+        Command(Command&&)                 = delete;
+        Command& operator=(const Command&) = delete;
+        Command& operator=(Command&&)      = delete;
 
 
         virtual void Execute() = 0;

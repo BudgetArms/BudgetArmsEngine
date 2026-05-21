@@ -17,10 +17,10 @@ namespace bae
 
         ~GameActorCommand() override = default;
 
-        GameActorCommand(const GameActorCommand& other)            = delete;
-        GameActorCommand(GameActorCommand&& other)                 = delete;
-        GameActorCommand& operator=(const GameActorCommand& other) = delete;
-        GameActorCommand& operator=(GameActorCommand&& other)      = delete;
+        GameActorCommand(const GameActorCommand&)            = delete;
+        GameActorCommand(GameActorCommand&&)                 = delete;
+        GameActorCommand& operator=(const GameActorCommand&) = delete;
+        GameActorCommand& operator=(GameActorCommand&&)      = delete;
 
 
         void Execute() override = 0;

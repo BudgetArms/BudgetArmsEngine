@@ -15,10 +15,10 @@ namespace bae
         explicit Font(const std::string& fullPath, float size);
         ~Font();
 
-        Font(const Font&)             = delete;
-        Font(Font&&)                  = delete;
-        Font& operator=(const Font&)  = delete;
-        Font& operator=(const Font&&) = delete;
+        Font(const Font&)            = delete;
+        Font(Font&&)                 = delete;
+        Font& operator=(const Font&) = delete;
+        Font& operator=(Font&&)      = delete;
 
 
         [[nodiscard]] TTF_Font* GetFont() const;

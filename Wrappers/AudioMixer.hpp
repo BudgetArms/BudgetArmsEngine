@@ -14,10 +14,10 @@ namespace bae
         explicit AudioMixer(SDL_AudioDeviceID deviceId, const SDL_AudioSpec* spec);
         ~AudioMixer();
 
-        AudioMixer(const AudioMixer&)             = delete;
-        AudioMixer(AudioMixer&&)                  = delete;
-        AudioMixer& operator=(const AudioMixer&)  = delete;
-        AudioMixer& operator=(const AudioMixer&&) = delete;
+        AudioMixer(const AudioMixer&)            = delete;
+        AudioMixer(AudioMixer&&)                 = delete;
+        AudioMixer& operator=(const AudioMixer&) = delete;
+        AudioMixer& operator=(AudioMixer&&)      = delete;
 
 
         [[nodiscard]] MIX_Mixer* GetMixer() const;

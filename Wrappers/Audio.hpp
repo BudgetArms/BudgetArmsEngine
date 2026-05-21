@@ -15,10 +15,10 @@ namespace bae
         explicit Audio(const std::string& fullPath, MIX_Mixer* mixer);
         ~Audio();
 
-        Audio(const Audio&)             = delete;
-        Audio(Audio&&)                  = delete;
-        Audio& operator=(const Audio&)  = delete;
-        Audio& operator=(const Audio&&) = delete;
+        Audio(const Audio&)            = delete;
+        Audio(Audio&&)                 = delete;
+        Audio& operator=(const Audio&) = delete;
+        Audio& operator=(Audio&&)      = delete;
 
 
         [[nodiscard]] MIX_Audio* GetAudio() const;

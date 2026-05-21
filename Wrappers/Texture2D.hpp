@@ -18,10 +18,10 @@ namespace bae
         explicit Texture2D(const std::string& fullPath);
         ~Texture2D();
 
-        Texture2D(const Texture2D&)             = delete;
-        Texture2D(Texture2D&&)                  = delete;
-        Texture2D& operator=(const Texture2D&)  = delete;
-        Texture2D& operator=(const Texture2D&&) = delete;
+        Texture2D(const Texture2D&)            = delete;
+        Texture2D(Texture2D&&)                 = delete;
+        Texture2D& operator=(const Texture2D&) = delete;
+        Texture2D& operator=(Texture2D&&)      = delete;
 
 
         [[nodiscard]] glm::vec2 GetSize() const;

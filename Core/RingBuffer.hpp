@@ -12,7 +12,12 @@ namespace bae
     class RingBuffer
     {
     public:
-        explicit RingBuffer(int capacity);
+        explicit RingBuffer(size_t capacity);
+
+        RingBuffer(const RingBuffer&)            = delete;
+        RingBuffer(RingBuffer&&)                 = delete;
+        RingBuffer& operator=(const RingBuffer&) = delete;
+        RingBuffer& operator=(RingBuffer&&)      = delete;
 
         bool Push(const T& item);
         bool Pop(T& item);
@@ -26,18 +31,15 @@ namespace bae
 
 
         std::mutex m_Mutex;
-        std::vector<T> m_Buffer;
-        size_t m_Head;
-        size_t m_Tail;
+        std::vector<T> m_Buffer{};
+        size_t m_Head{};
+        size_t m_Tail{};
     };
 }
 
 
 template<typename T>
-bae::RingBuffer<T>::RingBuffer(int capacity) :
-    m_Buffer{},
-    m_Head{ 0 },
-    m_Tail{ 0 }
+bae::RingBuffer<T>::RingBuffer(size_t capacity)
 {
     m_Buffer.resize(capacity);
 }

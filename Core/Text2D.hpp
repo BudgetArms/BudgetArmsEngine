@@ -18,10 +18,10 @@ namespace bae
                         const SDL_Color& color                              = SDL_Color{ 255, 255, 255, 255 });
         ~Text2D() = default;
 
-        Text2D(const Text2D& other)            = delete;
-        Text2D(Text2D&& other)                 = delete;
-        Text2D& operator=(const Text2D& other) = delete;
-        Text2D& operator=(Text2D&& other)      = delete;
+        Text2D(const Text2D&)            = delete;
+        Text2D(Text2D&&)                 = delete;
+        Text2D& operator=(const Text2D&) = delete;
+        Text2D& operator=(Text2D&&)      = delete;
 
 
         void Update();

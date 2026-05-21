@@ -14,10 +14,10 @@ namespace bae
         Keyboard();
         ~Keyboard();
 
-        Keyboard(const Keyboard& other)            = delete;
-        Keyboard(Keyboard&& other)                 = delete;
-        Keyboard& operator=(const Keyboard& other) = delete;
-        Keyboard& operator=(Keyboard&& other)      = delete;
+        Keyboard(const Keyboard&)            = delete;
+        Keyboard(Keyboard&&)                 = delete;
+        Keyboard& operator=(const Keyboard&) = delete;
+        Keyboard& operator=(Keyboard&&)      = delete;
 
 
         void ProcessInput() const;

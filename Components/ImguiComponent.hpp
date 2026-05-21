@@ -17,10 +17,10 @@ namespace bae
 
         ~ImguiComponent() override = default;
 
-        ImguiComponent(const ImguiComponent& other)            = delete;
-        ImguiComponent(ImguiComponent&& other)                 = delete;
-        ImguiComponent& operator=(const ImguiComponent& other) = delete;
-        ImguiComponent& operator=(ImguiComponent&& other)      = delete;
+        ImguiComponent(const ImguiComponent&)            = delete;
+        ImguiComponent(ImguiComponent&&)                 = delete;
+        ImguiComponent& operator=(const ImguiComponent&) = delete;
+        ImguiComponent& operator=(ImguiComponent&&)      = delete;
 
         void RenderGUI() override = 0;
     };

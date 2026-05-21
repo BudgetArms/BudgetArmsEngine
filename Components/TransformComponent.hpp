@@ -15,10 +15,10 @@ namespace bae
         explicit TransformComponent(GameObject& owner);
         ~TransformComponent() override = default;
 
-        TransformComponent(const TransformComponent& other)            = delete;
-        TransformComponent(TransformComponent&& other)                 = delete;
-        TransformComponent& operator=(const TransformComponent& other) = delete;
-        TransformComponent& operator=(TransformComponent&& other)      = delete;
+        TransformComponent(const TransformComponent&)            = delete;
+        TransformComponent(TransformComponent&&)                 = delete;
+        TransformComponent& operator=(const TransformComponent&) = delete;
+        TransformComponent& operator=(TransformComponent&&)      = delete;
 
 
         const glm::vec2& GetWorldLocation();

@@ -15,10 +15,10 @@ namespace bae
         explicit Controller(int controllerIndex);
         ~Controller();
 
-        Controller(const Controller& other)            = delete;
-        Controller(Controller&& other)                 = delete;
-        Controller& operator=(const Controller& other) = delete;
-        Controller& operator=(Controller&& other)      = delete;
+        Controller(const Controller&)            = delete;
+        Controller(Controller&&)                 = delete;
+        Controller& operator=(const Controller&) = delete;
+        Controller& operator=(Controller&&)      = delete;
 
 
         void ProcessInput() const;

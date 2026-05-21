@@ -14,10 +14,10 @@ namespace bae
         explicit AudioTrack(MIX_Mixer* mixer);
         ~AudioTrack();
 
-        AudioTrack(const AudioTrack&)             = delete;
-        AudioTrack(AudioTrack&&)                  = delete;
-        AudioTrack& operator=(const AudioTrack&)  = delete;
-        AudioTrack& operator=(const AudioTrack&&) = delete;
+        AudioTrack(const AudioTrack&)            = delete;
+        AudioTrack(AudioTrack&&)                 = delete;
+        AudioTrack& operator=(const AudioTrack&) = delete;
+        AudioTrack& operator=(AudioTrack&&)      = delete;
 
 
         [[nodiscard]] MIX_Track* GetTrack() const;

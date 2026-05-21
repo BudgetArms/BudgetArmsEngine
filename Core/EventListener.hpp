@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include "Core/Event.hpp"
 #include "Core/EventQueue.hpp"
 
 
@@ -16,6 +15,10 @@ namespace bae
 
         virtual ~EventListener() = default;
 
+        EventListener(const EventListener&)            = delete;
+        EventListener(EventListener&&)                 = delete;
+        EventListener& operator=(const EventListener&) = delete;
+        EventListener& operator=(EventListener&&)      = delete;
 
         virtual void HandleEvent(Event* event) = 0;
     };

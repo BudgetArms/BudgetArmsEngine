@@ -17,10 +17,10 @@ namespace bae
                                   const Utils::Color& color  = Utils::Color::White);
         ~FpsTextComponent() override = default;
 
-        FpsTextComponent(const FpsTextComponent& other)            = delete;
-        FpsTextComponent(FpsTextComponent&& other)                 = delete;
-        FpsTextComponent& operator=(const FpsTextComponent& other) = delete;
-        FpsTextComponent& operator=(FpsTextComponent&& other)      = delete;
+        FpsTextComponent(const FpsTextComponent&)            = delete;
+        FpsTextComponent(FpsTextComponent&&)                 = delete;
+        FpsTextComponent& operator=(const FpsTextComponent&) = delete;
+        FpsTextComponent& operator=(FpsTextComponent&&)      = delete;
 
         void Update() override;
         void Render() const override;

@@ -20,10 +20,10 @@ namespace bae
         explicit GameObject(const std::string& name);
         ~GameObject();
 
-        GameObject(const GameObject& other)            = delete;
-        GameObject(GameObject&& other)                 = delete;
-        GameObject& operator=(const GameObject& other) = delete;
-        GameObject& operator=(GameObject&& other)      = delete;
+        GameObject(const GameObject&)            = delete;
+        GameObject(GameObject&&)                 = delete;
+        GameObject& operator=(const GameObject&) = delete;
+        GameObject& operator=(GameObject&&)      = delete;
 
 
         void Update() const;
@@ -155,11 +155,12 @@ namespace bae
         void ForceDestroy();
 
         std::string m_Name{ "DefaultObject" };
-        bool m_MarkedForDeletion{ false };
 
         GameObject* m_Parent{ nullptr };
         std::vector<GameObject*> m_Children;
         std::vector<std::unique_ptr<Component>> m_Components;
+
+        bool m_MarkedForDeletion{ false };
 
     protected:
         void SetName(const std::string& newName);

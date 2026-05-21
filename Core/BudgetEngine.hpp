@@ -14,10 +14,10 @@ namespace bae
         explicit BudgetEngine(const Utils::Window& window);
         ~BudgetEngine();
 
-        BudgetEngine(const BudgetEngine& other)            = delete;
-        BudgetEngine(BudgetEngine&& other)                 = delete;
-        BudgetEngine& operator=(const BudgetEngine& other) = delete;
-        BudgetEngine& operator=(BudgetEngine&& other)      = delete;
+        BudgetEngine(const BudgetEngine&)            = delete;
+        BudgetEngine(BudgetEngine&&)                 = delete;
+        BudgetEngine& operator=(const BudgetEngine&) = delete;
+        BudgetEngine& operator=(BudgetEngine&&)      = delete;
 
 
         void Run(const std::function<void()>& load);

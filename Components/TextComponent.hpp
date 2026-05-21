@@ -20,10 +20,10 @@ namespace bae
                       std::shared_ptr<Font> font = nullptr, const Utils::Color& color = Utils::Color::White);
         ~TextComponent() override;
 
-        TextComponent(const TextComponent& other)            = delete;
-        TextComponent(TextComponent&& other)                 = delete;
-        TextComponent& operator=(const TextComponent& other) = delete;
-        TextComponent& operator=(TextComponent&& other)      = delete;
+        TextComponent(const TextComponent&)            = delete;
+        TextComponent(TextComponent&&)                 = delete;
+        TextComponent& operator=(const TextComponent&) = delete;
+        TextComponent& operator=(TextComponent&&)      = delete;
 
 
         void Update() override;

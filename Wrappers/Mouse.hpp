@@ -14,10 +14,10 @@ namespace bae
         Mouse();
         ~Mouse();
 
-        Mouse(const Mouse& other)            = delete;
-        Mouse(Mouse&& other)                 = delete;
-        Mouse& operator=(const Mouse& other) = delete;
-        Mouse& operator=(Mouse&& other)      = delete;
+        Mouse(const Mouse&)            = delete;
+        Mouse(Mouse&&)                 = delete;
+        Mouse& operator=(const Mouse&) = delete;
+        Mouse& operator=(Mouse&&)      = delete;
 
 
         void ProcessInput() const;
