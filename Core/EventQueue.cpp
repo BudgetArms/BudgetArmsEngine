@@ -2,30 +2,26 @@
 
 #include <algorithm>
 #include <iostream>
-#include <ranges>
 
 #include "Core/EventListener.hpp"
+#include "Core/HelperFunctions.hpp"
 
 
 using namespace bae;
 
 
-void EventQueue::AddEvent(const Event& event)
+void EventQueue::SendEvent(const unsigned int eventHash)
 {
-    std::lock_guard lock(m_Mutex);
-
-    if(IsFull())
+    if(m_Queue.IsFull())
     {
-        std::cout << "EventQueue is full, can't add more\n";
+        std::cout << FUNCTION_NAME << " Failed! EventQueue is full, can't add more" << '\n';
         return;
     }
 
-    m_Buffer[m_Head] = event;
-    m_Head           = (m_Head + 1) % m_Capacity;
-
-    if(m_Head == m_Tail)
+    const bool success = m_Queue.Push(eventHash);
+    if(!success)
     {
-        m_bFull = true;
+        std::cout << FUNCTION_NAME << " Failed! EventQueue is full, after trying push" << '\n';
     }
 }
 
@@ -48,28 +44,26 @@ void EventQueue::RemoveListener(EventListener* eventListener)
 
 void EventQueue::ProcessEvents()
 {
-    std::lock_guard lock(m_Mutex);
-
-    while(!IsEmpty())
+    while(!m_Queue.IsEmpty())
     {
-        if(m_Buffer[m_Tail].has_value())
-        {
-            ProcessEvent(m_Buffer[m_Tail].value());
-            m_Buffer[m_Tail].reset();
-        }
+        unsigned int eventHash{ 0 };
+        m_Queue.Pop(eventHash);
 
-        m_Tail  = (m_Tail + 1) % m_Capacity;
-        m_bFull = false;
+        // if Event Valid
+        if(eventHash != 0)
+        {
+            ProcessEvent(eventHash);
+        }
     }
 }
 
-void EventQueue::ProcessEvent(Event& event) const
+void EventQueue::ProcessEvent(const unsigned int eventHash) const
 {
     for(EventListener* listener : m_Listeners)
     {
         if(listener)
         {
-            listener->HandleEvent(&event);
+            listener->HandleEvent(eventHash);
         }
     }
 }
