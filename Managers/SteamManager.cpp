@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "Core/HelperFunctions.hpp"
+
 
 using namespace bae;
 
@@ -14,19 +16,24 @@ bool SteamManager::Initialize(const uint32_t appId)
         return true;
     }
 
+    if(!SteamAPI_IsSteamRunning())
+    {
+        std::cout << FUNCTION_NAME << " Failed! Steam is not running" << '\n';
+        return false;
+    }
+
     if(SteamAPI_RestartAppIfNecessary(appId))
     {
+        std::cout << FUNCTION_NAME << " Failed! App needs to be restarted through Steam" << '\n';
         return false;
     }
 
     if(!SteamAPI_Init())
     {
-        std::cerr << "Steam failed to initialize" << '\n';
-        std::cerr << "Make sure Steam is running" << '\n';
+        std::cout << FUNCTION_NAME << " Failed to initialize Steam" << '\n';
         return false;
     }
 
-    std::cout << "Steam Initialize" << '\n';
     m_bInitialized = true;
 
     // TODO: check if this is true
