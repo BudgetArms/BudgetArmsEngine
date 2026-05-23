@@ -5,6 +5,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "Core/Utils.hpp"
 #include "Wrappers/Font.hpp"
 #include "Wrappers/Texture2D.hpp"
 
@@ -15,7 +16,7 @@ namespace bae
     {
     public:
         explicit Text2D(const std::string& text, std::shared_ptr<Font> font = nullptr,
-                        const SDL_Color& color                              = SDL_Color{ 255, 255, 255, 255 });
+                        const Utils::Color& color                           = Utils::Color::White);
         ~Text2D() = default;
 
         Text2D(const Text2D&)            = delete;
@@ -30,8 +31,8 @@ namespace bae
         [[nodiscard]] std::string GetText();
         void SetText(const std::string& text);
 
-        [[nodiscard]] SDL_Color GetColor();
-        void SetColor(const SDL_Color& color);
+        [[nodiscard]] Utils::Color GetColor();
+        void SetColor(const Utils::Color& color);
 
         [[nodiscard]] Font* GetFont() const { return m_uFont.get(); }
         void SetFont(std::shared_ptr<Font> font);
@@ -48,7 +49,7 @@ namespace bae
 
         bool m_bNeedsUpdate{ true };
         std::string m_Text;
-        SDL_Color m_Color;
+        Utils::Color m_Color;
     };
 }
 

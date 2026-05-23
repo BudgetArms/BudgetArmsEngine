@@ -11,7 +11,7 @@
 using namespace bae;
 
 
-Text2D::Text2D(const std::string& text, std::shared_ptr<Font> font, const SDL_Color& color) :
+Text2D::Text2D(const std::string& text, std::shared_ptr<Font> font, const Utils::Color& color) :
     m_Text{ text },
     m_Color{ color }
 {
@@ -28,7 +28,8 @@ void Text2D::Update()
 {
     if(m_bNeedsUpdate)
     {
-        const auto surface = TTF_RenderText_Blended(m_uFont->GetFont(), m_Text.c_str(), m_Text.length(), m_Color);
+        const auto surface = TTF_RenderText_Blended(m_uFont->GetFont(), m_Text.c_str(), m_Text.length(),
+                                                    m_Color.GetSDLColor());
         if(!surface)
         {
             throw std::runtime_error(
@@ -76,7 +77,7 @@ void Text2D::SetText(const std::string& text)
 }
 
 
-SDL_Color Text2D::GetColor()
+Utils::Color Text2D::GetColor()
 {
     if(m_bNeedsUpdate)
     {
@@ -86,7 +87,7 @@ SDL_Color Text2D::GetColor()
     return m_Color;
 }
 
-void Text2D::SetColor(const SDL_Color& color)
+void Text2D::SetColor(const Utils::Color& color)
 {
     m_Color        = color;
     m_bNeedsUpdate = true;
@@ -98,5 +99,4 @@ void Text2D::SetFont(std::shared_ptr<Font> font)
     m_uFont        = std::move(font);
     m_bNeedsUpdate = true;
 }
-
 
