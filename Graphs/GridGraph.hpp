@@ -43,6 +43,9 @@ namespace bae::Graphs
         void AddConnectionsToAdjacentCells(GridPosition position);
         void AddConnectionsToAdjacentCells(int idx);
 
+        void AddConnectionsInDirections(int idx, GridPosition position, const std::vector<glm::vec2>& directions);
+        void RemoveConnectionsInDirections(int idx, GridPosition position, const std::vector<glm::vec2>& directions);
+
 
         [[nodiscard]] int GetRows() const { return m_NrOfRows; }
         [[nodiscard]] int GetColumns() const { return m_NrOfColumns; }
@@ -77,7 +80,6 @@ namespace bae::Graphs
 
     private:
         void InitializeGrid();
-        void AddConnectionsInDirections(int idx, GridPosition position, const std::vector<glm::vec2>& directions);
 
         [[nodiscard]] virtual float CalculateConnectionCost(int fromIdx, int toIdx) const;
 

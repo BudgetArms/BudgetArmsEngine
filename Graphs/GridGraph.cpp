@@ -114,6 +114,51 @@ void GridGraph::AddConnectionsToAdjacentCells(const int idx)
 }
 
 
+void GridGraph::AddConnectionsInDirections(const int idx, const GridPosition position,
+                                           const std::vector<glm::vec2>& directions)
+{
+    for(const glm::vec2& direction : directions)
+    {
+        const int neighborColumn = position.Column + static_cast<int>(direction.x);
+        const int neighborRow    = position.Row + static_cast<int>(direction.y);
+
+        if(IsWithinBounds(GridPosition{ neighborColumn, neighborRow }))
+        {
+            const int neighborIdx      = neighborRow * m_NrOfColumns + neighborColumn;
+            const float connectionCost = CalculateConnectionCost(idx, neighborIdx);
+
+            // Extra check for different terrain types
+            if(!ConnectionExists(idx, neighborIdx) && connectionCost < m_MaximumConnectionCost)
+            {
+                AddConnection(std::make_unique<GraphConnection>(idx, neighborIdx, connectionCost));
+            }
+        }
+    }
+}
+
+void GridGraph::RemoveConnectionsInDirections(const int idx, const GridPosition position,
+                                              const std::vector<glm::vec2>& directions)
+{
+    for(const glm::vec2& direction : directions)
+    {
+        const int neighborColumn = position.Column + static_cast<int>(direction.x);
+        const int neighborRow    = position.Row + static_cast<int>(direction.y);
+
+        if(IsWithinBounds(GridPosition{ neighborColumn, neighborRow }))
+        {
+            const int neighborIdx = neighborRow * m_NrOfColumns + neighborColumn;
+
+            if(!ConnectionExists(idx, neighborIdx))
+            {
+                continue;
+            }
+
+            RemoveConnection(idx, neighborIdx);
+        }
+    }
+}
+
+
 glm::vec2 GridGraph::GetPosition(const GridPosition position) const
 {
     const glm::vec2 cellCenterOffset =
@@ -129,7 +174,6 @@ glm::vec2 GridGraph::GetPosition(const GridPosition position) const
 
     return m_Position + cellPosition + cellCenterOffset;
 }
-
 
 int GridGraph::GetNodeId(const GridPosition position) const
 {
@@ -181,6 +225,7 @@ GridPosition GridGraph::GetGridPosition(const int idx) const
     };
 }
 
+
 GridPosition GridGraph::GetGridPosition(const glm::vec2& position) const
 {
     return GridPosition
@@ -189,7 +234,6 @@ GridPosition GridGraph::GetGridPosition(const glm::vec2& position) const
         .Row    = static_cast<int>((position.y - m_Position.y) / static_cast<float>(m_CellSize.y))
     };
 }
-
 
 void GridGraph::InitializeGrid()
 {
@@ -209,28 +253,6 @@ void GridGraph::InitializeGrid()
         for(int column = 0; column < m_NrOfColumns; ++column)
         {
             AddConnectionsToAdjacentCells(GridPosition{ column, row });
-        }
-    }
-}
-
-void GridGraph::AddConnectionsInDirections(int idx, const GridPosition position,
-                                           const std::vector<glm::vec2>& directions)
-{
-    for(const glm::vec2& direction : directions)
-    {
-        const int neighborColumn = position.Column + static_cast<int>(direction.x);
-        const int neighborRow    = position.Row + static_cast<int>(direction.y);
-
-        if(IsWithinBounds(GridPosition{ neighborColumn, neighborRow }))
-        {
-            const int neighborIdx      = neighborRow * m_NrOfColumns + neighborColumn;
-            const float connectionCost = CalculateConnectionCost(idx, neighborIdx);
-
-            // Extra check for different terrain types
-            if(!Graph::ConnectionExists(idx, neighborIdx) && connectionCost < m_MaximumConnectionCost)
-            {
-                AddConnection(std::make_unique<GraphConnection>(idx, neighborIdx, connectionCost));
-            }
         }
     }
 }
