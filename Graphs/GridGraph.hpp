@@ -60,7 +60,10 @@ namespace bae::Graphs
         [[nodiscard]] GraphNode* GetNodeAtPosition(const glm::vec2& pos) const override;
 
         [[nodiscard]] glm::vec2 GetNodePos(int nodeId) const override;
+
         [[nodiscard]] GridPosition GetGridPosition(int idx) const;
+        // Can return GridPosition outside grid
+        [[nodiscard]] GridPosition GetGridPosition(const glm::vec2& position) const;
 
 
         bool m_bRenderNodes{ false };
@@ -89,7 +92,7 @@ namespace bae::Graphs
         const std::vector<glm::vec2> m_DiagonalDirections = { { 1, 1 }, { -1, 1 }, { -1, -1 }, { 1, -1 } };
 
         const float m_MaximumConnectionCost{ 100000.f };
-        glm::vec2 m_Position;
+        const glm::vec2 m_Position;
 
         std::unique_ptr<ConnectionCostCalculator> m_uCostCalculator;
     };

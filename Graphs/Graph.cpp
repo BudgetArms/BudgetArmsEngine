@@ -155,6 +155,11 @@ void Graph::RemoveNode(const int nodeId)
 
 bool Graph::IsNodeValid(const int nodeId) const
 {
+    if(nodeId == InvalidNodeID)
+    {
+        return false;
+    }
+
     return static_cast<size_t>(nodeId) < m_uNodes.size() && m_uNodes[nodeId] != nullptr;
 }
 
@@ -397,12 +402,10 @@ void Graph::UpdateActiveNodes()
 #pragma region Protected
 
 
-void Graph::OnGraphModified(const bool nrOfNodesChanged, const bool nrOfConnectionsChanged)
+// TODO: fix or add logic
+// void Graph::OnGraphModified(const bool nrOfNodesChanged, const bool nrOfConnectionsChanged)
+void Graph::OnGraphModified(const bool, const bool)
 {
-    // TODO: fix unused var
-    std::cout << nrOfNodesChanged << nrOfConnectionsChanged << '\n';
-    // nrOfConnectionsChanged;
-    // nrOfNodesChanged;
 }
 
 void Graph::AddNodeAtIndex(std::unique_ptr<GraphNode> uNode)

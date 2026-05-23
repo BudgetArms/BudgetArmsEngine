@@ -143,8 +143,6 @@ GraphNode* GridGraph::GetNode(const GridPosition position) const
 
 int GridGraph::GetNodeIdAtPosition(const glm::vec2& pos) const
 {
-    constexpr int idx = InvalidNodeID;
-
     if(pos.x < 0 || pos.y < 0)
     {
         return InvalidNodeID;
@@ -158,7 +156,7 @@ int GridGraph::GetNodeIdAtPosition(const glm::vec2& pos) const
 
     if(!IsWithinBounds(gridPosition))
     {
-        return idx;
+        return InvalidNodeID;
     }
 
     return GetNodeId(gridPosition);
@@ -180,6 +178,15 @@ GridPosition GridGraph::GetGridPosition(const int idx) const
     {
         .Column = idx % m_NrOfColumns,
         .Row    = idx / m_NrOfColumns
+    };
+}
+
+GridPosition GridGraph::GetGridPosition(const glm::vec2& position) const
+{
+    return GridPosition
+    {
+        .Column = static_cast<int>((position.x - m_Position.x) / static_cast<float>(m_CellSize.x)),
+        .Row    = static_cast<int>((position.y - m_Position.y) / static_cast<float>(m_CellSize.y))
     };
 }
 
