@@ -22,7 +22,9 @@ namespace bae::Graphs
     public:
         GridGraph(
             const glm::vec2& position,
-            int nrColumns, int nrRows, const glm::ivec2& cellSize, bool bIsDirectionalGraph,
+            int nrColumns, int nrRows,
+            const glm::ivec2& cellSize,
+            bool bIsDirectionalGraph,
             bool bIsConnectedDiagonally,
             float costStraight                                        = 1.f,
             float costDiagonal                                        = 1.5,
