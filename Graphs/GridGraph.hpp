@@ -3,14 +3,12 @@
 #include <glm/glm.hpp>
 
 #include "Core/Utils.hpp"
-#include "Graphs/ConnectionCostCalculator.hpp"
 #include "Graphs/Graph.hpp"
+#include "Graphs/NodeFactory.hpp"
 
 
 namespace bae::Graphs
 {
-    class GraphNode;
-
     struct GridPosition
     {
         int Column;
@@ -26,10 +24,7 @@ namespace bae::Graphs
             const glm::ivec2& cellSize,
             bool bIsDirectionalGraph,
             bool bIsConnectedDiagonally,
-            float costStraight                                        = 1.f,
-            float costDiagonal                                        = 1.5,
-            GraphNodeFactory* factory                                 = nullptr,
-            std::unique_ptr<ConnectionCostCalculator> uCostCalculator = nullptr
+            std::unique_ptr<NodeFactory> factory
         );
 
         ~GridGraph() override = default;
@@ -41,10 +36,10 @@ namespace bae::Graphs
         [[nodiscard]] bool IsWithinBounds(GridPosition position) const;
 
         void AddConnectionsToAdjacentCells(GridPosition position);
-        void AddConnectionsToAdjacentCells(int idx);
+        void AddConnectionsToAdjacentCells(int nodeId);
 
-        void AddConnectionsInDirections(int idx, GridPosition position, const std::vector<glm::vec2>& directions);
-        void RemoveConnectionsInDirections(int idx, GridPosition position, const std::vector<glm::vec2>& directions);
+        void AddConnectionsInDirections(int nodeId, GridPosition position, const std::vector<glm::vec2>& directions);
+        void RemoveConnectionsInDirections(int nodeId, GridPosition position, const std::vector<glm::vec2>& directions);
 
 
         [[nodiscard]] int GetRows() const { return m_NrOfRows; }
@@ -57,20 +52,19 @@ namespace bae::Graphs
         [[nodiscard]] int GetNodeId(GridPosition position) const;
 
 
-        // Function overloading
-        using Graph::GetNode;
-        [[nodiscard]] GraphNode* GetNode(GridPosition position) const;
+        [[nodiscard]] Node* GetNode(GridPosition position) const;
 
-        [[nodiscard]] int GetNodeIdAtPosition(const glm::vec2& pos) const override;
-        [[nodiscard]] GraphNode* GetNodeAtPosition(const glm::vec2& pos) const override;
+        [[nodiscard]] int GetNodeIdAtPosition(const glm::vec2& pos) const;
+        [[nodiscard]] Node* GetNodeAtPosition(const glm::vec2& pos) const;
 
-        [[nodiscard]] glm::vec2 GetNodePos(int nodeId) const override;
+        [[nodiscard]] glm::vec2 GetNodePos(int nodeId) const;
 
-        [[nodiscard]] GridPosition GetGridPosition(int idx) const;
+        [[nodiscard]] GridPosition GetGridPosition(int nodeId) const;
         // Can return GridPosition outside grid
         [[nodiscard]] GridPosition GetGridPosition(const glm::vec2& position) const;
 
 
+        bool m_bRenderCells{ false };
         bool m_bRenderNodes{ false };
         bool m_bRenderConnections{ false };
 
@@ -81,16 +75,14 @@ namespace bae::Graphs
     private:
         void InitializeGrid();
 
-        [[nodiscard]] virtual float CalculateConnectionCost(int fromIdx, int toIdx) const;
-
 
         int m_NrOfColumns;
         int m_NrOfRows;
         glm::ivec2 m_CellSize;
 
         bool m_IsConnectedDiagonally;
-        float m_DefaultCostStraight;
-        float m_DefaultCostDiagonal;
+        float m_DefaultCostStraight{ 1.f };
+        float m_DefaultCostDiagonal{ 1.414f };
 
         const std::vector<glm::vec2> m_StraightDirections = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
         const std::vector<glm::vec2> m_DiagonalDirections = { { 1, 1 }, { -1, 1 }, { -1, -1 }, { 1, -1 } };
@@ -98,7 +90,11 @@ namespace bae::Graphs
         const float m_MaximumConnectionCost{ 100000.f };
         const glm::vec2 m_Position;
 
-        std::unique_ptr<ConnectionCostCalculator> m_uCostCalculator;
+    protected:
+        [[nodiscard]] std::unique_ptr<Node> CreateNode(const glm::vec2& position) const;
+
+
+        std::unique_ptr<NodeFactory> m_NodeFactory;
     };
 }
 

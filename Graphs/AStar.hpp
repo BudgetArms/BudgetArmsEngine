@@ -3,48 +3,50 @@
 #include <vector>
 
 #include "Graphs/Heuristic.hpp"
+#include "Graphs/HeuristicFunctions.hpp"
 
 
 namespace bae::Graphs
 {
     class Graph;
-    class GraphNode;
-    class GraphConnection;
+    class Node;
+    class Connection;
 
     class AStar
     {
     public:
-        AStar(Graph* pGraph, Heuristic hFunction);
+        AStar(Graph* graph, Heuristic hFunction);
 
         // stores the optimal connection to a node and its total costs related to the start and end node of the path
         struct NodeRecord final
         {
-            GraphNode* pNode             = nullptr;
-            GraphConnection* pConnection = nullptr;
-            float costSoFar              = 0.f; // accumulated g-costs of all the connections leading up to this one
-            float estimatedTotalCost     = 0.f; // f-cost (= costSoFar + h-cost)
+            Node* CurrentNode             = nullptr;
+            Connection* CurrentConnection = nullptr;
+            float CostSoFar               = 0.f; // accumulated g-costs of all the connections leading up to this one
+            float EstimatedTotalCost      = 0.f; // f-cost (= costSoFar + h-cost)
 
             bool operator==(const NodeRecord& other) const
             {
-                return pNode == other.pNode
-                        && pConnection == other.pConnection
-                        && costSoFar == other.costSoFar
-                        && estimatedTotalCost == other.estimatedTotalCost;
+                return CurrentNode == other.CurrentNode
+                        && CurrentConnection == other.CurrentConnection
+                        && CostSoFar == other.CostSoFar
+                        && EstimatedTotalCost == other.EstimatedTotalCost;
             }
 
             bool operator<(const NodeRecord& other) const
             {
-                return estimatedTotalCost < other.estimatedTotalCost;
+                return EstimatedTotalCost < other.EstimatedTotalCost;
             }
         };
 
-        [[nodiscard]] std::vector<GraphNode*> FindPath(GraphNode* pStartNode, const GraphNode* pDestinationNode) const;
+
+        [[nodiscard]] std::vector<Node*> FindPath(Node* startNode, const Node* destinationNode) const;
 
     private:
-        [[nodiscard]] float GetHeuristicCost(const GraphNode* pStartNode, const GraphNode* pEndNode) const;
+        [[nodiscard]] float GetHeuristicCost(const Node* pStartNode, const Node* pEndNode) const;
 
 
-        Graph* m_pGraph;
+        Graph* m_Graph;
         Heuristic m_HeuristicFunction;
     };
 }

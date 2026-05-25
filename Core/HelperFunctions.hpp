@@ -3,6 +3,9 @@
 #include <ctime>
 #include <string_view>
 
+#include "Graphs/Node.hpp"
+
+
 #define FUNCTION_NAME __FUNCTION__
 
 namespace bae
@@ -31,6 +34,27 @@ namespace bae
         }
 
         return HashSDBM(stringView.substr(1), hash * 65599u + static_cast<unsigned char>(stringView[0]));
+    }
+
+    namespace Graphs
+    {
+        constexpr std::vector<glm::vec2> ConvertNodesToPositions(const std::vector<Node*>& pathNodes)
+        {
+            std::vector<glm::vec2> pathPositions;
+            pathPositions.reserve(pathNodes.size());
+
+            for(const Node* node : pathNodes)
+            {
+                if(!node || !node->IsValid())
+                {
+                    return pathPositions;
+                }
+
+                pathPositions.push_back(node->m_Position);
+            }
+
+            return pathPositions;
+        }
     }
 }
 

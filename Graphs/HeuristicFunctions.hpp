@@ -15,6 +15,7 @@ namespace bae::Graphs::HeuristicFunctions
 {
     #pragma warning(push)
     #pragma warning(disable : 4505)
+
     // Manhattan distance
     static float Manhattan(float x, float y)
     {
@@ -24,13 +25,13 @@ namespace bae::Graphs::HeuristicFunctions
     // Euclidean distance
     static float Euclidean(float x, float y)
     {
-        return static_cast<float>(std::sqrtf(x * x + y * y));
+        return std::sqrtf(x * x + y * y);
     }
 
     // Sqrt Euclidean distance
     static float SqEuclidean(float x, float y)
     {
-        return static_cast<float>(x * x + y * y);
+        return x * x + y * y;
     }
 
     // Octile distance

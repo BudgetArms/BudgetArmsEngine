@@ -3,104 +3,80 @@
 #include <memory>
 #include <vector>
 
-#include "Graphs/GraphNode.hpp"
-#include "Graphs/GraphNodeFactory.hpp"
+#include "Graphs/Connection.hpp"
+#include "Graphs/Node.hpp"
 
 
 namespace bae::Graphs
 {
-    class GraphConnection;
-
     class Graph
     {
     public:
-        explicit Graph(bool isDirectional, GraphNodeFactory* pNodeFactory = nullptr);
-        Graph(const Graph& other);
-        virtual ~Graph();
+        explicit Graph(bool isDirectional);
+        explicit Graph(const Graph& other);
+        virtual ~Graph() = default;
 
 
-        void Clear();
-        [[nodiscard]] std::shared_ptr<Graph> Clone() const;
+        // Nodes
+        [[nodiscard]] const std::vector<std::unique_ptr<Node>>& GetNodes() const;
+        [[nodiscard]] std::vector<std::unique_ptr<Node>>& GetNodes();
+        [[nodiscard]] std::vector<const Node*> GetActiveNodes() const;
+        [[nodiscard]] std::vector<Node*> GetActiveNodes();
+        [[nodiscard]] int GetNodeCount() const;
 
-        [[nodiscard]] bool IsDirectional() const { return m_bIsDirectional; }
-        [[nodiscard]] int GetNextNodeId() const { return m_NextNodeId; }
-        [[nodiscard]] int GetAmountOfConnections() const { return m_AmountConnections; }
-        [[nodiscard]] int GetAmountOfNodes() const { return m_AmountNodes; }
-
-        //Nodes
-        int AddNode(std::unique_ptr<GraphNode> pNode);
-        void RemoveNode(int nodeId);
-
-        [[nodiscard]] bool IsNodeValid(int nodeId) const;
-        [[nodiscard]] GraphNode* GetNode(int nodeId) const;
-        std::unique_ptr<GraphNode> GetNodeRef(int nodeId);
-        [[nodiscard]] const std::vector<GraphNode*>& GetAllNodes() const { return m_pActiveNodes; }
+        const std::unique_ptr<Node>& GetNode(int nodeId) const;
+        std::unique_ptr<Node>& GetNode(int nodeId);
 
 
-        //Connections
-        void AddConnection(std::unique_ptr<GraphConnection> pConnection);
-        void RemoveConnection(int fromNodeId, int toNodeId);
-        void RemoveConnection(const std::unique_ptr<GraphConnection>& uConnection);
-        void RemoveAllConnectionsWithNode(int nodeId);
-
-        [[nodiscard]] GraphConnection* GetConnection(int fromNodeId, int toNodeId) const;
-        std::unique_ptr<GraphConnection> GetConnectionRef(int fromNodeId, int toNodeId);
-        [[nodiscard]] const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(int nodeId) const;
-
-        const std::vector<std::unique_ptr<GraphConnection>>& GetConnectionsFromNode(const GraphNode* const pNode) const
+        template<typename T>
+        T const* GetNodeAs(const int nodeId) const
         {
-            return GetConnectionsFromNode(pNode->GetId());
+            return static_cast<T const*>(m_Nodes[nodeId].get());
         }
 
-        void SetConnectionCostsToDistances() const;
-
-        //Query nodes and connections
-        [[nodiscard]] int GetNodeIdAtPosition(const glm::vec2& position, float errorMargin = 1.f) const;
-        [[nodiscard]] GraphNode* GetNodeAtPosition(const glm::vec2& position, float errorMargin) const;
-
-        [[nodiscard]] bool ConnectionExists(const int fromNodeId, const int toNodeId) const
+        template<typename T>
+        T* GetNodeAs(const int nodeId)
         {
-            return GetConnection(fromNodeId, toNodeId) != nullptr;
+            return static_cast<T*>(m_Nodes[nodeId].get());
         }
 
-        [[nodiscard]] virtual glm::vec2 GetNodePos(int nodeId) const;
-
-        [[nodiscard]] virtual int GetNodeIdAtPosition(const glm::vec2& position) const
-        {
-            return GetNodeIdAtPosition(position, 1.0f);
-        }
-
-        [[nodiscard]] virtual GraphNode* GetNodeAtPosition(const glm::vec2& position) const
-        {
-            return GetNodeAtPosition(position, 1.0f);
-        }
-
-    private:
-        void UpdateNextNodeIndex();
-        void UpdateActiveNodes();
+        // Return Type: (new) NodeId of the Node
+        // NodeID of node will be changed
+        int AddNode(std::unique_ptr<Node> node);
+        bool RemoveNode(int nodeId);
 
 
-        int m_AmountNodes{ 0 };
-        int m_AmountConnections{ 0 };
+        // Connections
+        const std::vector<std::unique_ptr<Connection>>& GetConnections() const;
+        std::vector<std::unique_ptr<Connection>>& GetConnections();
 
-        const float m_DefaultNodeRadius{ 3.f };
+        [[nodiscard]] Connection* FindConnection(int fromNodeId, int toNodeId);
+        [[nodiscard]] std::vector<Connection*> FindConnectionsFrom(int nodeId) const;
+        [[nodiscard]] std::vector<Connection*> FindConnectionsTo(int nodeId) const;
+        [[nodiscard]] std::vector<Connection*> FindConnectionsWith(int nodeId) const;
+
+        void AddConnection(std::unique_ptr<Connection> connection);
+        void AddConnection(int fromNodeId, int toNodeId);
+
+        bool RemoveConnection(Connection* connection);
+        bool RemoveConnection(int fromNodeId, int toNodeId);
+
+        bool RemoveConnectionsFrom(int nodeId);
+        bool RemoveConnectionsTo(int nodeId);
+
+
+        // Graph
+        [[nodiscard]] bool GetIsDirectional() const;
+        [[nodiscard]] Graph Clone() const;
 
     protected:
-        virtual void OnGraphModified(bool nrOfNodesChanged, bool nrOfConnectionsChanged);
-        void AddNodeAtIndex(std::unique_ptr<GraphNode> uNode);
-
-        [[nodiscard]] std::unique_ptr<GraphNode> CreateNode(const glm::vec2& pos) const;
-        [[nodiscard]] std::unique_ptr<GraphNode> CloneNode(const GraphNode& other) const;
+        std::optional<int> GetFirstInvalidNodeId() const;
 
 
         bool m_bIsDirectional;
-        int m_NextNodeId{ 0 };
 
-        std::vector<std::unique_ptr<GraphNode>> m_uNodes{};
-        std::vector<std::vector<std::unique_ptr<GraphConnection>>> m_uConnections{};
-
-        std::vector<GraphNode*> m_pActiveNodes;
-        std::shared_ptr<GraphNodeFactory> m_sNodeFactory;
+        std::vector<std::unique_ptr<Node>> m_Nodes{};
+        std::vector<std::unique_ptr<Connection>> m_Connections{};
     };
 }
 
