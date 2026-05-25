@@ -126,7 +126,7 @@ int Graph::AddNode(std::unique_ptr<Node> node)
 
 bool Graph::RemoveNode(const int nodeId)
 {
-    if(nodeId == InvalidNodeID || nodeId < 0 || nodeId >= m_Nodes.size())
+    if(nodeId == InvalidNodeID || nodeId < 0 || static_cast<size_t>(nodeId) >= m_Nodes.size())
     {
         return false;
     }

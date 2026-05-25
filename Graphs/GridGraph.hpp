@@ -81,13 +81,10 @@ namespace bae::Graphs
         glm::ivec2 m_CellSize;
 
         bool m_IsConnectedDiagonally;
-        float m_DefaultCostStraight{ 1.f };
-        float m_DefaultCostDiagonal{ 1.414f };
 
         const std::vector<glm::vec2> m_StraightDirections = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
         const std::vector<glm::vec2> m_DiagonalDirections = { { 1, 1 }, { -1, 1 }, { -1, -1 }, { 1, -1 } };
 
-        const float m_MaximumConnectionCost{ 100000.f };
         const glm::vec2 m_Position;
 
     protected:
