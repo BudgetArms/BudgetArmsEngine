@@ -44,7 +44,6 @@ add_library(${ENGINE_NAME} STATIC
     "Components/TextureComponent.cpp"
     "Components/TransformComponent.cpp"
 
-    "Graphs/ConnectionCostCalculator.hpp"
     "Graphs/Graph.cpp"
     "Graphs/GraphConnection.hpp"
     "Graphs/GraphEnums.hpp"
