@@ -88,6 +88,17 @@ std::unique_ptr<Node>& Graph::GetNode(const int nodeId)
 
 int Graph::AddNode(std::unique_ptr<Node> node)
 {
+    // Check if there's a valid node already in that position
+    const auto nodeWithSamePositionIt = std::ranges::find_if(m_Nodes, [&node](const auto& lambdaNode)
+    {
+        return lambdaNode->IsValid() && node->m_Position == lambdaNode->m_Position;
+    });
+
+    if(nodeWithSamePositionIt != m_Nodes.end())
+    {
+        return InvalidNodeID;
+    }
+
     // replace first invalid node with this node
     const std::optional<int> invalidNodeOpt = GetFirstInvalidNodeId();
     if(invalidNodeOpt.has_value())
@@ -311,7 +322,7 @@ std::optional<int> Graph::GetFirstInvalidNodeId() const
 {
     for(int idx{}; idx < static_cast<int>(m_Nodes.size()); ++idx)
     {
-        if(m_Nodes[idx]->m_Id == Graphs::InvalidNodeID)
+        if(m_Nodes[idx]->m_Id == InvalidNodeID)
         {
             return idx;
         }
