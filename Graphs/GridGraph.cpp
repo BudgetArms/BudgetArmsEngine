@@ -136,12 +136,15 @@ void GridGraph::AddConnectionsInDirections(const int nodeId, const GridPosition 
 {
     for(const glm::vec2& direction : directions)
     {
-        const int neighborColumn = position.Column + static_cast<int>(direction.x);
-        const int neighborRow    = position.Row + static_cast<int>(direction.y);
-
-        if(IsWithinBounds(GridPosition{ neighborColumn, neighborRow }))
+        const GridPosition neighborGridPos =
         {
-            const int neighborNodeId = neighborRow * m_NrOfColumns + neighborColumn;
+            position.Column + static_cast<int>(direction.x),
+            position.Row + static_cast<int>(direction.y)
+        };
+
+        if(IsWithinBounds(neighborGridPos))
+        {
+            const int neighborNodeId = GetNodeId(neighborGridPos);
             AddConnection(std::make_unique<Connection>(nodeId, neighborNodeId));
         }
     }
@@ -152,15 +155,18 @@ void GridGraph::RemoveConnectionsInDirections(const int nodeId, const GridPositi
 {
     for(const glm::vec2& direction : directions)
     {
-        const int neighborColumn = position.Column + static_cast<int>(direction.x);
-        const int neighborRow    = position.Row + static_cast<int>(direction.y);
+        const GridPosition neighborGridPos =
+        {
+            position.Column + static_cast<int>(direction.x),
+            position.Row + static_cast<int>(direction.y)
+        };
 
-        if(!IsWithinBounds(GridPosition{ neighborColumn, neighborRow }))
+        if(!IsWithinBounds(neighborGridPos))
         {
             continue;
         }
 
-        const int neighborNodeId = neighborRow * m_NrOfColumns + neighborColumn;
+        const int neighborNodeId = GetNodeId(neighborGridPos);
         if(!FindConnection(nodeId, neighborNodeId))
         {
             continue;
@@ -204,11 +210,7 @@ int GridGraph::GetNodeIdAtPosition(const glm::vec2& pos) const
         return InvalidNodeID;
     }
 
-    const GridPosition gridPosition
-    {
-        .Column = static_cast<int>((pos.x - m_Position.x) / static_cast<float>(m_CellSize.x)),
-        .Row    = static_cast<int>((pos.y - m_Position.y) / static_cast<float>(m_CellSize.y))
-    };
+    const GridPosition gridPosition = GetGridPosition(pos);
 
     if(!IsWithinBounds(gridPosition))
     {
@@ -242,8 +244,8 @@ GridPosition GridGraph::GetGridPosition(const glm::vec2& position) const
 {
     return GridPosition
     {
-        .Column = static_cast<int>((position.x - m_Position.x) / static_cast<float>(m_CellSize.x)),
-        .Row    = static_cast<int>((position.y - m_Position.y) / static_cast<float>(m_CellSize.y))
+        .Column = static_cast<int>(std::roundf((position.x - m_Position.x) / static_cast<float>(m_CellSize.x))),
+        .Row    = static_cast<int>(std::roundf((position.y - m_Position.y) / static_cast<float>(m_CellSize.y)))
     };
 }
 
