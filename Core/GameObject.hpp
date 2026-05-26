@@ -71,9 +71,9 @@ namespace bae
         void AddRotation(float addRotation) const;
         void AddScale(const glm::vec2& addScale) const;
 
-        constexpr void SetLocationDirty() const;
-        constexpr void SetRotationDirty() const;
-        constexpr void SetScaleDirty() const;
+        void SetLocationDirty() const;
+        void SetRotationDirty() const;
+        void SetScaleDirty() const;
 
 
         std::vector<std::unique_ptr<Component>>& GetComponents()

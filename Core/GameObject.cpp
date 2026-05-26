@@ -153,16 +153,9 @@ void GameObject::AttachChild(GameObject* child, const bool bFreezeLocation, cons
         child->SetLocalScale(child->GetWorldScale() / GetWorldScale());
     }
 
-
-    // Shouldn't make own location/rotation/scale dirty
-    // SetLocationDirty();
-    // SetRotationDirty();
-    // SetScaleDirty();
-
     child->SetLocationDirty();
     child->SetRotationDirty();
     child->SetScaleDirty();
-
 
     // this removes the child from the parent's children list
     if(child->m_Parent)
@@ -371,19 +364,34 @@ void GameObject::AddScale(const glm::vec2& addScale) const
 }
 
 
-constexpr void GameObject::SetLocationDirty() const
+void GameObject::SetLocationDirty() const
 {
     m_Transform->SetLocationDirty();
+
+    for(const GameObject* child : m_Children)
+    {
+        child->SetLocationDirty();
+    }
 }
 
-constexpr void GameObject::SetRotationDirty() const
+void GameObject::SetRotationDirty() const
 {
     m_Transform->SetRotationDirty();
+
+    for(const GameObject* child : m_Children)
+    {
+        child->SetRotationDirty();
+    }
 }
 
-constexpr void GameObject::SetScaleDirty() const
+void GameObject::SetScaleDirty() const
 {
     m_Transform->SetScaleDirty();
+
+    for(const GameObject* child : m_Children)
+    {
+        child->SetScaleDirty();
+    }
 }
 
 
