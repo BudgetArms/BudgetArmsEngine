@@ -62,9 +62,9 @@ void GridGraph::Render() const
 
     if(m_bRenderNodes)
     {
-        for(int row = 0; row < m_NrOfRows; ++row)
+        for(int row{}; row < m_NrOfRows; ++row)
         {
-            for(int column = 0; column < m_NrOfColumns; ++column)
+            for(int column{}; column < m_NrOfColumns; ++column)
             {
                 const GridPosition gridPosition{ column, row };
                 const Node* node = GetNode(gridPosition);
@@ -120,6 +120,10 @@ void GridGraph::AddConnectionsToAdjacentCells(const GridPosition position)
 void GridGraph::AddConnectionsToAdjacentCells(const int nodeId)
 {
     if(!IsWithinBounds(GetGridPosition(nodeId)))
+    {
+        return;
+    }
+
     const GridPosition position = GetGridPosition(nodeId);
 
     // Add connections in all directions, taking into account the dimensions of the grid
@@ -136,6 +140,10 @@ void GridGraph::AddConnectionsInDirections(const int nodeId, const GridPosition 
                                            const std::vector<glm::vec2>& directions)
 {
     if(!IsWithinBounds(GetGridPosition(nodeId)))
+    {
+        return;
+    }
+
     for(const glm::vec2& direction : directions)
     {
         const GridPosition neighborGridPos =
@@ -156,6 +164,10 @@ void GridGraph::RemoveConnectionsInDirections(const int nodeId, const GridPositi
                                               const std::vector<glm::vec2>& directions)
 {
     if(!IsWithinBounds(GetGridPosition(nodeId)))
+    {
+        return;
+    }
+
     for(const glm::vec2& direction : directions)
     {
         const GridPosition neighborGridPos =
@@ -257,9 +269,9 @@ void GridGraph::InitializeGrid()
     m_Nodes.resize(m_NrOfRows * m_NrOfColumns);
 
     // Create all nodes
-    for(int row = 0; row < m_NrOfRows; ++row)
+    for(int row{}; row < m_NrOfRows; ++row)
     {
-        for(int column = 0; column < m_NrOfColumns; ++column)
+        for(int column{}; column < m_NrOfColumns; ++column)
         {
             const int nodeId           = GetNodeId(GridPosition{ column, row });
             std::unique_ptr<Node> node = CreateNode(GetNodePos(nodeId));
@@ -270,9 +282,9 @@ void GridGraph::InitializeGrid()
     }
 
     // Create connections in each valid direction on each node
-    for(int row = 0; row < m_NrOfRows; ++row)
+    for(int row{}; row < m_NrOfRows; ++row)
     {
-        for(int column = 0; column < m_NrOfColumns; ++column)
+        for(int column{}; column < m_NrOfColumns; ++column)
         {
             AddConnectionsToAdjacentCells(GridPosition{ column, row });
         }

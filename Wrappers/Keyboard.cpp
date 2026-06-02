@@ -90,7 +90,7 @@ void Keyboard::Impl::ProcessInput()
     SDL_Event events[maxPeakedEvents];
     const int nrEvents = SDL_PeepEvents(events, maxPeakedEvents, SDL_PEEKEVENT, SDL_EVENT_FIRST, SDL_EVENT_LAST);
 
-    for(int i = 0; i < nrEvents; i++)
+    for(int i{}; i < nrEvents; i++)
     {
         const SDL_Event& event = events[i];
 
