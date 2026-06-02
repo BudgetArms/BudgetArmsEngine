@@ -20,15 +20,16 @@ endif()
 
 add_library(${ENGINE_NAME} STATIC
     "Core/BudgetEngine.cpp"
-    "Core/EventQueue.cpp"
     "Core/EventListener.hpp"
+    "Core/EventQueue.cpp"
     "Core/GameObject.cpp"
     "Core/HelperFunctions.hpp"
     "Core/Observer.hpp"
     "Core/Renderer.cpp"
     "Core/RingBuffer.hpp"
+    "Core/Scene.cpp"
     "Core/ServiceLocator.cpp"
-    "Core/Scene.cpp" "Core/Scene.hpp"
+    "Core/SpriteSheet.cpp"
     "Core/Subject.cpp"
     "Core/Text2D.cpp"
     "Core/Utils.cpp"
@@ -44,15 +45,15 @@ add_library(${ENGINE_NAME} STATIC
     "Components/TextureComponent.cpp"
     "Components/TransformComponent.cpp"
 
-    "Graphs/Graph.cpp"
+    "Graphs/AStar.cpp"
     "Graphs/Connection.cpp"
     "Graphs/Enums.hpp"
-    "Graphs/Node.cpp"
-    "Graphs/NodeFactory.hpp"
+    "Graphs/Graph.cpp"
     "Graphs/GridGraph.cpp"
-    "Graphs/AStar.cpp"
     "Graphs/HeuristicFunctions.hpp"
     "Graphs/Heuristic.hpp"
+    "Graphs/Node.cpp"
+    "Graphs/NodeFactory.hpp"
 
     "Managers/InputManager.cpp"
     "Managers/ResourceManager.cpp"
@@ -77,8 +78,8 @@ add_library(${ENGINE_NAME} STATIC
 
 if(NOT EMSCRIPTEN)
     target_sources(${ENGINE_NAME} PRIVATE
-        "Sounds/SdlAudioClip.cpp"
         "Sounds/MixerSoundSystem.cpp"
+        "Sounds/SdlAudioClip.cpp"
 
         "Wrappers/Audio.cpp"
         "Wrappers/AudioTrack.cpp"
