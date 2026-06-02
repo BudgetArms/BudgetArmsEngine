@@ -31,7 +31,7 @@ std::vector<Node*> AStar::FindPath(Node* const startNode, const Node* const dest
 
 
     std::list<NodeRecord> toBeCheckedNodeRecords{};
-    std::vector<NodeRecord> checkedNodeRecords{};
+    std::list<NodeRecord> checkedNodeRecords{};
     NodeRecord currentNodeRecord{};
 
     const NodeRecord startRecord
@@ -80,7 +80,7 @@ std::vector<Node*> AStar::FindPath(Node* const startNode, const Node* const dest
             {
                 // if an already existing connection to the same node is cheaper, skip this node
                 // else, remove the existing connection, since it's bad
-                if(foundCheckedRecordIt->CostSoFar < currentGCost)
+                if(foundCheckedRecordIt->CostSoFar <= currentGCost)
                 {
                     continue;
                 }
@@ -108,14 +108,12 @@ std::vector<Node*> AStar::FindPath(Node* const startNode, const Node* const dest
             const bool bIsNodeInToBeCheckedRecords = (foundToBeCheckedRecordIt != toBeCheckedNodeRecords.end());
             if(bIsNodeInToBeCheckedRecords)
             {
-                if(foundToBeCheckedRecordIt->CostSoFar < currentGCost)
+                if(foundToBeCheckedRecordIt->CostSoFar <= currentGCost)
                 {
                     continue;
                 }
-                else
-                {
-                    toBeCheckedNodeRecords.erase(foundToBeCheckedRecordIt);
-                }
+
+                toBeCheckedNodeRecords.remove(*foundToBeCheckedRecordIt);
             }
 
             NodeRecord connectionRecord
@@ -131,10 +129,10 @@ std::vector<Node*> AStar::FindPath(Node* const startNode, const Node* const dest
 
         if(currentNodeRecordIt == toBeCheckedNodeRecords.end())
         {
-            break;
+            return std::vector<Node*>{};
         }
 
-        toBeCheckedNodeRecords.erase(currentNodeRecordIt);
+        toBeCheckedNodeRecords.remove(*currentNodeRecordIt);
         checkedNodeRecords.push_back(currentNodeRecord);
     }
 
@@ -172,10 +170,7 @@ std::vector<Node*> AStar::FindPath(Node* const startNode, const Node* const dest
         const bool hasFoundPreviousRecord = previousNodeRecordIt != checkedNodeRecords.end();
         if(!hasFoundPreviousRecord)
         {
-            // TODO: Change back
-            path.push_back(startNode);
-            return path;
-            // return std::vector<Node*>{};
+            return std::vector<Node*>{};
         }
 
         currentNodeRecord = *previousNodeRecordIt;
@@ -194,5 +189,4 @@ float AStar::GetHeuristicCost(const Node* const pStartNode, const Node* const pE
 
     return m_HeuristicFunction(abs(toDestination.x), abs(toDestination.y));
 }
-
 
