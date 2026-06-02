@@ -13,6 +13,17 @@ namespace bae::Graphs
     {
         int Column;
         int Row;
+
+
+        bool operator==(const GridPosition& other) const
+        {
+            return std::tie(Column, Row) == std::tie(other.Column, other.Row);
+        }
+
+        bool operator<(const GridPosition& other) const
+        {
+            return std::tie(Column, Row) < std::tie(other.Column, other.Row);
+        }
     };
 
     class GridGraph : public Graph
