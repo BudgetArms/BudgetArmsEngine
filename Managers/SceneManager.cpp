@@ -11,6 +11,12 @@ void bae::SceneManager::Destroy()
 
 bae::Scene& bae::SceneManager::CreateScene(const std::string& name)
 {
+    // if scene already exists
+    if(Scene* scene = GetScene(name))
+    {
+        return *scene;
+    }
+
     const auto& scene = std::shared_ptr<Scene>(new Scene(name));
     m_Scenes.push_back(scene);
 
