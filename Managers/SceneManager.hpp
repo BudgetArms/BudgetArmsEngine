@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -16,11 +17,14 @@ namespace bae
     public:
         void Destroy();
 
-        Scene& CreateScene(const std::string& name);
+        Scene& CreateScene(const std::string& sceneName);
+        bool MarkSceneForDestruction(const std::string& sceneName);
+
+        [[nodiscard]] Scene* GetScene(const std::string& sceneName);
 
         void Update() const;
         void FixedUpdate() const;
-        void LateUpdate() const;
+        void LateUpdate();
         void Render() const;
         void RenderGUI() const;
 
@@ -28,7 +32,11 @@ namespace bae
         friend class Singleton;
         SceneManager() = default;
 
-        std::vector<std::shared_ptr<Scene>> m_Scenes;
+        void DestroyScene(const std::string& sceneName);
+
+
+        std::vector<std::shared_ptr<Scene>> m_Scenes{};
+        std::set<std::string> m_SceneNamesToBeDestroyed{};
     };
 }
 
