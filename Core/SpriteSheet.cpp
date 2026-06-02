@@ -10,8 +10,8 @@ using namespace bae;
 
 SpriteSheet::SpriteSheet(const std::filesystem::path& file, const SDL_FRect& srcRect, const int nrColumns,
                          const int nrSprites, const glm::ivec2& srcOffset) :
-    m_SrcOffset{ srcOffset },
     m_SrcRect{ srcRect },
+    m_SrcOffset{ srcOffset },
     m_NrSprites{ nrSprites },
     m_NrColumns{ nrColumns },
     m_NrRows{ static_cast<int>(std::ceil(static_cast<float>(m_NrSprites) / static_cast<float>(m_NrColumns))) }
