@@ -119,6 +119,7 @@ void GridGraph::AddConnectionsToAdjacentCells(const GridPosition position)
 
 void GridGraph::AddConnectionsToAdjacentCells(const int nodeId)
 {
+    if(!IsWithinBounds(GetGridPosition(nodeId)))
     const GridPosition position = GetGridPosition(nodeId);
 
     // Add connections in all directions, taking into account the dimensions of the grid
@@ -134,6 +135,7 @@ void GridGraph::AddConnectionsToAdjacentCells(const int nodeId)
 void GridGraph::AddConnectionsInDirections(const int nodeId, const GridPosition position,
                                            const std::vector<glm::vec2>& directions)
 {
+    if(!IsWithinBounds(GetGridPosition(nodeId)))
     for(const glm::vec2& direction : directions)
     {
         const GridPosition neighborGridPos =
@@ -153,6 +155,7 @@ void GridGraph::AddConnectionsInDirections(const int nodeId, const GridPosition 
 void GridGraph::RemoveConnectionsInDirections(const int nodeId, const GridPosition position,
                                               const std::vector<glm::vec2>& directions)
 {
+    if(!IsWithinBounds(GetGridPosition(nodeId)))
     for(const glm::vec2& direction : directions)
     {
         const GridPosition neighborGridPos =
