@@ -64,18 +64,13 @@ std::vector<Node*> AStar::FindPath(Node* const startNode, const Node* const dest
             const float currentGCost = currentNodeRecord.CostSoFar + currentConnection->m_Weight;
 
             // Check if NextNode has already been checked
-            const auto foundCheckedRecordIt = std::ranges::find_if(checkedNodeRecords,
-                                                                   [nextNode](const NodeRecord& checkedNodeRecord)
-                                                                   {
-                                                                       if(checkedNodeRecord.CurrentNode == nextNode)
-                                                                       {
-                                                                           return true;
-                                                                       }
+            const auto foundCheckedRecordIt =
+                    std::ranges::find_if(checkedNodeRecords, [nextNode](const NodeRecord& checkedNodeRecord)
+                    {
+                        return checkedNodeRecord.CurrentNode == nextNode;
+                    });
 
-                                                                       return false;
-                                                                   });
-
-            const bool hasNodeAlreadyBeenChecked = (foundCheckedRecordIt != checkedNodeRecords.end());
+            const bool hasNodeAlreadyBeenChecked = foundCheckedRecordIt != checkedNodeRecords.end();
             if(hasNodeAlreadyBeenChecked)
             {
                 // if an already existing connection to the same node is cheaper, skip this node
@@ -84,28 +79,19 @@ std::vector<Node*> AStar::FindPath(Node* const startNode, const Node* const dest
                 {
                     continue;
                 }
-                else
-                {
-                    checkedNodeRecords.erase(foundCheckedRecordIt);
-                }
+
+                checkedNodeRecords.remove(*foundCheckedRecordIt);
             }
 
 
             // Check if NextNode is in the toBeCheck list
-            const auto foundToBeCheckedRecordIt = std::ranges::find_if(toBeCheckedNodeRecords,
-                                                                       [nextNode](
-                                                                   const NodeRecord& toBeCheckedNodeRecord)
-                                                                       {
-                                                                           if(toBeCheckedNodeRecord.CurrentNode ==
-                                                                               nextNode)
-                                                                           {
-                                                                               return true;
-                                                                           }
+            const auto foundToBeCheckedRecordIt =
+                    std::ranges::find_if(toBeCheckedNodeRecords, [nextNode](const NodeRecord& toBeCheckedNodeRecord)
+                    {
+                        return toBeCheckedNodeRecord.CurrentNode == nextNode;
+                    });
 
-                                                                           return false;
-                                                                       });
-
-            const bool bIsNodeInToBeCheckedRecords = (foundToBeCheckedRecordIt != toBeCheckedNodeRecords.end());
+            const bool bIsNodeInToBeCheckedRecords = foundToBeCheckedRecordIt != toBeCheckedNodeRecords.end();
             if(bIsNodeInToBeCheckedRecords)
             {
                 if(foundToBeCheckedRecordIt->CostSoFar <= currentGCost)
@@ -155,17 +141,11 @@ std::vector<Node*> AStar::FindPath(Node* const startNode, const Node* const dest
         path.push_back(currentNodeRecord.CurrentNode);
 
         const int previousNodeId        = currentNodeRecord.CurrentConnection->GetFromNodeId();
-        const auto previousNodeRecordIt = std::ranges::find_if(checkedNodeRecords,
-                                                               [previousNodeId](const NodeRecord& CheckedNodeRecord)
-                                                               {
-                                                                   if(CheckedNodeRecord.CurrentNode->m_Id ==
-                                                                       previousNodeId)
-                                                                   {
-                                                                       return true;
-                                                                   }
-
-                                                                   return false;
-                                                               });
+        const auto previousNodeRecordIt =
+                std::ranges::find_if(checkedNodeRecords, [previousNodeId](const NodeRecord& CheckedNodeRecord)
+                {
+                    return CheckedNodeRecord.CurrentNode->m_Id == previousNodeId;
+                });
 
         const bool hasFoundPreviousRecord = previousNodeRecordIt != checkedNodeRecords.end();
         if(!hasFoundPreviousRecord)

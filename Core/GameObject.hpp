@@ -109,11 +109,10 @@ namespace bae
             }
 
 
-            auto it = std::ranges::find_if(m_Components,
-                                           [](const auto& component)
-                                           {
-                                               return dynamic_cast<ComponentType*>(component.get()) != nullptr;
-                                           });
+            auto it = std::ranges::find_if(m_Components, [](const auto& component)
+            {
+                return dynamic_cast<ComponentType*>(component.get()) != nullptr;
+            });
 
             m_Components.erase(it);
         }
@@ -125,22 +124,20 @@ namespace bae
         {
             // checks if any of them have the same type a component is the
             // components vector
-            return std::ranges::any_of(m_Components,
-                                       [](const auto& component)
-                                       {
-                                           return dynamic_cast<ComponentType*>(component.get()) != nullptr;
-                                       });
+            return std::ranges::any_of(m_Components, [](const auto& component)
+            {
+                return dynamic_cast<ComponentType*>(component.get()) != nullptr;
+            });
         }
 
         template<typename ComponentType, typename = std::enable_if_t<std::is_base_of_v<Component, ComponentType> &&
                      !std::is_same_v<Component, ComponentType>>>
         [[nodiscard]] ComponentType* GetComponent() const
         {
-            auto it = std::ranges::find_if(m_Components,
-                                           [](const auto& component)
-                                           {
-                                               return dynamic_cast<ComponentType*>(component.get()) != nullptr;
-                                           });
+            auto it = std::ranges::find_if(m_Components, [](const auto& component)
+            {
+                return dynamic_cast<ComponentType*>(component.get()) != nullptr;
+            });
 
             if(it == m_Components.end())
             {

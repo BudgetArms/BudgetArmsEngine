@@ -68,11 +68,11 @@ std::vector<Node*> Graph::GetActiveNodes()
 
 int Graph::GetNodeCount() const
 {
-    const auto nodeCount = std::ranges::count_if(m_Nodes,
-                                                 [](const auto& node)
-                                                 {
-                                                     return node->IsValid();
-                                                 });
+    const auto nodeCount = std::ranges::count_if(m_Nodes, [](const auto& node)
+    {
+        return node->IsValid();
+    });
+
     return static_cast<int>(nodeCount);
 }
 

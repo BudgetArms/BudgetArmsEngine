@@ -50,11 +50,10 @@ void Scene::LateUpdate()
         }
     }
 
-    std::erase_if(m_Objects,
-                  [](const std::shared_ptr<GameObject>& uObject)
-                  {
-                      return uObject->IsMarkedForDeletion();
-                  });
+    std::erase_if(m_Objects, [](const std::shared_ptr<GameObject>& uObject)
+    {
+        return uObject->IsMarkedForDeletion();
+    });
 
     for(auto sObject : m_ObjectsPendingAdd)
     {

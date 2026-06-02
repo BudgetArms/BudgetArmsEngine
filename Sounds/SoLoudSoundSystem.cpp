@@ -233,23 +233,21 @@ SoLoudSoundSystem::Impl::Impl()
 SoLoudSoundSystem::Impl::~Impl()
 {
     // Stop all Playing sounds
-    std::ranges::for_each(m_ActiveAudio,
-                          [&](auto& activeAudio)
-                          {
-                              const auto& [activeSoundID, soundHandle] = activeAudio;
-                              m_SoLoud->stop(soundHandle);
-                          });
+    std::ranges::for_each(m_ActiveAudio, [&](auto& activeAudio)
+    {
+        const auto& [activeSoundID, soundHandle] = activeAudio;
+        m_SoLoud->stop(soundHandle);
+    });
 
     m_ActiveAudio.clear();
 
 
     // Stop all loaded audio
-    std::ranges::for_each(m_LoadedAudio,
-                          [&](auto& loadedAudio)
-                          {
-                              SoLoud::Wav* wav = loadedAudio.second.get();
-                              wav->stop();
-                          });
+    std::ranges::for_each(m_LoadedAudio, [&](auto& loadedAudio)
+    {
+        SoLoud::Wav* wav = loadedAudio.second.get();
+        wav->stop();
+    });
 
     m_LoadedAudio.clear();
 
