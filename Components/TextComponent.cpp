@@ -24,7 +24,7 @@ TextComponent::TextComponent(GameObject& owner, const std::string& text, std::sh
 {
     if(!font)
     {
-        font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+        font = ResourceManager::GetInstance().LoadFont("Fonts/Lingua.otf", 36);
     }
 
     m_Font = std::move(font);
