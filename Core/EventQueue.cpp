@@ -27,23 +27,29 @@ void EventQueue::SendEvent(const unsigned int eventHash)
 
 void EventQueue::AddListener(EventListener* eventListener)
 {
-    if(std::ranges::find(m_Listeners, eventListener) != m_Listeners.end())
-    {
-        std::cout << "Listener Already Added!!!\n";
-        return;
-    }
-
-    m_Listeners.push_back(eventListener);
+    m_Listeners.insert(eventListener);
 }
 
 void EventQueue::RemoveListener(EventListener* eventListener)
 {
-    std::erase(m_Listeners, eventListener);
+    m_ListenersToAdd.insert(eventListener);
 }
 
 
 void EventQueue::ProcessEvents()
 {
+    for(auto& listenerToAdd : m_ListenersToAdd)
+    {
+        m_Listeners.insert(listenerToAdd);
+    }
+    m_ListenersToAdd.clear();
+
+    for(auto& listenerToRemove : m_ListenersToRemove)
+    {
+        m_Listeners.erase(listenerToRemove);
+    }
+    m_ListenersToRemove.clear();
+
     while(!m_Queue.IsEmpty())
     {
         unsigned int eventHash{ 0 };
@@ -59,11 +65,11 @@ void EventQueue::ProcessEvents()
 
 void EventQueue::ProcessEvent(const unsigned int eventHash) const
 {
-    for(EventListener* listener : m_Listeners)
+    for(EventListener* eventListener : m_Listeners)
     {
-        if(listener)
+        if(eventListener)
         {
-            listener->HandleEvent(eventHash);
+            eventListener->HandleEvent(eventHash);
         }
     }
 }

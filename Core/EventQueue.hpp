@@ -1,9 +1,6 @@
 ﻿#pragma once
 
-#include <array>
-#include <mutex>
-#include <optional>
-#include <vector>
+#include <set>
 
 #include "RingBuffer.hpp"
 #include "Singletons/Singleton.hpp"
@@ -33,7 +30,10 @@ namespace bae
         static constexpr size_t m_Capacity{ 64 };
         RingBuffer<unsigned int> m_Queue{ m_Capacity };
 
-        std::vector<EventListener*> m_Listeners{};
+        std::set<EventListener*> m_Listeners{};
+
+        std::set<EventListener*> m_ListenersToAdd{};
+        std::set<EventListener*> m_ListenersToRemove{};
     };
 }
 
