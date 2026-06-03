@@ -48,8 +48,8 @@ void bae::Renderer::Init(SDL_Window* window)
 
 void bae::Renderer::Render() const
 {
-    const SDL_Color& color = GetBackgroundColor();
-    SDL_SetRenderDrawColor(m_Renderer, color.r, color.g, color.b, color.a);
+    const SDL_Color& clearColor = m_ClearColor.GetSDLColor();
+    SDL_SetRenderDrawColor(m_Renderer, clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     SDL_RenderClear(m_Renderer);
 
     SceneManager::GetInstance().Render();

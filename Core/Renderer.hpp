@@ -37,8 +37,8 @@ namespace bae
         [[nodiscard]] SDL_Window* GetSDLWindow() const { return m_Window; }
         [[nodiscard]] WindowSize GetSDLWindowSize() const;
 
-        [[nodiscard]] const SDL_Color& GetBackgroundColor() const { return m_ClearColor; }
-        void SetBackgroundColor(const SDL_Color& color) { m_ClearColor = color; }
+        [[nodiscard]] const Utils::Color& GetBackgroundColor() const { return m_ClearColor; }
+        void SetBackgroundColor(const Utils::Color& color) { m_ClearColor = color; }
 
 
         bool m_bRenderPosition{ false };
@@ -51,7 +51,7 @@ namespace bae
     private:
         SDL_Renderer* m_Renderer{};
         SDL_Window* m_Window{};
-        SDL_Color m_ClearColor{};
+        Utils::Color m_ClearColor{ Utils::Color::Transparent };
     };
 }
 
