@@ -32,6 +32,10 @@ namespace bae
         void Add(std::shared_ptr<GameObject> object);
         void RemoveAll() const;
 
+        // This will crash your game if used incorrectly
+        void ForceRemoveAll();
+
+
         [[nodiscard]] std::string GetName() const { return m_Name; }
         std::vector<std::shared_ptr<GameObject>>& GetObjects() { return m_Objects; }
 
