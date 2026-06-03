@@ -13,7 +13,10 @@ namespace bae
             EventQueue::GetInstance().AddListener(this);
         }
 
-        virtual ~EventListener() = default;
+        virtual ~EventListener()
+        {
+            EventQueue::GetInstance().RemoveListener(this);
+        };
 
         EventListener(const EventListener&)            = delete;
         EventListener(EventListener&&)                 = delete;
