@@ -35,22 +35,22 @@ void bae::ResourceManager::Destroy()
 
 std::shared_ptr<bae::Texture2D> bae::ResourceManager::LoadTexture(const std::string& file)
 {
-    const auto fullPath = m_ResourcesPath / file;
-    const auto filename = fs::path(fullPath).filename().string();
+    const auto fullPath     = m_ResourcesPath / file;
+    const unsigned int hash = HashSDBM(fullPath.string());
 
-    if(!m_LoadedTextures.contains(filename))
+    if(!m_LoadedTextures.contains(hash))
     {
-        m_LoadedTextures.insert(std::pair(filename, std::make_shared<Texture2D>(fullPath.string())));
+        m_LoadedTextures.insert(std::pair(hash, std::make_shared<Texture2D>(fullPath.string())));
     }
 
-    return m_LoadedTextures.at(filename);
+    return m_LoadedTextures.at(hash);
 }
 
 std::shared_ptr<bae::Font> bae::ResourceManager::LoadFont(const std::string& file, uint8_t size)
 {
     const auto fullPath = m_ResourcesPath / file;
-    const auto filename = fs::path(fullPath).filename().string();
-    const auto key      = std::pair(filename, size);
+    const auto hashPath = HashSDBM(fullPath.string());
+    const auto key      = std::pair(hashPath, size);
 
     if(!m_LoadedFonts.contains(key))
     {

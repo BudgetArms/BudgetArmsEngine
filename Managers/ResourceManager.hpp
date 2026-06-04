@@ -33,8 +33,8 @@ namespace bae
 
         std::filesystem::path m_ResourcesPath;
 
-        std::map<std::string, std::shared_ptr<Texture2D>> m_LoadedTextures;
-        std::map<std::pair<std::string, uint8_t>, std::shared_ptr<Font>> m_LoadedFonts;
+        std::map<unsigned int, std::shared_ptr<Texture2D>> m_LoadedTextures;
+        std::map<std::pair<unsigned int, uint8_t>, std::shared_ptr<Font>> m_LoadedFonts;
     };
 }
 
