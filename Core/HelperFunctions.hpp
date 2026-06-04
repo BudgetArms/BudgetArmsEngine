@@ -26,7 +26,7 @@ namespace bae
 
     // This is the real original SDBM function
     // Not to be confused with the 'faster' version of the algorithm
-    consteval unsigned int HashSDBM(const std::string_view stringView, const unsigned int hash = 0)
+    constexpr unsigned int HashSDBM(const std::string_view stringView, const unsigned int hash = 0)
     {
         if(stringView.empty())
         {
