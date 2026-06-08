@@ -13,25 +13,26 @@ namespace bae
     class AchievementManager final : public Singleton<AchievementManager>, public Observer
     {
     public:
-
         void AddAchievement(std::unique_ptr<Achievement> achievement)
         {
             m_Achievements.emplace_back(std::move(achievement));
         }
 
 
-        void Notify(const unsigned int eventHash, Subject* subject) override
+        void Notify(const unsigned int eventHash, Subject* subject, const std::any&) override
         {
             for(const auto& achievement : m_Achievements)
             {
                 if(achievement)
+                {
                     achievement->TryUnlock(eventHash, subject);
+                }
             }
         }
 
     private:
         friend class Singleton;
-        AchievementManager() = default;
+        AchievementManager()           = default;
         ~AchievementManager() override = default;
 
         std::vector<std::unique_ptr<Achievement>> m_Achievements;

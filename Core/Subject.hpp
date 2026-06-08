@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <any>
 #include <vector>
 
 #include "Core/GameObject.hpp"
@@ -27,7 +28,7 @@ namespace bae
         std::vector<Observer*> m_Observers;
 
     protected:
-        void NotifyObservers(unsigned int eventHash);
+        void NotifyObservers(unsigned int eventHash, const std::any& eventData = {});
     };
 }
 

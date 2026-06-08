@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <any>
+
 
 namespace bae
 {
@@ -9,7 +11,7 @@ namespace bae
     {
     public:
         virtual ~Observer() = default;
-        virtual void Notify(unsigned int eventHash, Subject* subject) = 0;
+        virtual void Notify(unsigned int eventHash, Subject* subject, const std::any& eventData) = 0;
     };
 }
 
