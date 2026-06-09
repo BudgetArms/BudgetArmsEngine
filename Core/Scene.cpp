@@ -111,6 +111,11 @@ void Scene::RemoveAll() const
 
 void Scene::ForceRemoveAll()
 {
+    for(const auto& object : m_Objects)
+    {
+        object->Destroy();
+    }
+
     m_Objects.clear();
 }
 
