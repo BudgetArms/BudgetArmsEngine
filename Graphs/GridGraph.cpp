@@ -241,6 +241,53 @@ Node* GridGraph::GetNodeAtPosition(const glm::vec2& pos) const
     return GetNode(GetGridPosition(pos));
 }
 
+GridPosition GridGraph::GetClosestValidNodePosition(const GridPosition position) const
+{
+    if(IsWithinBounds(position))
+    {
+        const Node* node = GetNode(position);
+        if(node && node->IsValid())
+        {
+            return position;
+        }
+    }
+
+    const int maxRadius = std::max(m_NrOfColumns, m_NrOfRows);
+
+    for(int radius = 1; radius <= maxRadius; ++radius)
+    {
+        for(int radiusX = -radius; radiusX <= radius; ++radiusX)
+        {
+            for(int radiusY = -radius; radiusY <= radius; ++radiusY)
+            {
+                if(std::abs(radiusX) != radius && std::abs(radiusY) != radius)
+                {
+                    continue;
+                }
+
+                const GridPosition neighborPos{ position.Column + radiusX, position.Row + radiusY };
+                if(!IsWithinBounds(neighborPos))
+                {
+                    continue;
+                }
+
+                Node* node = GetNode(neighborPos);
+                if(node && node->IsValid())
+                {
+                    return neighborPos;
+                }
+            }
+        }
+    }
+
+    return GridPosition(-1, -1);
+}
+
+GridPosition GridGraph::GetClosestValidNodePositionAtPosition(const glm::vec2& pos) const
+{
+    return GetClosestValidNodePosition(GetGridPosition(pos));
+}
+
 glm::vec2 GridGraph::GetNodePos(const int nodeId) const
 {
     return GetPosition(GetGridPosition(nodeId));
