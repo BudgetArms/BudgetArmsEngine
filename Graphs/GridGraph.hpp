@@ -65,6 +65,7 @@ namespace bae::Graphs
 
         [[nodiscard]] Node* GetNode(GridPosition position) const;
 
+
         [[nodiscard]] int GetNodeIdAtPosition(const glm::vec2& pos) const;
         [[nodiscard]] Node* GetNodeAtPosition(const glm::vec2& pos) const;
 

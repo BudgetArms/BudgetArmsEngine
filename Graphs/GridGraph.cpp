@@ -4,9 +4,9 @@
 
 #include "Core/HelperFunctions.hpp"
 #include "Core/Utils.hpp"
-#include "Graphs/Graph.hpp"
 #include "Graphs/Connection.hpp"
 #include "Graphs/Enums.hpp"
+#include "Graphs/Graph.hpp"
 
 
 using namespace bae::Graphs;
@@ -194,18 +194,13 @@ void GridGraph::RemoveConnectionsInDirections(const int nodeId, const GridPositi
 
 glm::vec2 GridGraph::GetPosition(const GridPosition position) const
 {
-    const glm::vec2 cellCenterOffset =
-    {
-        static_cast<float>(m_CellSize.x) / 2.f,
-        static_cast<float>(m_CellSize.y) / 2.f
-    };
     const glm::vec2 cellPosition =
     {
         static_cast<float>(position.Column) * static_cast<float>(m_CellSize.x),
         static_cast<float>(position.Row) * static_cast<float>(m_CellSize.y)
     };
 
-    return m_Position + cellPosition + cellCenterOffset;
+    return m_Position + cellPosition;
 }
 
 int GridGraph::GetNodeId(const GridPosition position) const
@@ -265,8 +260,8 @@ GridPosition GridGraph::GetGridPosition(const glm::vec2& position) const
 {
     return GridPosition
     {
-        .Column = static_cast<int>(std::roundf((position.x - m_Position.x) / static_cast<float>(m_CellSize.x))),
-        .Row    = static_cast<int>(std::roundf((position.y - m_Position.y) / static_cast<float>(m_CellSize.y)))
+        .Column = static_cast<int>(std::floor((position.x - m_Position.x) / static_cast<float>(m_CellSize.x))),
+        .Row    = static_cast<int>(std::floor((position.y - m_Position.y) / static_cast<float>(m_CellSize.y)))
     };
 }
 
