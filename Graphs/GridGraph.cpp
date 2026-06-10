@@ -215,7 +215,13 @@ int GridGraph::GetNodeId(const GridPosition position) const
 
 Node* GridGraph::GetNode(const GridPosition position) const
 {
-    return Graph::GetNode(GetNodeId(position)).get();
+    const int nodeId = GetNodeId(position);
+    if(nodeId == InvalidNodeID)
+    {
+        return nullptr;
+    }
+
+    return Graph::GetNode(nodeId).get();
 }
 
 int GridGraph::GetNodeIdAtPosition(const glm::vec2& pos) const
