@@ -99,12 +99,8 @@ void GridGraph::Render() const
 
 bool GridGraph::IsWithinBounds(const GridPosition position) const
 {
-    if(position.Column < 0 || position.Row < 0)
-    {
-        return false;
-    }
-
-    if(position.Column >= m_NrOfColumns || position.Row >= m_NrOfRows)
+    if(position.Column < 0 || position.Row < 0 ||
+        position.Column >= m_NrOfColumns || position.Row >= m_NrOfRows)
     {
         return false;
     }
