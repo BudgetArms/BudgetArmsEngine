@@ -60,6 +60,10 @@ std::vector<Node*> AStar::FindPath(Node* const startNode, const Node* const dest
         {
             // Aka neighbor node
             Node* const nextNode = m_Graph->GetNode(currentConnection->GetToNodeId()).get();
+            if(!nextNode->IsValid())
+            {
+                return std::vector<Node*>{};
+            }
 
             const float currentGCost = currentNodeRecord.CostSoFar + currentConnection->m_Weight;
 
