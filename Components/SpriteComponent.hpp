@@ -31,6 +31,8 @@ namespace bae
         void PreviousSprite();
         void NextSprite();
 
+        void SetColumns(int nrColumns);
+        void SetSprites(int nrSprites);
 
         int m_Index{};
 
@@ -46,9 +48,9 @@ namespace bae
         SDL_FRect m_SrcRect;
         SDL_FRect m_DstRect;
 
-        const int m_NrSprites;
-        const int m_NrColumns;
-        const int m_NrRows;
+        int m_NrSprites;
+        int m_NrColumns;
+        int m_NrRows;
     };
 }
 

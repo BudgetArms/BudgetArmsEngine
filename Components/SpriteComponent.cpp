@@ -124,4 +124,26 @@ void SpriteComponent::NextSprite()
     m_Index %= m_NrSprites;
 }
 
+void SpriteComponent::SetColumns(const int nrColumns)
+{
+    if(nrColumns <= 0 || nrColumns == m_NrColumns)
+    {
+        return;
+    }
+
+    m_NrColumns = nrColumns;
+    m_NrRows    = static_cast<int>(std::ceil(static_cast<float>(m_NrSprites) / static_cast<float>(m_NrColumns)));
+}
+
+void SpriteComponent::SetSprites(int nrSprites)
+{
+    if(nrSprites <= 0 || nrSprites == m_NrSprites)
+    {
+        return;
+    }
+
+    m_NrSprites = nrSprites;
+    m_NrRows    = static_cast<int>(std::ceil(static_cast<float>(m_NrSprites) / static_cast<float>(m_NrColumns)));
+}
+
 
