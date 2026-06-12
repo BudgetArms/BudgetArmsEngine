@@ -1,6 +1,5 @@
 ﻿#include "EventQueue.hpp"
 
-#include <algorithm>
 #include <iostream>
 
 #include "Core/EventListener.hpp"
@@ -27,28 +26,46 @@ void EventQueue::SendEvent(const unsigned int eventHash)
 
 void EventQueue::AddListener(EventListener* eventListener)
 {
-    m_Listeners.insert(eventListener);
+    if(eventListener)
+    {
+        m_ListenersToAdd.insert(eventListener);
+    }
 }
 
 void EventQueue::RemoveListener(EventListener* eventListener)
 {
-    m_ListenersToRemove.insert(eventListener);
+    if(eventListener)
+    {
+        m_Listeners.erase(eventListener);
+        m_ListenersToAdd.erase(eventListener);
+        m_ListenersToRemove.erase(eventListener);
+    }
 }
 
 
 void EventQueue::ProcessEvents()
 {
+    std::cout << "ProcessEvents" << '\n';
+    for(auto& listenerToRemove : m_ListenersToRemove)
+    {
+        if(listenerToRemove)
+        {
+            std::cout << "Erased listener" << '\n';
+            m_Listeners.erase(listenerToRemove);
+        }
+    }
+    m_ListenersToRemove.clear();
+
     for(auto& listenerToAdd : m_ListenersToAdd)
     {
-        m_Listeners.insert(listenerToAdd);
+        std::cout << "Added listener" << '\n';
+        if(listenerToAdd)
+        {
+            m_Listeners.insert(listenerToAdd);
+        }
     }
     m_ListenersToAdd.clear();
 
-    for(auto& listenerToRemove : m_ListenersToRemove)
-    {
-        m_Listeners.erase(listenerToRemove);
-    }
-    m_ListenersToRemove.clear();
 
     while(!m_Queue.IsEmpty())
     {
@@ -65,11 +82,12 @@ void EventQueue::ProcessEvents()
 
 void EventQueue::ProcessEvent(const unsigned int eventHash) const
 {
-    for(EventListener* eventListener : m_Listeners)
+    const auto listeners = m_Listeners;
+    for(auto* listener : listeners)
     {
-        if(eventListener)
+        if(m_Listeners.contains(listener))
         {
-            eventListener->HandleEvent(eventHash);
+            listener->HandleEvent(eventHash);
         }
     }
 }
