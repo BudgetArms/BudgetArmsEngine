@@ -32,7 +32,7 @@ void EventQueue::AddListener(EventListener* eventListener)
 
 void EventQueue::RemoveListener(EventListener* eventListener)
 {
-    m_ListenersToAdd.insert(eventListener);
+    m_ListenersToRemove.insert(eventListener);
 }
 
 
