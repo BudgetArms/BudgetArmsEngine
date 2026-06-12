@@ -45,12 +45,10 @@ void EventQueue::RemoveListener(EventListener* eventListener)
 
 void EventQueue::ProcessEvents()
 {
-    std::cout << "ProcessEvents" << '\n';
     for(auto& listenerToRemove : m_ListenersToRemove)
     {
         if(listenerToRemove)
         {
-            std::cout << "Erased listener" << '\n';
             m_Listeners.erase(listenerToRemove);
         }
     }
@@ -58,7 +56,6 @@ void EventQueue::ProcessEvents()
 
     for(auto& listenerToAdd : m_ListenersToAdd)
     {
-        std::cout << "Added listener" << '\n';
         if(listenerToAdd)
         {
             m_Listeners.insert(listenerToAdd);
