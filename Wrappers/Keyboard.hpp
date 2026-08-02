@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <SDL3/SDL_events.h>
+
 #include "Commands/Command.hpp"
 #include "Managers/InputManager.hpp"
 
@@ -20,15 +22,17 @@ namespace bae
         Keyboard& operator=(Keyboard&&)      = delete;
 
 
-        void ProcessInput() const;
+        void BeginInput() const;
+        void ProcessEvent(const SDL_Event& event) const;
+        void ExecuteCommands() const;
         void ClearCommands() const;
 
-        void AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int button,
+        void AddKeyboardCommands(std::unique_ptr<Command> command, unsigned int key,
                                  InputManager::ButtonState activationState) const;
 
-        [[nodiscard]] bool IsButtonUp(unsigned int button) const;
-        [[nodiscard]] bool IsButtonDown(unsigned int button) const;
-        [[nodiscard]] bool IsButtonPressed(unsigned int button) const;
+        [[nodiscard]] bool IsKeyUp(unsigned int key) const;
+        [[nodiscard]] bool IsKeyDown(unsigned int key) const;
+        [[nodiscard]] bool IsKeyPressed(unsigned int key) const;
 
     private:
         // Pimple implementation

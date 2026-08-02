@@ -17,11 +17,10 @@ using namespace bae;
 
 bool InputManager::ProcessInput() const
 {
-    // uses SDL_PeekEvents, so not to consume events
-    m_Keyboard->ProcessInput();
     m_Mouse->ProcessInput();
 
-    // process Keyboard
+    m_Keyboard->BeginInput();
+
     SDL_Event e;
     while(SDL_PollEvent(&e))
     {
@@ -38,11 +37,14 @@ bool InputManager::ProcessInput() const
         }
         #endif
 
+        m_Keyboard->ProcessEvent(e);
 
         // Todo: remove ImGui
         //process event for IMGUI
         ImGui_ImplSDL3_ProcessEvent(&e);
     }
+
+    m_Keyboard->ExecuteCommands();
 
     for(const std::unique_ptr<Controller>& controller : m_Controllers)
     {
