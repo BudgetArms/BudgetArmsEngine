@@ -42,10 +42,9 @@ namespace bae
         void AddScale(const glm::vec2& addScale);
 
 
-        // Trivial setter, so should actually be removed
-        constexpr void SetLocationDirty() { m_bLocationDirty = true; }
-        constexpr void SetRotationDirty() { m_bRotationDirty = true; }
-        constexpr void SetScaleDirty() { m_bScaleDirty = true; }
+        void SetLocationDirty();
+        void SetRotationDirty();
+        void SetScaleDirty();
 
     private:
         void UpdateWorldLocation();

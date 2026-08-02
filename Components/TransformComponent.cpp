@@ -154,6 +154,39 @@ void TransformComponent::AddScale(const glm::vec2& addScale)
     SetScaleDirty();
 }
 
+void TransformComponent::SetLocationDirty()
+{
+    if(m_bLocationDirty)
+    {
+        return;
+    }
+
+    m_bLocationDirty = true;
+    m_Owner->SetLocationDirty();
+}
+
+void TransformComponent::SetRotationDirty()
+{
+    if(m_bRotationDirty)
+    {
+        return;
+    }
+
+    m_bRotationDirty = true;
+    m_Owner->SetRotationDirty();
+}
+
+void TransformComponent::SetScaleDirty()
+{
+    if(m_bScaleDirty)
+    {
+        return;
+    }
+
+    m_bScaleDirty = true;
+    m_Owner->SetScaleDirty();
+}
+
 
 void TransformComponent::UpdateWorldLocation()
 {
