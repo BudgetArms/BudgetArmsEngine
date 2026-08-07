@@ -13,8 +13,8 @@ namespace bae::Graphs
         NodeFactory()          = default;
         virtual ~NodeFactory() = default;
 
-        virtual std::unique_ptr<Node> const CreateNode(glm::vec2 const& Position) const = 0;
-        virtual std::unique_ptr<Node> const CloneNode(Node const& Other) const = 0;
+        virtual std::unique_ptr<Node> CreateNode(const glm::vec2& Position) const = 0;
+        virtual std::unique_ptr<Node> CloneNode(const Node& Other) const = 0;
     };
 
 
@@ -27,12 +27,12 @@ namespace bae::Graphs
         ~NodeFactoryTemplate() override = default;
 
 
-        [[nodiscard]] std::unique_ptr<NodeType> CreateNode(const glm::vec2& pos) const override
+        [[nodiscard]] std::unique_ptr<Node> CreateNode(const glm::vec2& pos) const override
         {
             return std::make_unique<NodeType>(pos);
         }
 
-        [[nodiscard]] std::unique_ptr<NodeType> CloneNode(const Node& other) const override
+        [[nodiscard]] std::unique_ptr<Node> CloneNode(const Node& other) const override
         {
             return std::make_unique<NodeType>(static_cast<const NodeType&>(other));
         }
