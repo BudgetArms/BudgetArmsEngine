@@ -111,7 +111,10 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
 
 bae::BudgetEngine::~BudgetEngine()
 {
-    std::cout << FUNCTION_NAME << '\n';
+    if(m_bDebugDestruction)
+    {
+        std::cout << FUNCTION_NAME << '\n';
+    }
     SceneManager::GetInstance().Destroy();
 
     Renderer::GetInstance().Destroy();
@@ -120,7 +123,11 @@ bae::BudgetEngine::~BudgetEngine()
     SDL_DestroyWindow(g_Window);
     g_Window = nullptr;
 
-    std::cout << FUNCTION_NAME << " Quiting SDL" << '\n';
+    if(m_bDebugDestruction)
+    {
+        std::cout << FUNCTION_NAME << " Quiting SDL" << '\n';
+    }
+
     SDL_Quit();
 }
 

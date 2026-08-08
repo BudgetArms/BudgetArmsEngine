@@ -147,6 +147,8 @@ namespace bae
             return dynamic_cast<ComponentType*>(it->get());
         }
 
+        bool m_bDebugDestruction{ false };
+
     private:
         // DON'T USE THIS UNLESS ABSOLUTELY NECESSARY (THIS WILL MOST LIKELY RESULT IN A CRASH)
         void ForceDestroy();

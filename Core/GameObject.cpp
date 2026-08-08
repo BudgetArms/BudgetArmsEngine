@@ -39,7 +39,10 @@ GameObject::~GameObject()
         assert(false && errorMessage.c_str());
     }
 
-    std::cout << FUNCTION_NAME << " Name: " << m_Name << '\n';
+    if(m_bDebugDestruction)
+    {
+        std::cout << FUNCTION_NAME << " Name: " << m_Name << '\n';
+    }
 }
 
 void GameObject::Update() const

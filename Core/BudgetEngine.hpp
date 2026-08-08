@@ -29,6 +29,8 @@ namespace bae
         const float m_MaxFrames{ 2000.f };
         float m_AccumulatedTime{};
 
+        bool m_bDebugDestruction{ false };
+
     private:
         bool m_Quit{};
     };
