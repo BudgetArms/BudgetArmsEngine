@@ -195,7 +195,6 @@ AudioQueue::AudioQueue() :
 
 AudioQueue::~AudioQueue()
 {
-    std::cout << FUNCTION_NAME << '\n';
     m_AudioThread.request_stop();
     m_ConditionVariable.notify_all();
 
