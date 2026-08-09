@@ -42,7 +42,7 @@ namespace bae::Graphs::HeuristicFunctions
     //Chebyshev distance
     [[maybe_unused]] static float Chebyshev(float x, float y)
     {
-        return std::max(x, y);
+        return (std::max)(x, y);
     }
 }
 
