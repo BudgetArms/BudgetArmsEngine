@@ -16,7 +16,7 @@ namespace bae
 
         [[nodiscard]] virtual SoundID LoadSound(const std::string& path) = 0;
 
-        [[nodiscard]] virtual ActiveSoundID Play(SoundID soundId) = 0;
+        virtual ActiveSoundID Play(SoundID soundId) = 0;
 
         virtual void Stop(ActiveSoundID activeSoundId) = 0;
         virtual void Resume(ActiveSoundID activeSoundId) = 0;
