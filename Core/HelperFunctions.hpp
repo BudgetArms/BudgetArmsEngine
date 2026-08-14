@@ -24,6 +24,30 @@ namespace bae
         return std::rand();
     }
 
+    inline int GetRandomInt(const int min, const int max)
+    {
+        static bool bSeeded = false;
+        if(!bSeeded)
+        {
+            std::srand(static_cast<unsigned int>(std::time(nullptr)));
+            bSeeded = true;
+        }
+
+        return min + (std::rand() % (max - min + 1));
+    }
+
+    inline float GetRandomFloat(const float min, const float max)
+    {
+        static bool bSeeded = false;
+        if(!bSeeded)
+        {
+            std::srand(static_cast<unsigned int>(std::time(nullptr)));
+            bSeeded = true;
+        }
+
+        return min + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (max - min);
+    }
+
     // This is the real original SDBM function
     // Not to be confused with the 'faster' version of the algorithm
     constexpr unsigned int HashSDBM(const std::string_view stringView, const unsigned int hash = 0)
