@@ -179,8 +179,6 @@ namespace bae
 AudioQueue::AudioQueue() :
     m_SoundEventBuffer{ m_SoundEventBufferSize }
 {
-    std::cout << "Initialized AudioQueue\n";
-
     if(!MIX_Init())
     {
         std::cout << FUNCTION_NAME << " Failed to initialize Mixer, Error: " << SDL_GetError() << '\n';

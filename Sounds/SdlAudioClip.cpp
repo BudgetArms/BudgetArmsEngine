@@ -75,7 +75,6 @@ SdlAudioClip::SdlAudioClip(ActiveSoundID activeId, SoundID soundId, MIX_Mixer* m
 
 SdlAudioClip::~SdlAudioClip()
 {
-    std::cout << FUNCTION_NAME << '\n';
 }
 
 
