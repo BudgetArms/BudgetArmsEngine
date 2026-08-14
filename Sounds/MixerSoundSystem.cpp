@@ -77,6 +77,10 @@ public:
 
     void SetVolumeAllSounds(float volume) const;
 
+
+    // Mixer Specific
+    void SetShouldLogAudioDestruction(bool bShouldLog) const;
+
 private:
     std::unordered_map<std::string, SoundID> m_LoadedSoundIDs{};
     std::unique_ptr<AudioQueue> m_AudioQueue{};
@@ -132,6 +136,9 @@ namespace bae
 
         bool IsAudioLoaded(SoundID soundId);
         void AddAudio(SoundID soundId, const std::string& path);
+
+
+        bool m_bShouldLogAudioDestruction{ false };
 
     private:
         void AudioThreadLoop(const std::stop_token& stopToken);
@@ -583,15 +590,15 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
 
 void AudioQueue::CleanUpFinishedSounds()
 {
-    constexpr auto functionName = std::string_view(FUNCTION_NAME);
-
-    std::erase_if(m_ActiveAudio, [&functionName](const auto& activeAudio)
+    std::erase_if(m_ActiveAudio, [&](const auto& activeAudio)
     {
         const auto& [activeSoundID, uAudioClip] = activeAudio;
         if(uAudioClip->IsStopped())
         {
-            std::cout << functionName << " Cleaning up ActiveSoundID: " << activeSoundID.ID << '\n';
-
+            if(m_bShouldLogAudioDestruction)
+            {
+                std::cout << FUNCTION_NAME << " Cleaning up ActiveSoundID: " << activeSoundID.ID << '\n';
+            }
             return true;
         }
         return false;
@@ -856,6 +863,11 @@ float MixerSoundSystem::GetVolume(const ActiveSoundID activeSoundId)
 void MixerSoundSystem::SetVolume(const ActiveSoundID activeSoundId, const float volume)
 {
     m_Pimpl->SetVolume(activeSoundId, volume);
+}
+
+void MixerSoundSystem::SetShouldLogAudioDestruction(const bool bShouldLog) const
+{
+    m_Pimpl->SetShouldLogAudioDestruction(bShouldLog);
 }
 
 
@@ -1195,6 +1207,11 @@ void MixerSoundSystem::Impl::SetVolumeAllSounds(const float volume) const
     };
 
     m_AudioQueue->SendSoundEvent(data);
+}
+
+void MixerSoundSystem::Impl::SetShouldLogAudioDestruction(const bool bShouldLog) const
+{
+    m_AudioQueue->m_bShouldLogAudioDestruction = bShouldLog;
 }
 
 

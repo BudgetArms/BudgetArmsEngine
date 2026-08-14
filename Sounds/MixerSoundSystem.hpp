@@ -47,6 +47,9 @@ namespace bae
         [[nodiscard]] float GetVolume(ActiveSoundID activeSoundId) override;
         void SetVolume(ActiveSoundID activeSoundId, float volume) override;
 
+        // Mixer Specific
+        void SetShouldLogAudioDestruction(bool bShouldLog) const;
+
     private:
         // Pimple implementation
         class Impl;
