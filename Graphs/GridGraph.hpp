@@ -70,7 +70,7 @@ namespace bae::Graphs
         [[nodiscard]] Node* GetNodeAtPosition(const glm::vec2& pos) const;
 
         [[nodiscard]] GridPosition GetClosestValidNodePosition(GridPosition position) const;
-        [[nodiscard]] GridPosition GetClosestValidNodePositionAtPosition(const glm::vec2& pos) const;
+        [[nodiscard]] GridPosition GetClosestValidNodePositionAtPosition(const glm::vec2& position) const;
 
         [[nodiscard]] glm::vec2 GetNodePos(int nodeId) const;
 

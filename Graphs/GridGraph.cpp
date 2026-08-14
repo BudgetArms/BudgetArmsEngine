@@ -239,49 +239,39 @@ Node* GridGraph::GetNodeAtPosition(const glm::vec2& pos) const
 
 GridPosition GridGraph::GetClosestValidNodePosition(const GridPosition position) const
 {
-    if(IsWithinBounds(position))
-    {
-        const Node* node = GetNode(position);
-        if(node && node->IsValid())
-        {
-            return position;
-        }
-    }
+    return GetClosestValidNodePositionAtPosition(GetPosition(position));
+}
 
-    const int maxRadius = std::max(m_NrOfColumns, m_NrOfRows);
+GridPosition GridGraph::GetClosestValidNodePositionAtPosition(const glm::vec2& position) const
+{
+    GridPosition closestGridPosition{ -1, -1 };
+    float closestDistanceSquared = std::numeric_limits<float>::max();
 
-    for(int radius = 1; radius <= maxRadius; ++radius)
+    for(int row{}; row < m_NrOfRows; ++row)
     {
-        for(int radiusX = -radius; radiusX <= radius; ++radiusX)
+        for(int column{}; column < m_NrOfColumns; ++column)
         {
-            for(int radiusY = -radius; radiusY <= radius; ++radiusY)
+            const GridPosition gridPosition{ column, row };
+            const Node* node = GetNode(gridPosition);
+
+            if(!node || !node->IsValid())
             {
-                if(std::abs(radiusX) != radius && std::abs(radiusY) != radius)
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                const GridPosition neighborPos{ position.Column + radiusX, position.Row + radiusY };
-                if(!IsWithinBounds(neighborPos))
-                {
-                    continue;
-                }
+            const glm::vec2 nodePosition = GetPosition(gridPosition);
+            const glm::vec2 difference   = nodePosition - position;
+            const float distanceSquared  = glm::dot(difference, difference);
 
-                Node* node = GetNode(neighborPos);
-                if(node && node->IsValid())
-                {
-                    return neighborPos;
-                }
+            if(distanceSquared < closestDistanceSquared)
+            {
+                closestDistanceSquared = distanceSquared;
+                closestGridPosition    = gridPosition;
             }
         }
     }
 
-    return GridPosition(-1, -1);
-}
-
-GridPosition GridGraph::GetClosestValidNodePositionAtPosition(const glm::vec2& pos) const
-{
-    return GetClosestValidNodePosition(GetGridPosition(pos));
+    return closestGridPosition;
 }
 
 glm::vec2 GridGraph::GetNodePos(const int nodeId) const
