@@ -172,8 +172,8 @@ void bae::BudgetEngine::RunOneFrame()
 
     SceneManager::GetInstance().Update();
     SceneManager::GetInstance().LateUpdate();
-    Renderer::GetInstance().Render();
     EventQueue::GetInstance().ProcessEvents();
+    Renderer::GetInstance().Render();
 
     std::this_thread::sleep_for(std::chrono::duration<float>(GameTime::GetInstance().GetSleepTime()));
 }
