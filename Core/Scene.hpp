@@ -29,7 +29,7 @@ namespace bae
         void Render() const;
         void RenderGUI() const;
 
-        void Add(std::shared_ptr<GameObject> object);
+        void Add(std::unique_ptr<GameObject> object);
         void RemoveAll() const;
 
         // This will crash your game if used incorrectly
@@ -37,7 +37,7 @@ namespace bae
 
 
         [[nodiscard]] std::string GetName() const { return m_Name; }
-        std::vector<std::shared_ptr<GameObject>>& GetObjects() { return m_Objects; }
+        std::vector<std::unique_ptr<GameObject>>& GetObjects() { return m_Objects; }
 
 
         bool m_bIsEnabled{ true };
@@ -46,12 +46,12 @@ namespace bae
         explicit Scene(const std::string& name);
 
         friend Scene& SceneManager::CreateScene(const std::string& name);
-        void Remove(const std::shared_ptr<GameObject>& object);
+        void Remove(const std::unique_ptr<GameObject>& object);
 
 
         std::string m_Name{ "Default" };
-        std::vector<std::shared_ptr<GameObject>> m_Objects{};
-        std::vector<std::shared_ptr<GameObject>> m_ObjectsPendingAdd{};
+        std::vector<std::unique_ptr<GameObject>> m_Objects{};
+        std::vector<std::unique_ptr<GameObject>> m_ObjectsPendingAdd{};
     };
 }
 

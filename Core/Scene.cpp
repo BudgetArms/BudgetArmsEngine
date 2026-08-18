@@ -9,9 +9,9 @@ using namespace bae;
 
 Scene::~Scene()
 {
-    for(const std::shared_ptr<GameObject>& object : m_Objects)
+    for(const std::unique_ptr<GameObject>& uObject : m_Objects)
     {
-        object->Destroy();
+        uObject->Destroy();
     }
 
     m_Objects.clear();
@@ -19,11 +19,11 @@ Scene::~Scene()
 
 void Scene::Update() const
 {
-    for(const std::shared_ptr<GameObject>& sObject : m_Objects)
+    for(const std::unique_ptr<GameObject>& uObject : m_Objects)
     {
-        if(sObject)
+        if(uObject)
         {
-            sObject->Update();
+            uObject->Update();
         }
     }
 }
@@ -31,35 +31,36 @@ void Scene::Update() const
 
 void Scene::FixedUpdate() const
 {
-    for(const std::shared_ptr<GameObject>& sObject : m_Objects)
+    for(const std::unique_ptr<GameObject>& uObject : m_Objects)
     {
-        if(sObject)
+        if(uObject)
         {
-            sObject->FixedUpdate();
+            uObject->FixedUpdate();
         }
     }
 }
 
 void Scene::LateUpdate()
 {
-    for(const std::shared_ptr<GameObject>& sObject : m_Objects)
+    for(const std::unique_ptr<GameObject>& uObject : m_Objects)
     {
-        if(sObject)
+        if(uObject)
         {
-            sObject->LateUpdate();
+            uObject->LateUpdate();
         }
     }
 
-    std::erase_if(m_Objects, [](const std::shared_ptr<GameObject>& uObject)
+    // Destroy Objects marked for deletion
+    std::erase_if(m_Objects, [](const std::unique_ptr<GameObject>& uObject)
     {
         return uObject->IsMarkedForDeletion();
     });
 
-    for(auto sObject : m_ObjectsPendingAdd)
+    for(auto& uObject : m_ObjectsPendingAdd)
     {
-        if(sObject)
+        if(uObject)
         {
-            m_Objects.emplace_back(std::move(sObject));
+            m_Objects.emplace_back(std::move(uObject));
         }
     }
 
@@ -72,7 +73,7 @@ void Scene::LateUpdate()
 
 void Scene::Render() const
 {
-    for(const std::shared_ptr<GameObject>& sObject : m_Objects)
+    for(const std::unique_ptr<GameObject>& sObject : m_Objects)
     {
         if(sObject)
         {
@@ -83,7 +84,7 @@ void Scene::Render() const
 
 void Scene::RenderGUI() const
 {
-    for(const std::shared_ptr<GameObject>& sObject : m_Objects)
+    for(const std::unique_ptr<GameObject>& sObject : m_Objects)
     {
         if(sObject)
         {
@@ -92,7 +93,7 @@ void Scene::RenderGUI() const
     }
 }
 
-void Scene::Add(std::shared_ptr<GameObject> object)
+void Scene::Add(std::unique_ptr<GameObject> object)
 {
     m_ObjectsPendingAdd.emplace_back(std::move(object));
 }
@@ -100,7 +101,7 @@ void Scene::Add(std::shared_ptr<GameObject> object)
 
 void Scene::RemoveAll() const
 {
-    for(const std::shared_ptr<GameObject>& sObject : m_Objects)
+    for(const std::unique_ptr<GameObject>& sObject : m_Objects)
     {
         if(sObject)
         {
@@ -125,7 +126,7 @@ Scene::Scene(const std::string& name) :
 }
 
 
-void Scene::Remove(const std::shared_ptr<GameObject>& object)
+void Scene::Remove(const std::unique_ptr<GameObject>& object)
 {
     std::erase(m_Objects, object);
 }
