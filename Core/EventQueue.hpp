@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <any>
 #include <set>
 
 #include "RingBuffer.hpp"
@@ -10,10 +11,16 @@ namespace bae
 {
     class EventListener;
 
+    struct EventData
+    {
+        unsigned int Hash{};
+        std::any Data{};
+    };
+
     class EventQueue final : public Singleton<EventQueue>
     {
     public:
-        void SendEvent(unsigned int eventHash);
+        void SendEvent(const EventData& eventData);
 
         void AddListener(EventListener* eventListener);
         void RemoveListener(EventListener* eventListener);
@@ -24,11 +31,11 @@ namespace bae
         friend class Singleton;
         ~EventQueue() override = default;
 
-        void ProcessEvent(unsigned int eventHash) const;
+        void ProcessEvent(const EventData& eventData) const;
 
 
         static constexpr size_t m_Capacity{ 64 };
-        RingBuffer<unsigned int> m_Queue{ m_Capacity };
+        RingBuffer<EventData> m_Queue{ m_Capacity };
 
         std::set<EventListener*> m_Listeners{};
 

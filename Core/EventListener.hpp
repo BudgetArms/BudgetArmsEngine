@@ -23,7 +23,7 @@ namespace bae
         EventListener& operator=(const EventListener&) = delete;
         EventListener& operator=(EventListener&&)      = delete;
 
-        virtual void HandleEvent(unsigned int eventHash) = 0;
+        virtual void HandleEvent(const EventData& eventData) = 0;
     };
 }
 
