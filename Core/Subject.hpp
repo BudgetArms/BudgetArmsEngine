@@ -28,7 +28,7 @@ namespace bae
         std::vector<Observer*> m_Observers;
 
     protected:
-        void NotifyObservers(unsigned int eventHash, const std::any& eventData = {});
+        void NotifyObservers(const EventData& eventData);
     };
 }
 

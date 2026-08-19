@@ -5,8 +5,6 @@
 #include "Core/Achievement.hpp"
 #include "Singletons/Singleton.hpp"
 
-#include "Core/Subject.hpp"
-
 
 namespace bae
 {
@@ -19,13 +17,13 @@ namespace bae
         }
 
 
-        void Notify(const unsigned int eventHash, Subject* subject, const std::any&) override
+        void Notify(const EventData& eventData, Subject* subject) override
         {
             for(const auto& achievement : m_Achievements)
             {
                 if(achievement)
                 {
-                    achievement->TryUnlock(eventHash, subject);
+                    achievement->TryUnlock(eventData.Hash, subject);
                 }
             }
         }
