@@ -3,7 +3,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "Singletons/Singleton.hpp"
 
@@ -24,7 +23,6 @@ namespace bae
         void Destroy();
 
         Scene& CreateScene(const std::string& sceneName);
-        bool MarkSceneForDestruction(const std::string& sceneName);
 
         [[nodiscard]] Scene* GetScene(const std::string& sceneName);
 
@@ -33,11 +31,10 @@ namespace bae
     private:
         friend class Singleton;
         SceneManager() = default;
+        ~SceneManager() override;
 
-        void DestroyScene(const std::string& sceneName);
 
-        std::vector<std::shared_ptr<Scene>> m_Scenes{};
-        std::set<std::string> m_SceneNamesToBeDestroyed{};
+        std::set<std::shared_ptr<Scene>> m_Scenes{};
 
         bool m_bIsDestroyed{};
     };

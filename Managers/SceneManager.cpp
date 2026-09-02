@@ -37,12 +37,10 @@ void bae::SceneManager::LateUpdate()
     }
 
     // Destroy Marked scenes
-    for(const std::string& nameScene : m_SceneNamesToBeDestroyed)
+    std::erase_if(m_Scenes, [](const std::shared_ptr<Scene>& scene)
     {
-        DestroyScene(nameScene);
-    }
-
-    m_SceneNamesToBeDestroyed.clear();
+        return scene->IsMarkedForDeletion();
+    });
 }
 
 void bae::SceneManager::Render() const
@@ -83,32 +81,11 @@ bae::Scene& bae::SceneManager::CreateScene(const std::string& name)
     }
 
     const auto& scene = std::shared_ptr<Scene>(new Scene(name));
-    m_Scenes.push_back(scene);
+    m_Scenes.insert(scene);
 
     return *scene;
 }
 
-bool bae::SceneManager::MarkSceneForDestruction(const std::string& sceneName)
-{
-    const size_t oldToBeDestroyedSize = m_SceneNamesToBeDestroyed.size();
-
-    for(const auto& scene : m_Scenes)
-    {
-        if(scene->GetName() == sceneName)
-        {
-            m_SceneNamesToBeDestroyed.insert(sceneName);
-        }
-    }
-
-    const size_t newToBeDestroyedSize = m_SceneNamesToBeDestroyed.size();
-
-    if(oldToBeDestroyedSize == newToBeDestroyedSize)
-    {
-        return false;
-    }
-
-    return true;
-}
 
 bae::Scene* bae::SceneManager::GetScene(const std::string& name)
 {
