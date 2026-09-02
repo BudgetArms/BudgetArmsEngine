@@ -35,9 +35,11 @@ namespace bae
         // This will crash your game if used incorrectly
         void ForceRemoveAll();
 
+        [[nodiscard]] std::string GetName() const;
+        std::vector<std::unique_ptr<GameObject>>& GetObjects();
 
-        [[nodiscard]] std::string GetName() const { return m_Name; }
-        std::vector<std::unique_ptr<GameObject>>& GetObjects() { return m_Objects; }
+        void Destroy();
+        [[nodiscard]] bool IsMarkedForDeletion() const;
 
 
         bool m_bIsEnabled{ true };
@@ -52,6 +54,8 @@ namespace bae
         std::string m_Name{ "Default" };
         std::vector<std::unique_ptr<GameObject>> m_Objects{};
         std::vector<std::unique_ptr<GameObject>> m_ObjectsPendingAdd{};
+
+        bool m_bIsMarkedForDeletion{};
     };
 }
 

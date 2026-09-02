@@ -53,7 +53,7 @@ void Scene::LateUpdate()
     // Destroy Objects marked for deletion
     std::erase_if(m_Objects, [](const std::unique_ptr<GameObject>& uObject)
     {
-        return uObject->IsMarkedForDeletion();
+        return !GameObject::IsValid(uObject.get());
     });
 
     for(auto& uObject : m_ObjectsPendingAdd)
@@ -120,6 +120,26 @@ void Scene::ForceRemoveAll()
     m_Objects.clear();
 }
 
+std::string Scene::GetName() const
+{
+    return m_Name;
+}
+
+std::vector<std::unique_ptr<GameObject>>& Scene::GetObjects()
+{
+    return m_Objects;
+}
+
+void Scene::Destroy()
+{
+    m_bIsMarkedForDeletion = true;
+}
+
+bool Scene::IsMarkedForDeletion() const
+{
+    return m_bIsMarkedForDeletion;
+}
+
 Scene::Scene(const std::string& name) :
     m_Name(name)
 {
@@ -130,5 +150,3 @@ void Scene::Remove(const std::unique_ptr<GameObject>& object)
 {
     std::erase(m_Objects, object);
 }
-
-
