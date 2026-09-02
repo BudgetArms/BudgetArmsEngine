@@ -28,7 +28,7 @@ namespace bae
 
         void Update() const;
         void FixedUpdate() const;
-        void LateUpdate() const;
+        void LateUpdate();
         void Render() const;
         void RenderGUI() const;
 
@@ -36,17 +36,17 @@ namespace bae
         // Mark for destruction
         void Destroy();
 
-        // this is a way more accurate name, Remove Child sounds too much like destroying
-        void AttachChild(GameObject* child, bool bFreezeLocation = true, bool bFreezeRotation = true,
+        void AttachChild(GameObject& child, bool bFreezeLocation = true, bool bFreezeRotation = true,
                          bool bFreezeScale                       = true);
-        void DetachChild(GameObject* child, bool bUpdateChildrenOfChildLocations = true);
+        void DetachChild(GameObject& child, bool bUpdateChildrenOfChildLocations = true);
 
         bool IsChild(const GameObject* child) const;
+
+        static bool IsValid(const GameObject* object);
 
         [[nodiscard]] std::string GetName() const { return m_Name; }
 
         [[nodiscard]] GameObject* GetParent() const;
-        void SetParent(GameObject* newParent, bool bKeepLocation);
 
         [[nodiscard]] constexpr bool IsMarkedForDeletion() const { return m_MarkedForDeletion; }
 
@@ -147,19 +147,21 @@ namespace bae
             return dynamic_cast<ComponentType*>(it->get());
         }
 
-        bool m_bDebugDestruction{ false };
+        static bool m_bDebugCreation;
+        static bool m_bDebugDestruction;
 
     private:
         // DON'T USE THIS UNLESS ABSOLUTELY NECESSARY (THIS WILL MOST LIKELY RESULT IN A CRASH)
         void ForceDestroy();
 
+
         std::string m_Name{ "DefaultObject" };
 
-        GameObject* m_Parent{ nullptr };
-        std::vector<GameObject*> m_Children;
-        std::vector<std::unique_ptr<Component>> m_Components;
+        GameObject* m_Parent{};
+        std::vector<GameObject*> m_Children{};
+        std::vector<std::unique_ptr<Component>> m_Components{};
 
-        bool m_MarkedForDeletion{ false };
+        bool m_MarkedForDeletion{};
 
     protected:
         void SetName(const std::string& newName);
@@ -167,5 +169,3 @@ namespace bae
         TransformComponent* m_Transform{};
     };
 }
-
-
