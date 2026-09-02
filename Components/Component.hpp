@@ -10,11 +10,8 @@ namespace bae
     class Component
     {
     public:
-        explicit Component(GameObject& owner) : m_Owner{ &owner }
-        {
-        }
-
-        virtual ~Component() = default;
+        explicit Component(GameObject& owner);
+        virtual ~Component();
 
         Component(const Component&)            = delete;
         Component(Component&&)                 = delete;
@@ -28,10 +25,17 @@ namespace bae
         virtual void Render() const {}
         virtual void RenderGUI() {}
 
-        [[nodiscard]] virtual GameObject* GetOwner() { return m_Owner; }
+        void Destroy();
+
+
+        [[nodiscard]] static bool IsValid(const Component* component);
+        [[nodiscard]] virtual GameObject* GetOwner();
+        [[nodiscard]] bool IsMarkedDeletion() const;
+
+    private:
+        bool m_bIsMarkedForDeletion{};
 
     protected:
         GameObject* m_Owner;
     };
 }
-
