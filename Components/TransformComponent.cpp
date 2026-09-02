@@ -61,7 +61,7 @@ const glm::vec2& TransformComponent::GetLocalScale() const
 
 void TransformComponent::SetWorldLocation(const glm::vec2& location)
 {
-    if(!m_Owner->GetParent())
+    if(!GameObject::IsValid(m_Owner->GetParent()))
     {
         m_LocalLocation = location;
     }
@@ -75,7 +75,7 @@ void TransformComponent::SetWorldLocation(const glm::vec2& location)
 
 void TransformComponent::SetWorldRotation(const float rotation)
 {
-    if(!m_Owner->GetParent())
+    if(!GameObject::IsValid(m_Owner->GetParent()))
     {
         m_LocalRotation = rotation;
     }
@@ -89,7 +89,7 @@ void TransformComponent::SetWorldRotation(const float rotation)
 
 void TransformComponent::SetWorldScale(const glm::vec2& scale)
 {
-    if(!m_Owner->GetParent())
+    if(!GameObject::IsValid(m_Owner->GetParent()))
     {
         m_LocalScale = scale;
     }
@@ -192,7 +192,7 @@ void TransformComponent::UpdateWorldLocation()
 {
     if(m_bLocationDirty)
     {
-        if(!m_Owner->GetParent())
+        if (!GameObject::IsValid(m_Owner->GetParent()))
         {
             m_WorldLocation = m_LocalLocation;
         }
@@ -209,7 +209,7 @@ void TransformComponent::UpdateWorldRotation()
 {
     if(m_bRotationDirty)
     {
-        if(!m_Owner->GetParent())
+        if(!GameObject::IsValid(m_Owner->GetParent()))
         {
             m_WorldRotation = m_LocalRotation;
         }
@@ -226,7 +226,7 @@ void TransformComponent::UpdateWorldScale()
 {
     if(m_bScaleDirty)
     {
-        if(!m_Owner->GetParent())
+        if(!GameObject::IsValid(m_Owner->GetParent()))
         {
             m_WorldScale = m_LocalScale;
         }
