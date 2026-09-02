@@ -8,7 +8,7 @@ void bae::SceneManager::Update() const
 {
     for(const auto& scene : m_Scenes)
     {
-        if(scene->m_bIsEnabled)
+        if(scene->m_bIsEnabled && !scene->IsMarkedForDeletion())
         {
             scene->Update();
         }
@@ -19,7 +19,7 @@ void bae::SceneManager::FixedUpdate() const
 {
     for(const auto& scene : m_Scenes)
     {
-        if(scene->m_bIsEnabled)
+        if(scene->m_bIsEnabled && !scene->IsMarkedForDeletion())
         {
             scene->FixedUpdate();
         }
@@ -30,7 +30,7 @@ void bae::SceneManager::LateUpdate()
 {
     for(const auto& scene : m_Scenes)
     {
-        if(scene->m_bIsEnabled)
+        if(scene->m_bIsEnabled && !scene->IsMarkedForDeletion())
         {
             scene->LateUpdate();
         }
@@ -49,7 +49,7 @@ void bae::SceneManager::Render() const
 {
     for(const auto& scene : m_Scenes)
     {
-        if(scene->m_bIsEnabled)
+        if(scene->m_bIsEnabled && !scene->IsMarkedForDeletion())
         {
             scene->Render();
         }
@@ -60,7 +60,7 @@ void bae::SceneManager::RenderGUI() const
 {
     for(const auto& scene : m_Scenes)
     {
-        if(scene->m_bIsEnabled)
+        if(scene->m_bIsEnabled && !scene->IsMarkedForDeletion())
         {
             scene->RenderGUI();
         }
@@ -140,26 +140,14 @@ bool bae::SceneManager::IsDestroyed() const
     return m_bIsDestroyed;
 }
 
-
-void bae::SceneManager::DestroyScene(const std::string& name)
+bae::SceneManager::~SceneManager()
 {
-    const Scene* scene = GetScene(name);
-    if(!scene)
+    if(!m_bIsDestroyed)
     {
-        std::cout << FUNCTION_NAME << " Failed to find scene!" << '\n';
-        return;
-    }
+        const std::string errorMessage = std::string(FUNCTION_NAME) +
+                " Failed! Destroy should be called before program close";
 
-
-    const size_t amountScenesRemoved = std::erase_if(m_Scenes, [&](const auto& lambdaScene)
-    {
-        return lambdaScene->GetName() == name;
-    });
-
-    if(amountScenesRemoved <= 0)
-    {
-        std::cout << FUNCTION_NAME << " Failed To Destroy Scene, Somehow Couldn't Be Erased!" << '\n';
+        std::cout << errorMessage << '\n';
+        assert(false && errorMessage.c_str());
     }
 }
-
-
