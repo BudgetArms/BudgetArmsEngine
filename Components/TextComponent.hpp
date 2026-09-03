@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include "Component.hpp"
+#include "Components/Component.hpp"
 #include "Core/GameObject.hpp"
 #include "Core/Utils.hpp"
 
