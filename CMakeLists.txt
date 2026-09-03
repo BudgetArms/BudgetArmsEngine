@@ -37,7 +37,7 @@ add_library(${ENGINE_NAME} STATIC
     "Commands/Command.hpp"
     "Commands/GameActorCommand.hpp"
 
-    "Components/Component.hpp"
+    "Components/Component.cpp"
     "Components/FpsCounterComponent.cpp"
     "Components/ImguiComponent.cpp"
     "Components/SpriteComponent.cpp"
