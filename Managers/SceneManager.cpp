@@ -81,7 +81,7 @@ bae::Scene& bae::SceneManager::CreateScene(const std::string& name)
     }
 
     const auto& scene = std::shared_ptr<Scene>(new Scene(name));
-    m_Scenes.insert(scene);
+    m_Scenes.emplace_back(scene);
 
     return *scene;
 }

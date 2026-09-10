@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include <memory>
-#include <set>
 #include <string>
+#include <vector>
 
 #include "Singletons/Singleton.hpp"
 
@@ -34,9 +34,8 @@ namespace bae
         ~SceneManager() override;
 
 
-        std::set<std::shared_ptr<Scene>> m_Scenes{};
+        std::vector<std::shared_ptr<Scene>> m_Scenes{};
 
         bool m_bIsDestroyed{};
     };
 }
-
