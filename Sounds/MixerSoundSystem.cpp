@@ -132,11 +132,15 @@ namespace bae
         ~AudioQueue();
 
         void SendSoundEvent(const SoundEventData& soundEvent);
-        const AudioClip* GetAudioClip(ActiveSoundID activeSoundId);
+        const AudioClip* GetAudioClipUnlocked(ActiveSoundID activeSoundId);
 
         bool IsAudioLoaded(SoundID soundId);
         void AddAudio(SoundID soundId, const std::string& path);
 
+        [[nodiscard]] bool IsPlaying(ActiveSoundID activeSoundId);
+        [[nodiscard]] bool IsPaused(ActiveSoundID activeSoundId);
+        [[nodiscard]] bool IsMuted(ActiveSoundID activeSoundId);
+        [[nodiscard]] float GetVolume(ActiveSoundID activeSoundId);
 
         bool m_bShouldLogAudioDestruction{ false };
 
@@ -236,9 +240,8 @@ void AudioQueue::SendSoundEvent(const SoundEventData& soundEvent)
     m_ConditionVariable.notify_one();
 }
 
-const AudioClip* AudioQueue::GetAudioClip(const ActiveSoundID activeSoundId)
+const AudioClip* AudioQueue::GetAudioClipUnlocked(const ActiveSoundID activeSoundId)
 {
-    std::lock_guard lock(m_ActiveAudioMutex);
     if(const auto it = m_ActiveAudio.find(activeSoundId); it != m_ActiveAudio.end())
     {
         if(!it->second)
@@ -262,6 +265,58 @@ void AudioQueue::AddAudio(SoundID soundId, const std::string& path)
 {
     std::lock_guard lock(m_LoadedAudioMutex);
     m_LoadedAudio.insert({ soundId, std::make_unique<Audio>(path, m_Mixer) });
+}
+
+bool AudioQueue::IsPlaying(const ActiveSoundID activeSoundId)
+{
+    std::lock_guard lock(m_ActiveAudioMutex);
+    const AudioClip* audioClip = GetAudioClipUnlocked(activeSoundId);
+    if(!audioClip)
+    {
+        std::cout << FUNCTION_NAME << "Failed! AudioClip Not Founded/Invalid" << '\n';
+        return false;
+    }
+
+    return audioClip->IsPlaying();
+}
+
+bool AudioQueue::IsPaused(const ActiveSoundID activeSoundId)
+{
+    std::lock_guard lock(m_ActiveAudioMutex);
+    const AudioClip* audioClip = GetAudioClipUnlocked(activeSoundId);
+    if(!audioClip)
+    {
+        std::cout << FUNCTION_NAME << "Failed! AudioClip Not Founded/Invalid" << '\n';
+        return false;
+    }
+
+    return audioClip->IsPaused();
+}
+
+bool AudioQueue::IsMuted(const ActiveSoundID activeSoundId)
+{
+    std::lock_guard lock(m_ActiveAudioMutex);
+    const AudioClip* audioClip = GetAudioClipUnlocked(activeSoundId);
+    if(!audioClip)
+    {
+        std::cout << FUNCTION_NAME << "Failed! AudioClip Not Founded/Invalid" << '\n';
+        return false;
+    }
+
+    return audioClip->IsMuted();
+}
+
+float AudioQueue::GetVolume(const ActiveSoundID activeSoundId)
+{
+    std::lock_guard lock(m_ActiveAudioMutex);
+    const AudioClip* audioClip = GetAudioClipUnlocked(activeSoundId);
+    if(!audioClip)
+    {
+        std::cout << FUNCTION_NAME << "Failed! AudioClip Not Founded/Invalid" << '\n';
+        return -1.f;
+    }
+
+    return audioClip->GetVolume();
 }
 
 void AudioQueue::AudioThreadLoop(const std::stop_token& stopToken)
@@ -1094,56 +1149,24 @@ bool MixerSoundSystem::Impl::IsLoaded(const SoundID soundId) const
 
 bool MixerSoundSystem::Impl::IsPlaying(const ActiveSoundID activeSoundId) const
 {
-    // this is special bc we are sending request, and you can't immediately get a response back
-    // OR
-    // we don't use the audio queue's thread and get the m_ActiveSound's or something like that, ...
-
-    const auto pAudioClip = m_AudioQueue->GetAudioClip(activeSoundId);
-    if(!pAudioClip)
-    {
-        std::cout << FUNCTION_NAME << " Failed! AudioClip not found, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return false;
-    }
-
-    return pAudioClip->IsPlaying();
+    return m_AudioQueue->IsPlaying(activeSoundId);
 }
 
 
 bool MixerSoundSystem::Impl::IsPaused(const ActiveSoundID activeSoundId) const
 {
-    const auto pAudioClip = m_AudioQueue->GetAudioClip(activeSoundId);
-    if(!pAudioClip)
-    {
-        std::cout << FUNCTION_NAME << " Failed! AudioClip not found, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return false;
-    }
-
-    return pAudioClip->IsPaused();
+    return m_AudioQueue->IsPaused(activeSoundId);
 }
 
 bool MixerSoundSystem::Impl::IsMuted(const ActiveSoundID activeSoundId) const
 {
-    const auto pAudioClip = m_AudioQueue->GetAudioClip(activeSoundId);
-    if(!pAudioClip)
-    {
-        std::cout << FUNCTION_NAME << " Failed! AudioClip not found, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return false;
-    }
-
-    return pAudioClip->IsMuted();
+    return m_AudioQueue->IsMuted(activeSoundId);
 }
 
 
 float MixerSoundSystem::Impl::GetVolume(const ActiveSoundID activeSoundId) const
 {
-    const auto pAudioClip = m_AudioQueue->GetAudioClip(activeSoundId);
-    if(!pAudioClip)
-    {
-        std::cout << FUNCTION_NAME << " Failed! AudioClip not found, ActiveSoundID: " << activeSoundId.ID << '\n';
-        return 0.f;
-    }
-
-    return pAudioClip->GetVolume();
+    return m_AudioQueue->GetVolume(activeSoundId);
 }
 
 void MixerSoundSystem::Impl::SetVolume(const ActiveSoundID activeSoundId, const float volume) const
