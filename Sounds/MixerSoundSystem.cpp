@@ -158,7 +158,6 @@ namespace bae
 
         std::jthread m_AudioThread;
 
-        std::mutex m_MainThreadMutex{};
         std::mutex m_LoadedAudioMutex{};
         std::mutex m_SoundBufferMutex{};
         std::mutex m_ActiveAudioMutex{};
@@ -166,7 +165,7 @@ namespace bae
         std::condition_variable m_ConditionVariable;
         bool m_bIsShuttingDown{ false };
 
-        static constexpr int m_SoundEventBufferSize{ 15 };
+        static constexpr int m_SoundEventBufferMaxSize{ 15 };
         bool m_bAreAllSoundsMuted{ false };
 
         std::unordered_map<SoundID, std::unique_ptr<Audio>> m_LoadedAudio{};
@@ -177,7 +176,7 @@ namespace bae
 
 
 AudioQueue::AudioQueue() :
-    m_SoundEventBuffer{ m_SoundEventBufferSize }
+    m_SoundEventBuffer{ m_SoundEventBufferMaxSize }
 {
     if(!MIX_Init())
     {
@@ -203,9 +202,8 @@ AudioQueue::~AudioQueue()
     m_AudioThread.request_stop();
     m_ConditionVariable.notify_all();
 
-    std::lock_guard mainLock(m_MainThreadMutex);
-    std::lock_guard activeAudioLock(m_ActiveAudioMutex);
     std::lock_guard soundBufferLock(m_SoundBufferMutex);
+    std::lock_guard activeAudioLock(m_ActiveAudioMutex);
     std::lock_guard loadedAudioLock(m_LoadedAudioMutex);
 
     for(const auto& uAudioClip : m_ActiveAudio | std::views::values)
@@ -225,15 +223,16 @@ AudioQueue::~AudioQueue()
 
 void AudioQueue::SendSoundEvent(const SoundEventData& soundEvent)
 {
-    std::lock_guard lock(m_SoundBufferMutex);
-
     // ignore request if audio is shutting down
     if(m_bIsShuttingDown)
     {
         return;
     }
 
+    std::unique_lock soundBufferLock(m_SoundBufferMutex);
     m_SoundEventBuffer.Push(soundEvent);
+    soundBufferLock.unlock();
+
     m_ConditionVariable.notify_one();
 }
 
@@ -242,6 +241,11 @@ const AudioClip* AudioQueue::GetAudioClip(const ActiveSoundID activeSoundId)
     std::lock_guard lock(m_ActiveAudioMutex);
     if(const auto it = m_ActiveAudio.find(activeSoundId); it != m_ActiveAudio.end())
     {
+        if(!it->second)
+        {
+            std::cout << FUNCTION_NAME << " Failed! Invalid AudioClip" << '\n';
+            return nullptr;
+        }
         return it->second.get();
     }
 
@@ -262,10 +266,14 @@ void AudioQueue::AddAudio(SoundID soundId, const std::string& path)
 
 void AudioQueue::AudioThreadLoop(const std::stop_token& stopToken)
 {
+    // While AudioQueue Exists
     while(!stopToken.stop_requested())
     {
-        std::unique_lock lock(m_MainThreadMutex);
-        m_ConditionVariable.wait(lock, [this, stopToken]
+        // Get Sound Event
+        SoundEventData eventData{};
+        std::unique_lock soundBufferLock(m_SoundBufferMutex);
+
+        m_ConditionVariable.wait(soundBufferLock, [this, stopToken]
         {
             return stopToken.stop_requested() || !m_SoundEventBuffer.IsEmpty();
         });
@@ -275,20 +283,24 @@ void AudioQueue::AudioThreadLoop(const std::stop_token& stopToken)
             return;
         }
 
-        while(!stopToken.stop_requested() && !m_SoundEventBuffer.IsEmpty())
+        m_SoundEventBuffer.Pop(eventData);
+        soundBufferLock.unlock();
+
+
+        // Process sound event
+        std::unique_lock activeAudioLock(m_ActiveAudioMutex);
+        ProcessSoundEvent(eventData);
+        activeAudioLock.unlock();
+
+
+        // After All Queued Audio Events Processed, Try Cleanup Sounds
+        soundBufferLock.lock();
+        if(m_SoundEventBuffer.IsEmpty())
         {
-            std::unique_lock soundBufferLock(m_SoundBufferMutex);
-            SoundEventData eventData{};
-            m_SoundEventBuffer.Pop(eventData);
-            soundBufferLock.unlock();
-
-            std::lock_guard activeSoundLock(m_ActiveAudioMutex);
-            ProcessSoundEvent(eventData);
+            activeAudioLock.lock();
+            CleanUpFinishedSounds();
         }
-
-        // After all SoundEvents are done, clean any finished sounds
-        std::lock_guard activeAudioLock(m_ActiveAudioMutex);
-        CleanUpFinishedSounds();
+        soundBufferLock.unlock();
     }
 }
 
@@ -344,8 +356,8 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
             }
 
             const Audio* audio = GetAudio(eventData.SoundID);
-            auto uAudioClip    = std::make_unique<
-                SdlAudioClip>(eventData.ActiveSoundID, eventData.SoundID, m_Mixer, audio);
+            auto uAudioClip    = std::make_unique<SdlAudioClip>(eventData.ActiveSoundID, eventData.SoundID,
+                                                                m_Mixer, audio);
 
             if(!uAudioClip->Play())
             {
@@ -588,6 +600,7 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
 
 void AudioQueue::CleanUpFinishedSounds()
 {
+    constexpr const char* functionName = FUNCTION_NAME;
     std::erase_if(m_ActiveAudio, [&](const auto& activeAudio)
     {
         const auto& [activeSoundID, uAudioClip] = activeAudio;
@@ -595,7 +608,7 @@ void AudioQueue::CleanUpFinishedSounds()
         {
             if(m_bShouldLogAudioDestruction)
             {
-                std::cout << FUNCTION_NAME << " Cleaning up ActiveSoundID: " << activeSoundID.ID << '\n';
+                std::cout << functionName << " Cleaning up ActiveSoundID: " << activeSoundID.ID << '\n';
             }
             return true;
         }
@@ -1214,4 +1227,3 @@ void MixerSoundSystem::Impl::SetShouldLogAudioDestruction(const bool bShouldLog)
 
 
 #pragma endregion
-
