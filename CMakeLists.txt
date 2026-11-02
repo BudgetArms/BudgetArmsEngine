@@ -24,6 +24,7 @@ add_library(${ENGINE_NAME} STATIC
     "Core/EventQueue.cpp"
     "Core/GameObject.cpp"
     "Core/HelperFunctions.hpp"
+    "Core/Logger.cpp"
     "Core/Observer.hpp"
     "Core/Renderer.cpp"
     "Core/RingBuffer.hpp"
