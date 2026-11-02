@@ -37,7 +37,10 @@ private:
 #pragma region Mouse | NOT PIMPL
 
 
-Mouse::Mouse() = default;
+Mouse::Mouse() :
+    m_Pimpl{ std::make_unique<Impl>() }
+{
+}
 
 Mouse::~Mouse() = default;
 
@@ -233,6 +236,3 @@ bool Mouse::Impl::IsButtonPressed(const unsigned int button) const
 
 
 #pragma endregion
-
-
-

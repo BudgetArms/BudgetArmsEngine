@@ -75,7 +75,11 @@ private:
 #pragma region NOT PIMPL
 
 
-SoLoudSoundSystem::SoLoudSoundSystem()  = default;
+SoLoudSoundSystem::SoLoudSoundSystem() :
+    m_Pimpl{ std::make_unique<Impl>() }
+{
+}
+
 SoLoudSoundSystem::~SoLoudSoundSystem() = default;
 
 

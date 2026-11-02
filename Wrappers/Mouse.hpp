@@ -33,8 +33,6 @@ namespace bae
     private:
         // Pimple implementation
         class Impl;
-        std::unique_ptr<Impl> m_Pimpl{ std::make_unique<Impl>() };
+        std::unique_ptr<Impl> m_Pimpl{};
     };
 }
-
-

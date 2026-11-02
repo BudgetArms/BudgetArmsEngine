@@ -49,6 +49,7 @@ private:
 
 
 Controller::Controller(const int controllerIndex) :
+    m_Pimpl{ std::make_unique<Impl>() },
     m_ControllerIndex{ controllerIndex }
 {
 }

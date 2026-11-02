@@ -13,6 +13,11 @@ namespace bae
         SoundSystem()          = default;
         virtual ~SoundSystem() = default;
 
+        SoundSystem(const SoundSystem&)            = delete;
+        SoundSystem(SoundSystem&&)                 = delete;
+        SoundSystem& operator=(const SoundSystem&) = delete;
+        SoundSystem& operator=(SoundSystem&&)      = delete;
+
 
         [[nodiscard]] virtual SoundID LoadSound(const std::string& path) = 0;
 
@@ -49,4 +54,3 @@ namespace bae
         virtual void SetVolume(ActiveSoundID activeSoundId, float volume) = 0;
     };
 }
-

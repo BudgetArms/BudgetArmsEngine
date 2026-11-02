@@ -6,6 +6,7 @@
 
 #include <SDL3_mixer/SDL_mixer.h>
 
+#include "Core/Logger.hpp"
 #include "Core/ServiceLocator.hpp"
 #include "Sounds/SoundSystem.hpp"
 
@@ -68,14 +69,14 @@ private:
 
 
 SdlAudioClip::SdlAudioClip(ActiveSoundID activeId, SoundID soundId, MIX_Mixer* mixer, const Audio* audio) :
-    AudioClip(activeId, soundId)
+    AudioClip(activeId, soundId),
+    m_Pimpl{ std::make_unique<Impl>(activeId, soundId, mixer, audio) }
 {
-    m_Pimpl = std::make_unique<Impl>(activeId, soundId, mixer, audio);
+    LogWarning("testing");
+    std::cout << __FUNCTION__ << '\n';
 }
 
-SdlAudioClip::~SdlAudioClip()
-{
-}
+SdlAudioClip::~SdlAudioClip() = default;
 
 
 bool SdlAudioClip::Play()
@@ -373,5 +374,3 @@ void __cdecl SdlAudioClip::Impl::TrackFinishedCallBack(void* data, MIX_Track*)
 }
 
 #pragma endregion
-
-

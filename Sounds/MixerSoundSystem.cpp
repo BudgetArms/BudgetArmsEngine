@@ -789,7 +789,11 @@ Audio* AudioQueue::GetAudio(const SoundID soundId)
 #pragma region SdlSoundSystem | NOT PIMPL
 
 
-MixerSoundSystem::MixerSoundSystem()  = default;
+MixerSoundSystem::MixerSoundSystem() :
+    m_Pimpl{ std::make_unique<Impl>() }
+{
+}
+
 MixerSoundSystem::~MixerSoundSystem() = default;
 
 

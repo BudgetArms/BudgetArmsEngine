@@ -41,7 +41,10 @@ private:
 #pragma region Keyboard | NOT PIMPL
 
 
-Keyboard::Keyboard() = default;
+Keyboard::Keyboard() :
+    m_Pimpl{ std::make_unique<Impl>() }
+{
+}
 
 Keyboard::~Keyboard() = default;
 
@@ -212,5 +215,3 @@ bool Keyboard::Impl::IsKeyPressed(const unsigned int key) const
 
 
 #pragma endregion
-
-

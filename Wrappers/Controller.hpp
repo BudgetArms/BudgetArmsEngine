@@ -9,7 +9,7 @@
 
 namespace bae
 {
-    class Controller
+    class Controller final
     {
     public:
         explicit Controller(int controllerIndex);
@@ -36,9 +36,8 @@ namespace bae
     private:
         // Pimple implementation
         class Impl;
-        std::unique_ptr<Impl> m_Pimpl{ std::make_unique<Impl>() };
+        std::unique_ptr<Impl> m_Pimpl{};
 
         int m_ControllerIndex;
     };
 }
-
