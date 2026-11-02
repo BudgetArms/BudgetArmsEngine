@@ -86,7 +86,14 @@ void Logger::Initialize(const LogVerbosity verbosity)
 
 void Logger::SetConsoleColor(const Utils::Color color)
 {
-    std::cout << "\033[38;2;" << (255.f * color.R) << ";" << (255.f * color.G) << ";" << (255.f * color.B) << "m";
+    const int r = static_cast<int>(color.R * 255);
+    const int g = static_cast<int>(color.G * 255);
+    const int b = static_cast<int>(color.B * 255);
+
+    std::cout << "\033[38;2;" <<
+            r << ";" <<
+            g << ";" <<
+            b << "m";
 }
 
 Utils::Color Logger::GetVerbosityColor(const LogVerbosity verbosity) const
