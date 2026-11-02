@@ -4,28 +4,27 @@
 #include <print>
 
 
+bae::Utils::Color bae::Logger::m_LogColor = Utils::Color::White;
+
+
 using namespace bae;
 
-Utils::Color Logger::m_LogColor = Utils::Color::White;
-
-
-void LogCustom(const std::string& message, const Utils::Color color, const bool bPrintToFile,
-               const std::source_location& location)
+void bae::LogCustom(const std::string& message, const Utils::Color& color, const bool bPrintToFile,
+                    const std::source_location& location)
 {
     Logger::SetConsoleColor(color);
-    std::cout
-            << "[" << "CUSTOM" << "]"
-            << std::setw(5) << " "
-            << location.function_name()
-            << std::setw(5) << " "
-            << " Line " << location.line() << ": "
-            << std::setw(5) << " "
-            << message << '\n';
+    const std::string_view prefix = "CUSTOM";
+
+    std::println("{:<15}{:<40} {:<4} {}",
+                 std::format("[{}]", prefix),
+                 location.function_name(),
+                 std::format("Line {}:", location.line()),
+                 message);
 
     Logger::SetConsoleColor(Logger::m_LogColor);
-
     bPrintToFile;
 }
+
 
 void bae::LogError(const std::string& message, const std::source_location& location)
 {
@@ -57,12 +56,11 @@ void bae::LogVeryVerbose(const std::string& message, const std::source_location&
     PrintLog(message, LogVerbosity::VeryVerbose, location);
 }
 
-
 void bae::PrintLog(const std::string& message, const LogVerbosity verbosity, const std::source_location& location)
 {
     Logger::SetConsoleColor(Logger::GetInstance().GetVerbosityColor(verbosity));
     const std::string_view prefix = Logger::GetInstance().GetVerbosityPrefix(verbosity);
-  
+
     std::println("{:<15}{:<40} {:<4} {}",
                  std::format("[{}]", prefix),
                  location.function_name(),
@@ -70,6 +68,28 @@ void bae::PrintLog(const std::string& message, const LogVerbosity verbosity, con
                  message);
 
     Logger::SetConsoleColor(Logger::m_LogColor);
+}
+
+
+void bae::DebugPrintAllColors()
+{
+    LogCustom("Testing Colors", Utils::Color::White, false);
+    LogCustom("Testing Colors", Utils::Color::Black, false);
+    LogCustom("Testing Colors", Utils::Color::DarkRed, false);
+    LogCustom("Testing Colors", Utils::Color::Red, false);
+    LogCustom("Testing Colors", Utils::Color::Green, false);
+    LogCustom("Testing Colors", Utils::Color::Lime, false);
+    LogCustom("Testing Colors", Utils::Color::LightGreen, false);
+    LogCustom("Testing Colors", Utils::Color::DarkGreen, false);
+    LogCustom("Testing Colors", Utils::Color::Blue, false);
+    LogCustom("Testing Colors", Utils::Color::Yellow, false);
+    LogCustom("Testing Colors", Utils::Color::Orange, false);
+    LogCustom("Testing Colors", Utils::Color::Magenta, false);
+    LogCustom("Testing Colors", Utils::Color::Cyan, false);
+    LogCustom("Testing Colors", Utils::Color::Purple, false);
+    LogCustom("Testing Colors", Utils::Color::Gray, false);
+    LogCustom("Testing Colors", Utils::Color::DarkGray, false);
+    LogCustom("Testing Colors", Utils::Color::Transparent, false);
 }
 
 void Logger::Initialize(const LogVerbosity verbosity)
