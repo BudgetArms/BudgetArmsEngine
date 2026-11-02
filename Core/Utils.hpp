@@ -54,6 +54,10 @@ namespace bae::Utils
         static const Color Black;
         static const Color Red;
         static const Color Green;
+        static const Color DarkRed;
+        static const Color Lime;
+        static const Color LightGreen;
+        static const Color DarkGreen;
         static const Color Blue;
         static const Color Yellow;
         static const Color Orange;
@@ -79,16 +83,20 @@ namespace bae::Utils
     // inline's are needed to prevent linker error(s)
     inline constexpr Color Color::White       = Color(1.f, 1.f, 1.f);
     inline constexpr Color Color::Black       = Color(0.f, 0.f, 0.f);
+    inline constexpr Color Color::DarkRed     = Color(0.545f, 0.f, 0.f);
     inline constexpr Color Color::Red         = Color(1.f, 0.f, 0.f);
-    inline constexpr Color Color::Green       = Color(0.f, 1.f, 0.f);
+    inline constexpr Color Color::Green       = Color(0.f, 0.5f, 0.f);
+    inline constexpr Color Color::Lime        = Color(0.f, 1.f, 0.f);
+    inline constexpr Color Color::LightGreen  = Color(0.46f, 0.99f, 0.39f);
+    inline constexpr Color Color::DarkGreen   = Color(0.f, 0.31f, 0.f);
     inline constexpr Color Color::Blue        = Color(0.f, 0.f, 1.f);
     inline constexpr Color Color::Yellow      = Color(1.f, 1.f, 0.f);
-    inline constexpr Color Color::Orange      = Color(1.f, 0.392f, 0.f);
+    inline constexpr Color Color::Orange      = Color(0.9f, 0.52f, 0.f);
     inline constexpr Color Color::Magenta     = Color(1.f, 0.f, 1.f);
     inline constexpr Color Color::Cyan        = Color(0.f, 1.f, 1.f);
     inline constexpr Color Color::Purple      = Color(0.392f, 0.165f, 0.624f);
-    inline constexpr Color Color::Gray        = Color(0.753f, 0.753f, 0.753f);
-    inline constexpr Color Color::DarkGray    = Color(0.212f, 0.231f, 0.247f);
+    inline constexpr Color Color::Gray        = Color(0.553f, 0.553f, 0.553f);
+    inline constexpr Color Color::DarkGray    = Color(0.312f, 0.331f, 0.347f);
     inline constexpr Color Color::Transparent = Color(0.f, 0.f, 0.f, 0.f);
 
 
@@ -112,5 +120,3 @@ namespace bae::Utils
     void DrawPolygon(const std::vector<glm::vec2>& points, const Color& color);
     void FillPolygon(const std::vector<glm::vec2>& points, const Color& color);
 }
-
-
