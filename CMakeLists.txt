@@ -96,8 +96,8 @@ if(STEAMWORKS_ENABLED)
 endif()
 
 
-# enable c++20 features
-target_compile_features(${ENGINE_NAME} PUBLIC cxx_std_20)
+# Enable C++23 features
+target_compile_features(${ENGINE_NAME} PUBLIC cxx_std_23)
 
 # Compile at max warning level + treat warnings as errors
 if(MSVC)
