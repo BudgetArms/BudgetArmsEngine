@@ -1,95 +1,157 @@
 #include "Logger.hpp"
 
+#include <array>
 #include <iostream>
 #include <print>
+#include <regex>
 
-
-bae::Color bae::Logger::m_LogColor = Color::White;
+#include "HelperFunctions.hpp"
 
 
 using namespace bae;
 
-void bae::LogCustom(const std::string& message, const Color& color, const bool bPrintToFile,
-                    const std::source_location& location)
+
+Color Logger::m_LogColor         = Color::White;
+LogVerbosity Logger::m_Verbosity = LogVerbosity::Normal;
+bool Logger::m_bIsInitialized    = false;
+
+LogVerbosity Logger::GetVerbosity()
 {
-    Logger::SetConsoleColor(color);
-    const std::string_view prefix = "CUSTOM";
-
-    std::println("{:<15}{:<40} {:<4} {}",
-                 std::format("[{}]", prefix),
-                 location.function_name(),
-                 std::format("Line {}:", location.line()),
-                 message);
-
-    Logger::SetConsoleColor(Logger::m_LogColor);
-    bPrintToFile;
+    return m_Verbosity;
 }
 
 
-void bae::LogError(const std::string& message, const std::source_location& location)
+void Logger::LogCustom(const std::string& message, const Color& color, const bool bPrintToFile,
+                       const std::source_location& location)
+{
+    if(!m_bIsInitialized)
+    {
+        return;
+    }
+
+    SetConsoleColor(color);
+    constexpr std::string_view prefix = "CUSTOM";
+
+    std::println("{:<20}{:<50} {:<10} {}",
+                 std::format("[{}]", prefix),
+                 SanitizeFunctionNameSignature(location.function_name()),
+                 std::format("Line {}:", location.line()),
+                 message);
+
+    SetConsoleColor(m_LogColor);
+    if(bPrintToFile)
+        return;
+}
+
+
+void Logger::LogError(const std::string& message, const std::source_location& location)
 {
     PrintLog(message, LogVerbosity::Error, location);
 }
 
-void bae::LogWarning(const std::string& message, const std::source_location& location)
+void Logger::LogWarning(const std::string& message, const std::source_location& location)
 {
     PrintLog(message, LogVerbosity::Warning, location);
 }
 
-void bae::LogSuccess(const std::string& message, const std::source_location& location)
+void Logger::LogSuccess(const std::string& message, const std::source_location& location)
 {
     PrintLog(message, LogVerbosity::Success, location);
 }
 
-void bae::LogNormal(const std::string& message, const std::source_location& location)
+void Logger::LogNormal(const std::string& message, const std::source_location& location)
 {
     PrintLog(message, LogVerbosity::Normal, location);
 }
 
-void bae::LogVerbose(const std::string& message, const std::source_location& location)
+void Logger::LogVerbose(const std::string& message, const std::source_location& location)
 {
     PrintLog(message, LogVerbosity::Verbose, location);
 }
 
-void bae::LogVeryVerbose(const std::string& message, const std::source_location& location)
+void Logger::LogVeryVerbose(const std::string& message, const std::source_location& location)
 {
     PrintLog(message, LogVerbosity::VeryVerbose, location);
 }
 
-void bae::PrintLog(const std::string& message, const LogVerbosity verbosity, const std::source_location& location)
+std::string Logger::SanitizeFunctionNameSignature(const std::string& functionName)
 {
-    Logger::SetConsoleColor(Logger::GetInstance().GetVerbosityColor(verbosity));
-    const std::string_view prefix = Logger::GetInstance().GetVerbosityPrefix(verbosity);
+    #ifdef _MSC_VER
 
-    std::println("{:<15}{:<40} {:<4} {}",
+    constexpr std::array<std::string_view, 5> msvcCallingConventions =
+    {
+        "__cdecl",
+        "__stdcall",
+        "__fastcall",
+        "__thiscall",
+        "__vectorcall"
+    };
+
+    std::string normalFunctionName = functionName;
+    for(auto msvcCallingConvention : msvcCallingConventions)
+    {
+        normalFunctionName = Utils::ReplaceText(normalFunctionName, msvcCallingConvention, "");
+    }
+
+    // replace (void)
+    normalFunctionName = Utils::ReplaceText(normalFunctionName, "(void)", "");
+
+    return normalFunctionName;
+
+    #else
+
+    return functionName;
+    #endif
+}
+
+void Logger::PrintLog(const std::string& message, const LogVerbosity verbosity, const std::source_location& location)
+{
+    SetConsoleColor(GetVerbosityColor(verbosity));
+    const std::string_view prefix = GetVerbosityPrefix(verbosity);
+
+    std::println("{:<20}{:<50} {:<10} {}",
                  std::format("[{}]", prefix),
-                 location.function_name(),
+                 SanitizeFunctionNameSignature(location.function_name()),
                  std::format("Line {}:", location.line()),
                  message);
 
-    Logger::SetConsoleColor(Logger::m_LogColor);
+    SetConsoleColor(m_LogColor);
 }
 
 
 void bae::DebugPrintAllColors()
 {
-    LogCustom("Testing Colors", Color::White, false);
-    LogCustom("Testing Colors", Color::Black, false);
-    LogCustom("Testing Colors", Color::DarkRed, false);
-    LogCustom("Testing Colors", Color::Red, false);
-    LogCustom("Testing Colors", Color::Green, false);
-    LogCustom("Testing Colors", Color::Lime, false);
-    LogCustom("Testing Colors", Color::LightGreen, false);
-    LogCustom("Testing Colors", Color::DarkGreen, false);
-    LogCustom("Testing Colors", Color::Blue, false);
-    LogCustom("Testing Colors", Color::Yellow, false);
-    LogCustom("Testing Colors", Color::Orange, false);
-    LogCustom("Testing Colors", Color::Magenta, false);
-    LogCustom("Testing Colors", Color::Cyan, false);
-    LogCustom("Testing Colors", Color::Purple, false);
-    LogCustom("Testing Colors", Color::Gray, false);
-    LogCustom("Testing Colors", Color::DarkGray, false);
-    LogCustom("Testing Colors", Color::Transparent, false);
+    std::println();
+    Logger::LogCustom("Testing Colors", Color::White, false);
+    Logger::LogCustom("Testing Colors", Color::Black, false);
+    Logger::LogCustom("Testing Colors", Color::DarkRed, false);
+    Logger::LogCustom("Testing Colors", Color::Red, false);
+    Logger::LogCustom("Testing Colors", Color::Green, false);
+    Logger::LogCustom("Testing Colors", Color::Lime, false);
+    Logger::LogCustom("Testing Colors", Color::LightGreen, false);
+    Logger::LogCustom("Testing Colors", Color::DarkGreen, false);
+    Logger::LogCustom("Testing Colors", Color::Blue, false);
+    Logger::LogCustom("Testing Colors", Color::Yellow, false);
+    Logger::LogCustom("Testing Colors", Color::Orange, false);
+    Logger::LogCustom("Testing Colors", Color::Magenta, false);
+    Logger::LogCustom("Testing Colors", Color::Cyan, false);
+    Logger::LogCustom("Testing Colors", Color::Purple, false);
+    Logger::LogCustom("Testing Colors", Color::Gray, false);
+    Logger::LogCustom("Testing Colors", Color::DarkGray, false);
+    Logger::LogCustom("Testing Colors", Color::Transparent, false);
+    std::println();
+}
+
+void bae::DebugPrintAllVerbosity()
+{
+    std::println();
+    Logger::LogSuccess("Testing Success");
+    Logger::LogWarning("Testing Warning");
+    Logger::LogError("Testing Error");
+    Logger::LogNormal("Testing Normal");
+    Logger::LogVerbose("Testing Verbose");
+    Logger::LogVeryVerbose("Testing VeryVerbose");
+    std::println();
 }
 
 void Logger::Initialize(const LogVerbosity verbosity)
@@ -104,7 +166,7 @@ void Logger::Initialize(const LogVerbosity verbosity)
     m_Verbosity      = verbosity;
 }
 
-void Logger::SetConsoleColor(const Color color)
+void Logger::SetConsoleColor(const Color& color)
 {
     const int r = static_cast<int>(color.R * 255);
     const int g = static_cast<int>(color.G * 255);
@@ -116,7 +178,7 @@ void Logger::SetConsoleColor(const Color color)
             b << "m";
 }
 
-Color Logger::GetVerbosityColor(const LogVerbosity verbosity) const
+Color Logger::GetVerbosityColor(const LogVerbosity verbosity)
 {
     if(!m_bIsInitialized)
     {
@@ -141,7 +203,7 @@ Color Logger::GetVerbosityColor(const LogVerbosity verbosity) const
     return color;
 }
 
-std::string_view Logger::GetVerbosityPrefix(const LogVerbosity verbosity) const
+std::string_view Logger::GetVerbosityPrefix(const LogVerbosity verbosity)
 {
     if(!m_bIsInitialized)
     {

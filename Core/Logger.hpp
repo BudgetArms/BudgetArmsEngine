@@ -1,12 +1,9 @@
 #pragma once
 
-#include <array>
 #include <source_location>
 #include <string>
 
-#include "Color.hpp"
 #include "Utils.hpp"
-#include "Singletons/Singleton.hpp"
 
 
 namespace bae
@@ -23,43 +20,59 @@ namespace bae
     };
 
 
-    void LogCustom(const std::string& message, const Color& color, bool bPrintToFile,
-                   const std::source_location& location = std::source_location::current());
+    [[maybe_unused]] void DebugPrintAllColors();
+    [[maybe_unused]] void DebugPrintAllVerbosity();
 
-    void LogError(const std::string& message,
-                  const std::source_location& location = std::source_location::current());
-    void LogWarning(const std::string& message,
-                    const std::source_location& location = std::source_location::current());
-    void LogSuccess(const std::string& message,
-                    const std::source_location& location = std::source_location::current());
-    void LogNormal(const std::string& message,
-                   const std::source_location& location = std::source_location::current());
-    void LogVerbose(const std::string& message,
-                    const std::source_location& location = std::source_location::current());
-    void LogVeryVerbose(const std::string& message,
-                        const std::source_location& location = std::source_location::current());
-
-    // Do Not Use
-    void PrintLog(const std::string& message, LogVerbosity verbosity, const std::source_location& location);
-
-    void DebugPrintAllColors();
-
-    class Logger : public Singleton<Logger>
+    class Logger
     {
     public:
-        void Initialize(LogVerbosity verbosity);
-        static void SetConsoleColor(Color color);
+        virtual ~Logger() = default;
+
+        Logger(const Logger&)            = delete;
+        Logger(Logger&&)                 = delete;
+        Logger& operator=(const Logger&) = delete;
+        Logger& operator=(Logger&&)      = delete;
 
 
-        [[nodiscard]] Color GetVerbosityColor(LogVerbosity verbosity) const;
-        [[nodiscard]] std::string_view GetVerbosityPrefix(LogVerbosity verbosity) const;
+        static void Initialize(LogVerbosity verbosity);
+        static void SetConsoleColor(const Color& color);
+
+
+        static void LogCustom(const std::string& message, const Color& color, bool bPrintToFile,
+                              const std::source_location& location = std::source_location::current());
+
+        static void LogError(const std::string& message,
+                             const std::source_location& location = std::source_location::current());
+        static void LogWarning(const std::string& message,
+                               const std::source_location& location = std::source_location::current());
+        static void LogSuccess(const std::string& message,
+                               const std::source_location& location = std::source_location::current());
+        static void LogNormal(const std::string& message,
+                              const std::source_location& location = std::source_location::current());
+        static void LogVerbose(const std::string& message,
+                               const std::source_location& location = std::source_location::current());
+        static void LogVeryVerbose(const std::string& message,
+                                   const std::source_location& location = std::source_location::current());
+
+
+        [[nodiscard]] static Color GetVerbosityColor(LogVerbosity verbosity);
+        [[nodiscard]] static std::string_view GetVerbosityPrefix(LogVerbosity verbosity);
 
         static Color m_LogColor;
+        static LogVerbosity GetVerbosity();
 
-    private:
+    protected:
+        Logger() = default;
+
+        [[nodiscard]] static std::string SanitizeFunctionNameSignature(const std::string& functionName);
+
+        static
+        void PrintLog(const std::string& message, LogVerbosity verbosity,
+                      const std::source_location& location);
+
         std::filesystem::path m_LogFilePath{ "/" };
-        LogVerbosity m_Verbosity{ LogVerbosity::Normal };
-        bool m_bIsInitialized{};
+        static LogVerbosity m_Verbosity;
+        static bool m_bIsInitialized;
 
         static constexpr Color m_ErrorColor{ Color::Magenta };
         static constexpr std::string_view m_ErrorPrefix{ "UNDEFINED_ERROR" };
