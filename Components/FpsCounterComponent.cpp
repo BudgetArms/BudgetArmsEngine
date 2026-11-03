@@ -10,7 +10,7 @@
 
 using namespace bae;
 
-FpsTextComponent::FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font, const Utils::Color& color) :
+FpsTextComponent::FpsTextComponent(GameObject& owner, std::shared_ptr<Font> font, const Color& color) :
     TextComponent(owner, "FPS: xxx", std::move(font))
 {
     SetColor(color);
@@ -82,7 +82,7 @@ void FpsTextComponent::Render() const
     };
 
 
-    Utils::FillPolygon(points, Utils::Color::DarkGray);
+    Utils::FillPolygon(points, Color::DarkGray);
 
     TextComponent::Render();
 }

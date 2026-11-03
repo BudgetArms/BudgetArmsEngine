@@ -20,6 +20,7 @@ endif()
 
 add_library(${ENGINE_NAME} STATIC
     "Core/BudgetEngine.cpp"
+    "Core/Color.hpp"
     "Core/EventListener.hpp"
     "Core/EventQueue.cpp"
     "Core/GameObject.cpp"

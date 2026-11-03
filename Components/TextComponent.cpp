@@ -15,7 +15,7 @@ using namespace bae;
 
 
 TextComponent::TextComponent(GameObject& owner, const std::string& text, std::shared_ptr<Font> font,
-                             const Utils::Color& color) :
+                             const Color& color) :
     Component{ owner },
     m_NeedsUpdate{ true },
     m_Text{ text },
@@ -88,7 +88,7 @@ void TextComponent::SetText(const std::string& text)
 }
 
 
-Utils::Color TextComponent::GetColor()
+Color TextComponent::GetColor()
 {
     if(m_NeedsUpdate)
     {
@@ -98,7 +98,7 @@ Utils::Color TextComponent::GetColor()
     return m_Color;
 }
 
-void TextComponent::SetColor(const Utils::Color& color)
+void TextComponent::SetColor(const Color& color)
 {
     m_Color       = color;
     m_NeedsUpdate = true;

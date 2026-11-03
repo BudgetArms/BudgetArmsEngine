@@ -11,7 +11,7 @@
 using namespace bae;
 
 
-Text2D::Text2D(const std::string& text, std::shared_ptr<Font> font, const Utils::Color& color) :
+Text2D::Text2D(const std::string& text, std::shared_ptr<Font> font, const Color& color) :
     m_Text{ text },
     m_Color{ color }
 {
@@ -77,7 +77,7 @@ void Text2D::SetText(const std::string& text)
 }
 
 
-Utils::Color Text2D::GetColor()
+Color Text2D::GetColor()
 {
     if(m_bNeedsUpdate)
     {
@@ -87,7 +87,7 @@ Utils::Color Text2D::GetColor()
     return m_Color;
 }
 
-void Text2D::SetColor(const Utils::Color& color)
+void Text2D::SetColor(const Color& color)
 {
     m_Color        = color;
     m_bNeedsUpdate = true;

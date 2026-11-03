@@ -26,11 +26,9 @@ namespace bae::Graphs
         int m_Id{ InvalidNodeID };
 
         const int m_RenderRadius{ 10 };
-        Utils::Color m_RenderColor{ Utils::Color::Gray, 0.5f };
+        Color m_RenderColor{ Color::Gray, 0.5f };
 
     protected:
         friend class Graph;
     };
 }
-
-

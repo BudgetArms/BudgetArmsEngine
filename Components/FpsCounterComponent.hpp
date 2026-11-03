@@ -14,7 +14,7 @@ namespace bae
     public:
         explicit FpsTextComponent(GameObject& owner,
                                   std::shared_ptr<Font> font = nullptr,
-                                  const Utils::Color& color  = Utils::Color::White);
+                                  const Color& color         = Color::White);
         ~FpsTextComponent() override = default;
 
         FpsTextComponent(const FpsTextComponent&)            = delete;

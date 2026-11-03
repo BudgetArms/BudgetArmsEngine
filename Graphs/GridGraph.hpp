@@ -83,9 +83,9 @@ namespace bae::Graphs
         bool m_bRenderNodes{ false };
         bool m_bRenderConnections{ false };
 
-        Utils::Color m_RenderColorNode{ Utils::Color::Gray, 0.5f };
-        Utils::Color m_RenderColorNodeOutlines{ Utils::Color::Red };
-        Utils::Color m_RenderColorConnections{ Utils::Color::Cyan };
+        Color m_RenderColorNode{ Color::Gray, 0.5f };
+        Color m_RenderColorNodeOutlines{ Color::Red };
+        Color m_RenderColorConnections{ Color::Cyan };
 
     private:
         void InitializeGrid();

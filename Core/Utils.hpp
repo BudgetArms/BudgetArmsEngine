@@ -8,6 +8,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_rect.h>
 
+#include "Color.hpp"
+
 
 namespace bae::Utils
 {
@@ -25,79 +27,6 @@ namespace bae::Utils
     };
 
 
-    struct Color
-    {
-        // [0-1]
-        // constexpr explicit Color(const float r, const float g, const float b, const float a = 1.f) :
-        constexpr explicit Color(const float r, const float g, const float b, const float a = 1.f) :
-            R{ std::clamp(r, 0.f, 1.f) },
-            G{ std::clamp(g, 0.f, 1.f) },
-            B{ std::clamp(b, 0.f, 1.f) },
-            A{ std::clamp(a, 0.f, 1.f) }
-        {
-        }
-
-        constexpr Color(const Color& other, const float a) :
-            Color(other.R, other.G, other.B, a)
-        {
-        }
-
-        [[nodiscard]] constexpr SDL_Color GetSDLColor() const;
-
-        float R{};
-        float G{};
-        float B{};
-        float A{};
-
-
-        static const Color White;
-        static const Color Black;
-        static const Color Red;
-        static const Color Green;
-        static const Color DarkRed;
-        static const Color Lime;
-        static const Color LightGreen;
-        static const Color DarkGreen;
-        static const Color Blue;
-        static const Color Yellow;
-        static const Color Orange;
-        static const Color Magenta;
-        static const Color Cyan;
-        static const Color Purple;
-        static const Color Gray;
-        static const Color DarkGray;
-        static const Color Transparent;
-    };
-
-    constexpr SDL_Color Color::GetSDLColor() const
-    {
-        return SDL_Color
-        {
-            static_cast<Uint8>(255.f * std::clamp(R, 0.f, 1.f)),
-            static_cast<Uint8>(255.f * std::clamp(G, 0.f, 1.f)),
-            static_cast<Uint8>(255.f * std::clamp(B, 0.f, 1.f)),
-            static_cast<Uint8>(255.f * std::clamp(A, 0.f, 1.f))
-        };
-    }
-
-    // inline's are needed to prevent linker error(s)
-    inline constexpr Color Color::White       = Color(1.f, 1.f, 1.f);
-    inline constexpr Color Color::Black       = Color(0.f, 0.f, 0.f);
-    inline constexpr Color Color::DarkRed     = Color(0.545f, 0.f, 0.f);
-    inline constexpr Color Color::Red         = Color(1.f, 0.f, 0.f);
-    inline constexpr Color Color::Green       = Color(0.f, 0.5f, 0.f);
-    inline constexpr Color Color::Lime        = Color(0.f, 1.f, 0.f);
-    inline constexpr Color Color::LightGreen  = Color(0.46f, 0.99f, 0.39f);
-    inline constexpr Color Color::DarkGreen   = Color(0.f, 0.31f, 0.f);
-    inline constexpr Color Color::Blue        = Color(0.f, 0.f, 1.f);
-    inline constexpr Color Color::Yellow      = Color(1.f, 1.f, 0.f);
-    inline constexpr Color Color::Orange      = Color(0.9f, 0.52f, 0.f);
-    inline constexpr Color Color::Magenta     = Color(1.f, 0.f, 1.f);
-    inline constexpr Color Color::Cyan        = Color(0.f, 1.f, 1.f);
-    inline constexpr Color Color::Purple      = Color(0.392f, 0.165f, 0.624f);
-    inline constexpr Color Color::Gray        = Color(0.553f, 0.553f, 0.553f);
-    inline constexpr Color Color::DarkGray    = Color(0.312f, 0.331f, 0.347f);
-    inline constexpr Color Color::Transparent = Color(0.f, 0.f, 0.f, 0.f);
 
 
     bool IsOverlapping(const SDL_Rect& rect1, const SDL_Rect& rect2);

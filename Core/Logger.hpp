@@ -4,6 +4,7 @@
 #include <source_location>
 #include <string>
 
+#include "Color.hpp"
 #include "Utils.hpp"
 #include "Singletons/Singleton.hpp"
 
@@ -22,7 +23,7 @@ namespace bae
     };
 
 
-    void LogCustom(const std::string& message, const Utils::Color& color, bool bPrintToFile,
+    void LogCustom(const std::string& message, const Color& color, bool bPrintToFile,
                    const std::source_location& location = std::source_location::current());
 
     void LogError(const std::string& message,
@@ -47,30 +48,30 @@ namespace bae
     {
     public:
         void Initialize(LogVerbosity verbosity);
-        static void SetConsoleColor(Utils::Color color);
+        static void SetConsoleColor(Color color);
 
 
-        [[nodiscard]] Utils::Color GetVerbosityColor(LogVerbosity verbosity) const;
+        [[nodiscard]] Color GetVerbosityColor(LogVerbosity verbosity) const;
         [[nodiscard]] std::string_view GetVerbosityPrefix(LogVerbosity verbosity) const;
 
-        static Utils::Color m_LogColor;
+        static Color m_LogColor;
 
     private:
         std::filesystem::path m_LogFilePath{ "/" };
         LogVerbosity m_Verbosity{ LogVerbosity::Normal };
         bool m_bIsInitialized{};
 
-        static constexpr Utils::Color m_ErrorColor{ Utils::Color::Magenta };
+        static constexpr Color m_ErrorColor{ Color::Magenta };
         static constexpr std::string_view m_ErrorPrefix{ "UNDEFINED_ERROR" };
 
-        static inline const std::unordered_map<LogVerbosity, std::tuple<Utils::Color, std::string_view>> m_VerbosityData
+        static inline const std::unordered_map<LogVerbosity, std::tuple<Color, std::string_view>> m_VerbosityData
         {
-            { LogVerbosity::Error, { Utils::Color::Red, "ERROR" } },
-            { LogVerbosity::Warning, { Utils::Color::Orange, "WARNING" } },
-            { LogVerbosity::Success, { Utils::Color::LightGreen, "SUCCESS" } },
-            { LogVerbosity::Normal, { Utils::Color::White, "LOG" } },
-            { LogVerbosity::Verbose, { Utils::Color::Gray, "VERBOSE" } },
-            { LogVerbosity::VeryVerbose, { Utils::Color::DarkGray, "VERYVERBOSE" } },
+            { LogVerbosity::Error, { Color::Red, "ERROR" } },
+            { LogVerbosity::Warning, { Color::Orange, "WARNING" } },
+            { LogVerbosity::Success, { Color::LightGreen, "SUCCESS" } },
+            { LogVerbosity::Normal, { Color::White, "LOG" } },
+            { LogVerbosity::Verbose, { Color::Gray, "VERBOSE" } },
+            { LogVerbosity::VeryVerbose, { Color::DarkGray, "VERYVERBOSE" } },
         };
     };
 }

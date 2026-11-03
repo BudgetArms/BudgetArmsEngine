@@ -16,7 +16,7 @@ namespace bae
     {
     public:
         explicit Text2D(const std::string& text, std::shared_ptr<Font> font = nullptr,
-                        const Utils::Color& color                           = Utils::Color::White);
+                        const Color& color                                  = Color::White);
         ~Text2D() = default;
 
         Text2D(const Text2D&)            = delete;
@@ -31,8 +31,8 @@ namespace bae
         [[nodiscard]] std::string GetText();
         void SetText(const std::string& text);
 
-        [[nodiscard]] Utils::Color GetColor();
-        void SetColor(const Utils::Color& color);
+        [[nodiscard]] Color GetColor();
+        void SetColor(const Color& color);
 
         [[nodiscard]] Font* GetFont() const { return m_uFont.get(); }
         void SetFont(std::shared_ptr<Font> font);
@@ -49,7 +49,7 @@ namespace bae
 
         bool m_bNeedsUpdate{ true };
         std::string m_Text;
-        Utils::Color m_Color;
+        Color m_Color;
     };
 }
 

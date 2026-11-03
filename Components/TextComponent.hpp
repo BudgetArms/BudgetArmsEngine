@@ -17,7 +17,7 @@ namespace bae
     {
     public:
         TextComponent(GameObject& owner, const std::string& text,
-                      std::shared_ptr<Font> font = nullptr, const Utils::Color& color = Utils::Color::White);
+                      std::shared_ptr<Font> font = nullptr, const Color& color = Color::White);
         ~TextComponent() override;
 
         TextComponent(const TextComponent&)            = delete;
@@ -32,8 +32,8 @@ namespace bae
         std::string GetText();
         void SetText(const std::string& text);
 
-        Utils::Color GetColor();
-        void SetColor(const Utils::Color& color);
+        Color GetColor();
+        void SetColor(const Color& color);
 
         [[nodiscard]] Font* GetFont() const { return m_Font.get(); }
         void SetFont(std::shared_ptr<Font> font);
@@ -44,7 +44,7 @@ namespace bae
     private:
         bool m_NeedsUpdate;
         std::string m_Text;
-        Utils::Color m_Color;
+        Color m_Color;
         std::shared_ptr<Font> m_Font;
 
     protected:

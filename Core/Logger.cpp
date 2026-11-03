@@ -4,12 +4,12 @@
 #include <print>
 
 
-bae::Utils::Color bae::Logger::m_LogColor = Utils::Color::White;
+bae::Color bae::Logger::m_LogColor = Color::White;
 
 
 using namespace bae;
 
-void bae::LogCustom(const std::string& message, const Utils::Color& color, const bool bPrintToFile,
+void bae::LogCustom(const std::string& message, const Color& color, const bool bPrintToFile,
                     const std::source_location& location)
 {
     Logger::SetConsoleColor(color);
@@ -73,23 +73,23 @@ void bae::PrintLog(const std::string& message, const LogVerbosity verbosity, con
 
 void bae::DebugPrintAllColors()
 {
-    LogCustom("Testing Colors", Utils::Color::White, false);
-    LogCustom("Testing Colors", Utils::Color::Black, false);
-    LogCustom("Testing Colors", Utils::Color::DarkRed, false);
-    LogCustom("Testing Colors", Utils::Color::Red, false);
-    LogCustom("Testing Colors", Utils::Color::Green, false);
-    LogCustom("Testing Colors", Utils::Color::Lime, false);
-    LogCustom("Testing Colors", Utils::Color::LightGreen, false);
-    LogCustom("Testing Colors", Utils::Color::DarkGreen, false);
-    LogCustom("Testing Colors", Utils::Color::Blue, false);
-    LogCustom("Testing Colors", Utils::Color::Yellow, false);
-    LogCustom("Testing Colors", Utils::Color::Orange, false);
-    LogCustom("Testing Colors", Utils::Color::Magenta, false);
-    LogCustom("Testing Colors", Utils::Color::Cyan, false);
-    LogCustom("Testing Colors", Utils::Color::Purple, false);
-    LogCustom("Testing Colors", Utils::Color::Gray, false);
-    LogCustom("Testing Colors", Utils::Color::DarkGray, false);
-    LogCustom("Testing Colors", Utils::Color::Transparent, false);
+    LogCustom("Testing Colors", Color::White, false);
+    LogCustom("Testing Colors", Color::Black, false);
+    LogCustom("Testing Colors", Color::DarkRed, false);
+    LogCustom("Testing Colors", Color::Red, false);
+    LogCustom("Testing Colors", Color::Green, false);
+    LogCustom("Testing Colors", Color::Lime, false);
+    LogCustom("Testing Colors", Color::LightGreen, false);
+    LogCustom("Testing Colors", Color::DarkGreen, false);
+    LogCustom("Testing Colors", Color::Blue, false);
+    LogCustom("Testing Colors", Color::Yellow, false);
+    LogCustom("Testing Colors", Color::Orange, false);
+    LogCustom("Testing Colors", Color::Magenta, false);
+    LogCustom("Testing Colors", Color::Cyan, false);
+    LogCustom("Testing Colors", Color::Purple, false);
+    LogCustom("Testing Colors", Color::Gray, false);
+    LogCustom("Testing Colors", Color::DarkGray, false);
+    LogCustom("Testing Colors", Color::Transparent, false);
 }
 
 void Logger::Initialize(const LogVerbosity verbosity)
@@ -104,7 +104,7 @@ void Logger::Initialize(const LogVerbosity verbosity)
     m_Verbosity      = verbosity;
 }
 
-void Logger::SetConsoleColor(const Utils::Color color)
+void Logger::SetConsoleColor(const Color color)
 {
     const int r = static_cast<int>(color.R * 255);
     const int g = static_cast<int>(color.G * 255);
@@ -116,7 +116,7 @@ void Logger::SetConsoleColor(const Utils::Color color)
             b << "m";
 }
 
-Utils::Color Logger::GetVerbosityColor(const LogVerbosity verbosity) const
+Color Logger::GetVerbosityColor(const LogVerbosity verbosity) const
 {
     if(!m_bIsInitialized)
     {
