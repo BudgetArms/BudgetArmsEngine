@@ -1,5 +1,7 @@
 ﻿#include "Graph.hpp"
 
+#include <algorithm>
+
 #include "Connection.hpp"
 
 
@@ -330,7 +332,3 @@ std::optional<int> Graph::GetFirstInvalidNodeId() const
 
     return std::nullopt;
 }
-
-
-
-

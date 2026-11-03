@@ -62,7 +62,7 @@ void bae::Renderer::Render() const
 
     SceneManager::GetInstance().RenderGUI();
 
-    // Maybe Scene::RenderGUI could go before the ImGui rendering, and then, this cann all go in
+    // Maybe Scene::RenderGUI could go before the ImGui rendering, and then, this can all go in
     // a scene, so that ImGui isn't needed anymore in the Engine
     ImGui::Render();
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_Renderer);
@@ -214,5 +214,3 @@ bae::WindowSize bae::Renderer::GetSDLWindowSize() const
 
     return { width, height };
 }
-
-

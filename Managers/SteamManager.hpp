@@ -46,5 +46,3 @@ namespace bae
         bool m_bInitialized{ false };
     };
 }
-
-

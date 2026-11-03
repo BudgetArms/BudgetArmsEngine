@@ -4,7 +4,9 @@
 #include <vld.h>
 #endif
 
+#include <algorithm>
 #include <cassert>
+#include <condition_variable>
 #include <filesystem>
 #include <iostream>
 #include <memory>
@@ -88,8 +90,9 @@ private:
     int m_SoundIdValue{};
 };
 
-
-namespace bae
+// To avoid internal leakage (due to translation unit), an anonymous namespace is used, One Definition Rule violation
+// Even in .cpp file, the same struct/class name can still cause issue.
+namespace
 {
     enum class SoundEventType
     {
@@ -124,7 +127,10 @@ namespace bae
         ActiveSoundID ActiveSoundID{ -1 };
         float Volume{ 1.f };
     };
+}
 
+namespace bae
+{
     class AudioQueue final
     {
     public:
