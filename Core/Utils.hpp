@@ -1,5 +1,12 @@
 ﻿#pragma once
 
+#if WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <Windows.h>
+#endif
+
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -9,6 +16,7 @@
 #include <SDL3/SDL_rect.h>
 
 #include "Color.hpp"
+#include "Logger.hpp"
 
 
 namespace bae::Utils
@@ -26,7 +34,16 @@ namespace bae::Utils
         bool bIsVSyncOn;
     };
 
+    
+    void CreateConsole();
 
+    // Remove Window's ReplaceText Macro
+    #ifdef ReplaceText
+    #undef ReplaceText
+    #endif
+    [[nodiscard]] std::string ReplaceText(const std::string_view& inputString,
+                                          const std::string_view& oldText,
+                                          const std::string_view& newText);
 
 
     bool IsOverlapping(const SDL_Rect& rect1, const SDL_Rect& rect2);

@@ -6,6 +6,8 @@
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 
+#include <regex>
+
 #include "Core/Renderer.hpp"
 
 
@@ -20,6 +22,48 @@ bae::Utils::Window::Window(const std::string& title, const std::filesystem::path
 {
 }
 
+
+void bae::Utils::CreateConsole()
+{
+    #ifdef WIN32
+    if(GetConsoleWindow() != nullptr)
+    {
+        Logger::LogWarning("Console already exists");
+        return;
+    }
+
+    const BOOL bWasSuccess = AllocConsole();
+    if(!bWasSuccess)
+    {
+        Logger::LogWarning("Console couldn't be created");
+        return;
+    }
+
+
+    FILE* fp{};
+
+    freopen_s(&fp, "CONOUT$", "w", stdout);
+    freopen_s(&fp, "CONOUT$", "w", stderr);
+    freopen_s(&fp, "CONIN$", "r", stdin);
+
+    Logger::LogSuccess("Console created");
+
+    #endif
+}
+
+// Remove Window's ReplaceText 
+#ifdef ReplaceText
+#undef ReplaceText
+#endif
+std::string bae::Utils::ReplaceText(const std::string_view& inputString, const std::string_view& oldText,
+                                    const std::string_view& newText)
+{
+    const auto inputTextString = std::string(inputString);
+    const auto oldTextString   = std::string(oldText);
+    const auto newTextString   = std::string(newText);
+
+    return std::regex_replace(inputTextString, std::regex(oldTextString), newTextString);
+}
 
 bool bae::Utils::IsOverlapping(const SDL_Rect& rect1, const SDL_Rect& rect2)
 {
@@ -207,5 +251,3 @@ void bae::Utils::FillPolygon(const std::vector<glm::vec2>& points, const Color& 
     filledPolygonRGBA(pSdlRenderer, posX.data(), posY.data(), static_cast<int>(points.size()),
                       sdlColor.r, sdlColor.g, sdlColor.b, sdlColor.a);
 }
-
-
