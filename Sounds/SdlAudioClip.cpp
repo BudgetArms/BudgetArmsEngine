@@ -72,8 +72,6 @@ SdlAudioClip::SdlAudioClip(ActiveSoundID activeId, SoundID soundId, MIX_Mixer* m
     AudioClip(activeId, soundId),
     m_Pimpl{ std::make_unique<Impl>(activeId, soundId, mixer, audio) }
 {
-    LogWarning("testing");
-    std::cout << __FUNCTION__ << '\n';
 }
 
 SdlAudioClip::~SdlAudioClip() = default;
