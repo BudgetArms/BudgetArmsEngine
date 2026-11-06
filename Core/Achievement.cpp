@@ -1,5 +1,6 @@
 ﻿#include "Achievement.hpp"
 
+#include "Core/Logger.hpp"
 #include "Core/Subject.hpp"
 
 #include "Managers/SteamManager.hpp"
@@ -31,7 +32,7 @@ void Achievement::TryUnlock(const unsigned int eventHash, Subject* subject)
 
     if(SteamManager::GetInstance().UnlockAchievement(m_Id))
     {
-        std::cout << "Unlocked Achievement: " << m_Id << '\n';
+        Logger::LogNormal("Unlocked Achievement: " + m_Id);
         m_bUnlocked = true;
     }
 }

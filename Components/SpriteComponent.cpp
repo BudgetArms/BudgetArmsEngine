@@ -2,6 +2,7 @@
 
 #include "Core/GameObject.hpp"
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 #include "Core/Renderer.hpp"
 #include "Managers/ResourceManager.hpp"
 
@@ -21,15 +22,21 @@ SpriteComponent::SpriteComponent(GameObject& owner, const std::string& filename,
 {
     if(m_NrColumns == 0)
     {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! NrColumns is 0"));
+        const std::string errorMessage = "NrColumns cannot be 0";
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
     if(m_NrRows == 0)
     {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! NrRows is 0"));
+        const std::string errorMessage = "NrRows cannot be 0";
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
     if(m_NrSprites == 0)
     {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! NrSprites is 0"));
+        const std::string errorMessage = "NrSprites cannot be 0";
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
 
     m_DstRect.w = m_SrcRect.w / static_cast<float>(m_NrColumns) - static_cast<float>(srcOffset.x);

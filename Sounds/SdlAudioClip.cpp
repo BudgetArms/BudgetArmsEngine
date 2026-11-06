@@ -1,7 +1,6 @@
 ﻿#include "SdlAudioClip.hpp"
 
 #include <algorithm>
-#include <iostream>
 #include <mutex>
 
 #include <SDL3_mixer/SDL_mixer.h>
@@ -203,14 +202,14 @@ SdlAudioClip::Impl::Impl(const ActiveSoundID activeSoundId, const SoundID soundI
 
     if(!audio)
     {
-        std::cout << FUNCTION_NAME << " Failed to get valid audio from SoundID: " << soundId.ID << '\n';
+        Logger::LogWarning("Invalid Audio, from SoundID: " + std::to_string(soundId.ID));
         return;
     }
 
     bool success = MIX_SetTrackAudio(m_Track->GetTrack(), audio->GetAudio());
     if(!success)
     {
-        std::cout << FUNCTION_NAME << " Failed to set Audio on Track, Error:" << SDL_GetError() << '\n';
+        Logger::LogWarning("Failed to set audio on Track, Error: " + std::string(SDL_GetError()));
         return;
     }
 
@@ -218,7 +217,7 @@ SdlAudioClip::Impl::Impl(const ActiveSoundID activeSoundId, const SoundID soundI
     success = MIX_SetTrackStoppedCallback(m_Track->GetTrack(), TrackFinishedCallBack, this);
     if(!success)
     {
-        std::cout << FUNCTION_NAME << " Failed to create Track Stopped Callback, Error:" << SDL_GetError() << '\n';
+        Logger::LogError("Failed to create TrackStoppedCallback, Error:" + std::string(SDL_GetError()));
         return;
     }
 
@@ -235,9 +234,10 @@ bool SdlAudioClip::Impl::Play()
 {
     const auto track   = m_Track->GetTrack();
     const bool success = MIX_PlayTrack(track, 0);
+
     if(!success)
     {
-        std::cout << FUNCTION_NAME << " Failed to play sound, Error: " << SDL_GetError() << '\n';
+        Logger::LogError("Failed to play sound, Error:" + std::string(SDL_GetError()));
         return false;
     }
 
@@ -351,7 +351,7 @@ void __cdecl SdlAudioClip::Impl::TrackFinishedCallBack(void* data, MIX_Track*)
     const auto pImpl = static_cast<Impl*>(data);
     if(!pImpl)
     {
-        std::cout << FUNCTION_NAME << " Failed! data couldn't be casted to Impl*" << '\n';
+        Logger::LogError("Data couldn't be casted to Impl*");
         return;
     }
 
@@ -362,7 +362,7 @@ void __cdecl SdlAudioClip::Impl::TrackFinishedCallBack(void* data, MIX_Track*)
         const bool success = MIX_PlayTrack(pImpl->m_Track->GetTrack(), 0);
         if(!success)
         {
-            std::cout << FUNCTION_NAME << " Failed to loop/replay the same track, Error: " << SDL_GetError() << '\n';
+            Logger::LogError("Failed to loop/replay the same track, Error: " + std::string(SDL_GetError()));
         }
 
         return;

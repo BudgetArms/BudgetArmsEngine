@@ -8,6 +8,7 @@
 #include <SDL3/SDL.h>
 
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 
 
 using namespace bae;
@@ -107,7 +108,9 @@ void Mouse::Impl::ProcessInput()
     {
         if(!command)
         {
-            throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! Command is nullptr"));
+            const std::string errorMessage = "Command is invalid";
+            Logger::LogError(errorMessage);
+            throw std::runtime_error(FUNCTION_NAME + errorMessage);
         }
 
         bool keyPreviouslyPressed = false;

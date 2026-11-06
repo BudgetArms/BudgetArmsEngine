@@ -8,7 +8,6 @@
 #include <cassert>
 #include <condition_variable>
 #include <filesystem>
-#include <iostream>
 #include <memory>
 #include <ranges>
 #include <stop_token>
@@ -20,6 +19,7 @@
 #include <SDL3_mixer/SDL_mixer.h>
 
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 #include "Core/RingBuffer.hpp"
 #include "Core/ServiceLocator.hpp"
 #include "Managers/ResourceManager.hpp"
@@ -190,14 +190,14 @@ AudioQueue::AudioQueue() :
 {
     if(!MIX_Init())
     {
-        std::cout << FUNCTION_NAME << " Failed to initialize Mixer, Error: " << SDL_GetError() << '\n';
+        Logger::LogWarning("Failed to initialize Mixer, Error: " + std::string(SDL_GetError()));
         return;
     }
 
     m_Mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
     if(!m_Mixer)
     {
-        std::cout << FUNCTION_NAME << " Failed to create mixer, Error: " << SDL_GetError() << '\n';
+        Logger::LogWarning("Failed to create mixer, Error: " + std::string(SDL_GetError()));
         return;
     }
 
@@ -252,7 +252,7 @@ const AudioClip* AudioQueue::GetAudioClipUnlocked(const ActiveSoundID activeSoun
     {
         if(!it->second)
         {
-            std::cout << FUNCTION_NAME << " Failed! Invalid AudioClip" << '\n';
+            Logger::LogError("Invalid AudioClip");
             return nullptr;
         }
         return it->second.get();
@@ -279,7 +279,7 @@ bool AudioQueue::IsPlaying(const ActiveSoundID activeSoundId)
     const AudioClip* audioClip = GetAudioClipUnlocked(activeSoundId);
     if(!audioClip)
     {
-        std::cout << FUNCTION_NAME << "Failed! AudioClip Not Founded/Invalid" << '\n';
+        Logger::LogError("AudioClip Not Found/Invalid");
         return false;
     }
 
@@ -292,7 +292,7 @@ bool AudioQueue::IsPaused(const ActiveSoundID activeSoundId)
     const AudioClip* audioClip = GetAudioClipUnlocked(activeSoundId);
     if(!audioClip)
     {
-        std::cout << FUNCTION_NAME << "Failed! AudioClip Not Founded/Invalid" << '\n';
+        Logger::LogError("AudioClip Not Found/Invalid");
         return false;
     }
 
@@ -305,7 +305,7 @@ bool AudioQueue::IsMuted(const ActiveSoundID activeSoundId)
     const AudioClip* audioClip = GetAudioClipUnlocked(activeSoundId);
     if(!audioClip)
     {
-        std::cout << FUNCTION_NAME << "Failed! AudioClip Not Founded/Invalid" << '\n';
+        Logger::LogError("AudioClip Not Found/Invalid");
         return false;
     }
 
@@ -318,7 +318,7 @@ float AudioQueue::GetVolume(const ActiveSoundID activeSoundId)
     const AudioClip* audioClip = GetAudioClipUnlocked(activeSoundId);
     if(!audioClip)
     {
-        std::cout << FUNCTION_NAME << "Failed! AudioClip Not Founded/Invalid" << '\n';
+        Logger::LogError("AudioClip Not Found/Invalid");
         return -1.f;
     }
 
@@ -368,7 +368,7 @@ void AudioQueue::AudioThreadLoop(const std::stop_token& stopToken)
 
 void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
 {
-    SdlAudioClip* audioClip = nullptr;
+    SdlAudioClip* audioClip{};
 
     const auto it = std::ranges::find_if(m_ActiveAudio, [&eventData](auto& activeAudio)
     {
@@ -388,14 +388,14 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
     const bool isAudioClipNeeded = IsAudioClipNeededForSoundEventType(eventData.Type);
     if(isAudioClipNeeded && !audioClip)
     {
-        std::cout << FUNCTION_NAME << " Failed! Audio clip not found but needed in SoundEvent, ActiveSoundID: " <<
-                eventData.ActiveSoundID.ID << '\n';
+        Logger::LogError("AudioClip Not Found but needed in SoundEvent: ActiveSoundID: "
+            + std::to_string(eventData.ActiveSoundID.ID));
         return;
     }
 
     if(eventData.SoundID.ID == -1 && IsValidSoundIDNeededForSoundEventType(eventData.Type))
     {
-        std::cout << FUNCTION_NAME << " Failed! SoundId is invalid (-1) but needed in SoundEvent" << '\n';
+        Logger::LogError("SoundID is invalid but needed for this SoundEvent");
         return;
     }
 
@@ -406,13 +406,14 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
             // SoundClip already loaded, it shouldn't be loaded, bc Play shouldn't have an ActiveSoundID
             if(audioClip)
             {
-                std::cout << FUNCTION_NAME << " Failed to Play Sound, since it already has a sound playing" << '\n';
+                Logger::LogError("Play Sound: already playing a sound with this ActiveSoundID: "
+                    + std::to_string(eventData.ActiveSoundID.ID));
                 return;
             }
 
             if(eventData.SoundID.ID == -1)
             {
-                std::cout << FUNCTION_NAME << " Play: Invalid SoundID Given" << '\n';
+                Logger::LogError("Play Sound: No SoundID given");
                 return;
             }
 
@@ -422,7 +423,7 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
 
             if(!uAudioClip->Play())
             {
-                std::cout << FUNCTION_NAME << " Play: Invalid SoundID Given" << '\n';
+                Logger::LogError("Play Sound: Invalid SoundID given");
                 return;
             }
 
@@ -440,7 +441,7 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
         {
             if(!audioClip)
             {
-                std::cout << FUNCTION_NAME << " Failed! AudioClip is invalid" << '\n';
+                Logger::LogError("Stop Sound: AudioClip invalid");
                 return;
             }
             audioClip->Stop();
@@ -450,7 +451,7 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
         {
             if(!audioClip)
             {
-                std::cout << FUNCTION_NAME << " Failed! AudioClip is invalid" << '\n';
+                Logger::LogError("Resume Sound: AudioClip invalid");
                 return;
             }
             audioClip->Resume();
@@ -460,7 +461,7 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
         {
             if(!audioClip)
             {
-                std::cout << FUNCTION_NAME << " Failed! AudioClip is invalid" << '\n';
+                Logger::LogError("Pause Sound: AudioClip invalid");
                 return;
             }
             audioClip->Pause();
@@ -470,7 +471,7 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
         {
             if(!audioClip)
             {
-                std::cout << FUNCTION_NAME << " Failed! AudioClip is invalid" << '\n';
+                Logger::LogError("Mute Sound: AudioClip invalid");
                 return;
             }
             audioClip->Mute();
@@ -480,7 +481,7 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
         {
             if(!audioClip)
             {
-                std::cout << FUNCTION_NAME << " Failed! AudioClip is invalid" << '\n';
+                Logger::LogError("UnMute Sound: AudioClip invalid");
                 return;
             }
             audioClip->UnMute();
@@ -490,7 +491,7 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
         {
             if(!audioClip)
             {
-                std::cout << FUNCTION_NAME << " Failed! AudioClip is invalid" << '\n';
+                Logger::LogError("Loop Sound: AudioClip invalid");
                 return;
             }
             audioClip->Loop();
@@ -500,7 +501,7 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
         {
             if(!audioClip)
             {
-                std::cout << FUNCTION_NAME << " Failed! AudioClip is invalid" << '\n';
+                Logger::LogError("UnLoop Sound: AudioClip invalid");
                 return;
             }
             audioClip->UnLoop();
@@ -510,7 +511,7 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
         {
             if(!audioClip)
             {
-                std::cout << FUNCTION_NAME << " Failed! AudioClip is invalid" << '\n';
+                Logger::LogError("SetVolume Sound: AudioClip invalid");
                 return;
             }
             audioClip->SetVolume(eventData.Volume);
@@ -661,7 +662,6 @@ void AudioQueue::ProcessSoundEvent(const SoundEventData& eventData)
 
 void AudioQueue::CleanUpFinishedSounds()
 {
-    constexpr const char* functionName = FUNCTION_NAME;
     std::erase_if(m_ActiveAudio, [&](const auto& activeAudio)
     {
         const auto& [activeSoundID, uAudioClip] = activeAudio;
@@ -669,7 +669,7 @@ void AudioQueue::CleanUpFinishedSounds()
         {
             if(m_bShouldLogAudioDestruction)
             {
-                std::cout << functionName << " Cleaning up ActiveSoundID: " << activeSoundID.ID << '\n';
+                Logger::LogNormal("Cleaning up ActiveSoundID: " + std::to_string(activeSoundID.ID));
             }
             return true;
         }
@@ -710,10 +710,10 @@ constexpr bool AudioQueue::IsAudioClipNeededForSoundEventType(const SoundEventTy
             return false;
     }
 
-    const std::string errorMessage = std::string(FUNCTION_NAME) + " Failed! This line should never be reached" + '\n';
+    const std::string errorMessage = "This line should never be reached";
+    Logger::LogError(errorMessage);
+    assert(false && (FUNCTION_NAME + errorMessage).c_str());
 
-    std::cout << errorMessage;
-    assert(false && errorMessage.c_str());
     return true;
 }
 
@@ -750,10 +750,10 @@ constexpr bool AudioQueue::IsValidSoundIDNeededForSoundEventType(const SoundEven
             return false;
     }
 
-    const std::string errorMessage = std::string(FUNCTION_NAME) + " Failed! This line should never be reached" + '\n';
+    const std::string errorMessage = "This line should never be reached";
+    Logger::LogError(errorMessage);
+    assert(false && (FUNCTION_NAME + errorMessage).c_str());
 
-    std::cout << errorMessage;
-    assert(false && errorMessage.c_str());
     return true;
 }
 
@@ -973,7 +973,7 @@ SoundID MixerSoundSystem::Impl::LoadSound(const std::string& path)
     const std::filesystem::path soundPath = ResourceManager::GetInstance().GetResourcesPath() / path.c_str();
     if(!std::filesystem::exists(soundPath))
     {
-        std::cout << FUNCTION_NAME << " Failed! File Not Found, Path: " << soundPath << '\n';
+        Logger::LogWarning("File not Found, Path: " + soundPath.string());
         return SoundID{};
     }
 

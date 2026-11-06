@@ -1,6 +1,7 @@
 ﻿#include "SceneManager.hpp"
 
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 #include "Core/Scene.hpp"
 
 
@@ -121,10 +122,8 @@ bae::SceneManager::~SceneManager()
 {
     if(!m_bIsDestroyed)
     {
-        const std::string errorMessage = std::string(FUNCTION_NAME) +
-                " Failed! Destroy should be called before program close";
-
-        std::cout << errorMessage << '\n';
-        assert(false && errorMessage.c_str());
+        const std::string errorMessage = "Destroy should be called before program close";
+        Logger::LogError(errorMessage);
+        assert(false && (FUNCTION_NAME + errorMessage).c_str());
     }
 }

@@ -2,12 +2,12 @@
 
 #include <algorithm>
 #include <filesystem>
-#include <iostream>
 #include <optional>
 
 #include <soloud.h>
 #include <soloud_wav.h>
 
+#include "Core/Logger.hpp"
 #include "Managers/ResourceManager.hpp"
 
 
@@ -270,7 +270,7 @@ SoundID SoLoudSoundSystem::Impl::LoadSound(const std::string& path)
     const std::filesystem::path soundPath = ResourceManager::GetInstance().GetResourcesPath() / path.c_str();
     if(!std::filesystem::exists(soundPath))
     {
-        std::cout << FUNCTION_NAME << " Failed! File Not Found, Path: " << path << '\n';
+        Logger::LogWarning("File not Found, Path: " + soundPath.string());
         return SoundID{};
     }
 
@@ -279,35 +279,37 @@ SoundID SoLoudSoundSystem::Impl::LoadSound(const std::string& path)
 
     if(result != SoLoud::SOLOUD_ERRORS::SO_NO_ERROR)
     {
-        std::cout << FUNCTION_NAME << " Failed to Load Sound, Error: ";
+        std::string errorMessage = " Failed to Load Sound, Error: ";
 
         switch(result)
         {
             case SoLoud::INVALID_PARAMETER:
-                std::cout << "Invalid Parameter\n";
+                errorMessage += "Invalid Parameter";
                 break;
             case SoLoud::FILE_NOT_FOUND:
-                std::cout << "File Not Found\n";
+                errorMessage += "File Not Found";
                 break;
             case SoLoud::FILE_LOAD_FAILED:
-                std::cout << "File Load Failed\n";
+                errorMessage += "File Load Failed";
                 break;
             case SoLoud::DLL_NOT_FOUND:
-                std::cout << "Dll Not Found\n";
+                errorMessage += "Dll Not Found";
                 break;
             case SoLoud::OUT_OF_MEMORY:
-                std::cout << "Out Of Memory\n";
+                errorMessage += "Out Of Memory";
                 break;
             case SoLoud::NOT_IMPLEMENTED:
-                std::cout << "Not Implemented\n";
+                errorMessage += "Not Implemented";
                 break;
             case SoLoud::UNKNOWN_ERROR:
-                std::cout << "Unknown Error\n";
+                errorMessage += "Unknown Error";
                 break;
             default:
-                std::cout << "Default\n";
+                errorMessage += "Default";
                 break;
         }
+
+        Logger::LogError(errorMessage);
 
         return SoundID{ -1 };
     }
@@ -326,22 +328,27 @@ ActiveSoundID SoLoudSoundSystem::Impl::Play(const SoundID soundId)
 {
     if(!IsLoaded(soundId))
     {
-        std::cout << FUNCTION_NAME << " Failed! No Sound loaded with that SoundID: " << soundId.ID << '\n';
+        Logger::LogError("No Sound loaded with that SoundID: "
+            + std::to_string(soundId.ID));
+
         return ActiveSoundID{ -1 };
     }
 
     SoLoud::Wav* const uSound = m_LoadedAudio.at(soundId).get();
     if(!uSound)
     {
-        std::cout << FUNCTION_NAME << " Failed! Audio with that SoundID is invalid, SoundID: " << soundId.ID << '\n';
+        Logger::LogError("Audio with given SoundID is invalid, SoundID: "
+            + std::to_string(soundId.ID));
+
         return ActiveSoundID{ -1 };
     }
 
     const SoLoud::handle handleSound = m_SoLoud->play(*uSound);
     if(handleSound == SoLoud::SOLOUD_ERRORS::UNKNOWN_ERROR)
     {
-        std::cout << FUNCTION_NAME << " Failed! Audio couldn't play for unknown reason, SoundID: " << soundId.ID
-                << '\n';
+        Logger::LogError("Audio couldn't play for unknown reason, SoundID: "
+            + std::to_string(soundId.ID));
+
         return ActiveSoundID{ -1 };
     }
 

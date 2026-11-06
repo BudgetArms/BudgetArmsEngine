@@ -1,9 +1,8 @@
 ﻿#include "EventQueue.hpp"
 
-#include <iostream>
-
 #include "Core/EventListener.hpp"
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 
 
 using namespace bae;
@@ -13,14 +12,14 @@ void EventQueue::SendEvent(const EventData& eventData)
 {
     if(m_Queue.IsFull())
     {
-        std::cout << FUNCTION_NAME << " Failed! EventQueue is full, can't add more" << '\n';
+        Logger::LogWarning("EventQueue is full, cannot add more");
         return;
     }
 
     const bool success = m_Queue.Push(eventData);
     if(!success)
     {
-        std::cout << FUNCTION_NAME << " Failed! EventQueue is full, after trying push" << '\n';
+        Logger::LogWarning("EventQueue is full, after IsFull check");
     }
 }
 

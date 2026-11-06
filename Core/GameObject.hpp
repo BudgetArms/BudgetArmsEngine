@@ -1,12 +1,13 @@
 ﻿#pragma once
 
 #include <algorithm>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include <glm/glm.hpp>
+
+#include "Core/Logger.hpp"
 
 
 namespace bae
@@ -90,7 +91,7 @@ namespace bae
             // We don't need two components of the same type
             if(GameObject::HasComponent<ComponentType>())
             {
-                std::cout << "GameObject: " << m_Name << ", AddComponent: Can't add the same component twice\n";
+                Logger::LogWarning("Cannot add the same component twice, GameObject: " + m_Name);
                 return;
             }
 
@@ -104,7 +105,7 @@ namespace bae
             // if it does not have the component, you can't remove it
             if(!GameObject::HasComponent<ComponentType>())
             {
-                std::cout << "GameObject: " << m_Name << ", RemoveComponent: No Component specified found\n";
+                Logger::LogWarning("Doesn't have the specified component, GameObject: " + m_Name);
                 return;
             }
 

@@ -9,6 +9,7 @@
 
 #include "Core/Renderer.hpp"
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 #include "Core/Utils.hpp"
 #include "Managers/SceneManager.hpp"
 #include "Wrappers/Texture2D.hpp"
@@ -31,7 +32,9 @@ void bae::Renderer::Init(SDL_Window* window)
 
     if(!m_Renderer)
     {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed to create Renderer, Error: ") + SDL_GetError());
+        const std::string errorMessage = "Failed to create SDL Renderer, Error: " + std::string(SDL_GetError());
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
 
     // TODO: Remove ImGui related code
@@ -42,7 +45,9 @@ void bae::Renderer::Init(SDL_Window* window)
     ImGui_ImplSDLRenderer3_Init(m_Renderer);
     if(!success)
     {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed to create Imgui"));
+        const std::string errorMessage = "Failed to create ImGui";
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
 }
 

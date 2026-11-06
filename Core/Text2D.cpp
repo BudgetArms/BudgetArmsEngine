@@ -3,7 +3,8 @@
 #include <string>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "HelperFunctions.hpp"
+#include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 #include "Core/Renderer.hpp"
 #include "Managers/ResourceManager.hpp"
 
@@ -28,19 +29,30 @@ void Text2D::Update()
 {
     if(m_bNeedsUpdate)
     {
+        if(!m_uFont)
+        {
+            const std::string errorMessage = "Font is invalid, Error: " + std::string(SDL_GetError());
+            Logger::LogError(errorMessage);
+            throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        }
+
         const auto surface = TTF_RenderText_Blended(m_uFont->GetFont(), m_Text.c_str(), m_Text.length(),
                                                     m_Color.GetSDLColor());
         if(!surface)
         {
-            throw std::runtime_error(
-                FUNCTION_NAME + std::string(" Failed to render text/font, Error: ") + SDL_GetError());
+            const std::string errorMessage = "Failed to render surface, Error: " + std::string(
+                SDL_GetError());
+            Logger::LogError(errorMessage);
+            throw std::runtime_error(FUNCTION_NAME + errorMessage);
         }
 
         auto texture = SDL_CreateTextureFromSurface(Renderer::GetInstance().GetSDLRenderer(), surface);
         if(!texture)
         {
-            throw std::runtime_error(
-                FUNCTION_NAME + std::string(" Failed to create texture from surface, Error: ") + SDL_GetError());
+            const std::string errorMessage = "Failed to create texture from surface, Error: " + std::string(
+                SDL_GetError());
+            Logger::LogError(errorMessage);
+            throw std::runtime_error(FUNCTION_NAME + errorMessage);
         }
 
         SDL_DestroySurface(surface);
@@ -99,4 +111,3 @@ void Text2D::SetFont(std::shared_ptr<Font> font)
     m_uFont        = std::move(font);
     m_bNeedsUpdate = true;
 }
-

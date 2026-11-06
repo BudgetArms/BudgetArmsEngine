@@ -5,7 +5,7 @@
 
 // STD includes
 #include <chrono>
-#include <iostream>
+#include <print>
 #include <sstream>
 #include <stdexcept>
 #include <thread>
@@ -43,6 +43,7 @@
 #include "Core/BudgetEngine.hpp"
 #include "Core/EventQueue.hpp"
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 #include "Core/Renderer.hpp"
 #include "Core/ServiceLocator.hpp"
 #include "Core/Utils.hpp"
@@ -76,8 +77,10 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
 
     if(!SDL_InitSubSystem(SDL_INIT_VIDEO))
     {
-        throw std::runtime_error(
-            FUNCTION_NAME + std::string(" Failed to Initialize SDL Video SubSystem, Error: ") + SDL_GetError());
+        const std::string errorMessage = "Failed to Initialize SDL Video SubSystem, Error" +
+                std::string(SDL_GetError());
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
 
 
@@ -99,8 +102,9 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
 
         if(!g_Window)
         {
-            throw std::runtime_error(
-                FUNCTION_NAME + std::string(" Failed to create SDL Window, Error: ") + SDL_GetError());
+            const std::string errorMessage = "Failed to create SDL Window, Error" + std::string(SDL_GetError());
+            Logger::LogError(errorMessage);
+            throw std::runtime_error(FUNCTION_NAME + errorMessage);
         }
     }
 
@@ -113,7 +117,7 @@ bae::BudgetEngine::~BudgetEngine()
 {
     if(m_bDebugDestruction)
     {
-        std::cout << FUNCTION_NAME << '\n';
+        Logger::LogNormal("");
     }
     SceneManager::GetInstance().Destroy();
 
@@ -125,7 +129,7 @@ bae::BudgetEngine::~BudgetEngine()
 
     if(m_bDebugDestruction)
     {
-        std::cout << FUNCTION_NAME << " Quiting SDL" << '\n';
+        Logger::LogNormal("Quiting SDL");
     }
 
     SDL_Quit();
@@ -186,7 +190,7 @@ void LogSdlVersion(const std::string& message, const int major, const int minor,
     ss << message << major << "." << minor << "." << patch << "\n";
     OutputDebugString(ss.str().c_str());
     #else
-    std::cout << message << major << "." << minor << "." << patch << "\n";
+    std::println("{}{}.{}.{}", message, major, minor, patch);
     #endif
 }
 

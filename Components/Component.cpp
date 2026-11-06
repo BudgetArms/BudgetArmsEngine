@@ -1,6 +1,7 @@
 #include "Component.hpp"
 
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 
 
 using namespace bae;
@@ -16,11 +17,9 @@ Component::~Component()
     // if it gets deleted with being marked for deletion && it's the project closing; assert
     if(!m_bIsMarkedForDeletion)
     {
-        const std::string errorMessage = std::string(FUNCTION_NAME) +
-                " Failed! The Component was not marked for destruction\n";
-
-        std::cout << errorMessage;
-        assert(false && errorMessage.c_str());
+        const std::string errorMessage = "The Component was not marked for destruction";
+        Logger::LogError(errorMessage);
+        assert(false && (FUNCTION_NAME + errorMessage).c_str());
     }
 }
 

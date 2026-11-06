@@ -1,10 +1,9 @@
 ﻿#pragma once
 
-#include <iostream>
 #include <memory>
 
-#include "Core/HelperFunctions.h"
-#include "Sounds/AudioClip.h"
+#include "Core/Logger.hpp"
+#include "Sounds/AudioClip.hpp"
 
 
 namespace bae
@@ -19,101 +18,100 @@ namespace bae
             AudioClip(activeSoundId, soundId),
             m_RealAudioClip{}
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             m_RealAudioClip = std::make_unique<RealAudioClipType>(activeSoundId, soundId);
         };
 
         ~LoggingAudioClip() override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
         };
 
 
         bool Play() override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             return m_RealAudioClip->Play();
         };
 
         void Stop() override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             m_RealAudioClip->Stop();
         };
 
         void Resume() override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             m_RealAudioClip->Resume();
         };
 
         void Pause() override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             m_RealAudioClip->Pause();
         };
 
         void Mute() override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             m_RealAudioClip->Mute();
         };
 
         void UnMute() override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             m_RealAudioClip->UnMute();
         };
 
 
+        // No Logs since it's called constantly
         bool IsPlaying() const override
         {
-            // This is disabled because it's called constantly
-            //std::cout << FUNCTION_NAME << '\n';
             return m_RealAudioClip->IsPlaying();
         };
 
         bool IsPaused() const override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             return m_RealAudioClip->IsPaused();
         };
 
         bool IsMuted() const override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             return m_RealAudioClip->IsMuted();
         };
 
 
         float GetVolume() const override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             return m_RealAudioClip->GetVolume();
         };
 
         void SetVolume(float volume) override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             m_RealAudioClip->SetVolume(volume);
         };
 
 
         SoundID GetSoundId() override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             return m_RealAudioClip->GetSoundId();
         };
 
         ActiveSoundID GetActiveSoundId() override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             return m_RealAudioClip->GetActiveSoundId();
         };
 
         AudioTrack& GetAudioTrack() override
         {
-            std::cout << FUNCTION_NAME << '\n';
+            Logger::LogNormal("");
             return m_RealAudioClip->GetAudioTrack();
         };
 

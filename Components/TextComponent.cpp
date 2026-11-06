@@ -5,6 +5,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 #include "Core/Renderer.hpp"
 #include "Managers/ResourceManager.hpp"
 #include "Wrappers/Font.hpp"
@@ -41,15 +42,18 @@ void TextComponent::Update()
                                                  m_Color.GetSDLColor());
         if(!surf)
         {
-            throw std::runtime_error(
-                FUNCTION_NAME + std::string(" Failed to render text/font, Error: ") + SDL_GetError());
+            const std::string errorMessage = "Failed to create surface, Error: " + std::string(SDL_GetError());
+            Logger::LogError(errorMessage);
+            throw std::runtime_error(FUNCTION_NAME + errorMessage);
         }
 
         auto texture = SDL_CreateTextureFromSurface(Renderer::GetInstance().GetSDLRenderer(), surf);
         if(!texture)
         {
-            throw std::runtime_error(
-                FUNCTION_NAME + std::string(" Failed to create texture from surface, Error: ") + SDL_GetError());
+            const std::string errorMessage = " Failed to create texture from surface, Error: "
+                    + std::string(SDL_GetError());
+            Logger::LogError(errorMessage);
+            throw std::runtime_error(FUNCTION_NAME + errorMessage);
         }
 
         SDL_DestroySurface(surf);

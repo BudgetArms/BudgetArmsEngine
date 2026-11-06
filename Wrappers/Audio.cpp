@@ -6,20 +6,26 @@
 #include <SDL3_mixer/SDL_mixer.h>
 
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 
 
 bae::Audio::Audio(const std::string& fullPath, MIX_Mixer* mixer)
 {
     if(!std::filesystem::exists(fullPath))
     {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed to find audio file"));
+        const std::string errorMessage = "File Not Found, Path: " + std::filesystem::path(fullPath).
+                string();
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
 
 
     m_Audio = MIX_LoadAudio(mixer, fullPath.c_str(), false);
     if(!m_Audio)
     {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed to load audio, Error: ") + SDL_GetError());
+        const std::string errorMessage = "Failed to load audio, Error: " + std::string(SDL_GetError());
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
 }
 

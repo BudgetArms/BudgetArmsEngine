@@ -1,9 +1,9 @@
 ﻿#pragma once
 
-#include <iostream>
 #include <mutex>
-#include <string>
 #include <vector>
+
+#include "Core/Logger.hpp"
 
 
 namespace bae
@@ -51,7 +51,7 @@ bool bae::RingBuffer<T>::Push(const T& item)
 
     if(IsFull())
     {
-        std::cout << "is full\n";
+        Logger::LogWarning("RingBuffer is full");
         return false;
     }
 

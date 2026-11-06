@@ -1,7 +1,8 @@
 #include "SpriteSheet.hpp"
 
-#include "HelperFunctions.hpp"
-#include "Renderer.hpp"
+#include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
+#include "Core/Renderer.hpp"
 #include "Managers/ResourceManager.hpp"
 
 
@@ -19,27 +20,39 @@ SpriteSheet::SpriteSheet(const std::filesystem::path& file, const SDL_FRect& src
     const auto resourceFolder = ResourceManager::GetInstance().GetResourcesPath();
     if(!std::filesystem::exists(resourceFolder / file))
     {
-        throw std::runtime_error(
-            FUNCTION_NAME + std::string(" Failed! File Not found! File Path: ") + file.string());
+        const std::string errorMessage = "File Not Found, Path: " + std::filesystem::path(resourceFolder / file).
+                string();
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+    }
+
+    if(m_NrSprites == 0)
+    {
+        const std::string errorMessage = "NrSprites cannot be 0";
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
 
     if(m_NrColumns == 0)
     {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! NrColumns is 0"));
+        const std::string errorMessage = "NrColumns cannot be 0";
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
+
     if(m_NrRows == 0)
     {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! NrRows is 0"));
-    }
-    if(m_NrSprites == 0)
-    {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed! NrSprites is 0"));
+        const std::string errorMessage = "NrRows cannot be 0";
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
 
     m_Texture = ResourceManager::GetInstance().LoadTexture(file.string());
     if(!m_Texture)
     {
-        throw std::runtime_error(FUNCTION_NAME + std::string(" Failed to Load Texture!"));
+        const std::string errorMessage = "Failed to load texture";
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
 
     m_DstRect.w = m_SrcRect.w / static_cast<float>(m_NrColumns) - static_cast<float>(srcOffset.x);
@@ -53,7 +66,14 @@ void SpriteSheet::Render() const
         return;
     }
 
-    SDL_FRect dstRect{};
+    SDL_FRect dstRect
+    {
+        .x = -1,
+        .y = -1,
+        .w = m_DstRect.w,
+        .h = m_DstRect.h,
+    };
+
     if(m_bUseParentLocation)
     {
         dstRect.x = m_Position.x;
@@ -65,20 +85,21 @@ void SpriteSheet::Render() const
         dstRect.y = m_DstRect.h;
     }
 
-    dstRect.w = m_DstRect.w;
-    dstRect.h = m_DstRect.h;
 
     const float rotation   = m_Rotation;
     const glm::vec2& scale = m_Scale;
 
-    Renderer::GetInstance().RenderTexture(*m_Texture, m_bIsCenteredAtPosition, GetCurrentSpriteRect(), dstRect,
-                                          rotation, scale);
+    Renderer::GetInstance().RenderTexture(
+        *m_Texture,
+        m_bIsCenteredAtPosition,
+        GetCurrentSpriteRect(),
+        dstRect,
+        rotation,
+        scale);
 }
 
 SDL_FRect SpriteSheet::GetCurrentSpriteRect() const
 {
-    SDL_FRect srcRect{};
-
     const int currentColumn = m_Index % m_NrColumns;
     const int currentRow    = static_cast<int>(static_cast<float>(m_Index) / static_cast<float>(m_NrColumns));
 
@@ -87,16 +108,14 @@ SDL_FRect SpriteSheet::GetCurrentSpriteRect() const
     const float spriteHeight = (m_SrcRect.h - static_cast<float>(m_NrRows) * m_SrcOffset.y) / static_cast<float>(
         m_NrRows);
 
-    srcRect.x = m_SrcRect.x + static_cast<float>(currentColumn) * (spriteWidth + m_SrcOffset.x);
-    srcRect.y = m_SrcRect.y + static_cast<float>(currentRow) * (spriteHeight + m_SrcOffset.y);
 
-    srcRect.x = m_SrcRect.x + static_cast<float>(currentColumn) * (spriteWidth + m_SrcOffset.x) + m_SrcOffset.x;
-    srcRect.y = m_SrcRect.y + static_cast<float>(currentRow) * (spriteHeight + m_SrcOffset.y) + m_SrcOffset.y;
-
-    srcRect.w = spriteWidth;
-    srcRect.h = spriteHeight;
-
-    return srcRect;
+    return SDL_FRect
+    {
+        .x = m_SrcRect.x + static_cast<float>(currentColumn) * (spriteWidth + m_SrcOffset.x) + m_SrcOffset.x,
+        .y = m_SrcRect.y + static_cast<float>(currentRow) * (spriteHeight + m_SrcOffset.y) + m_SrcOffset.y,
+        .w = spriteWidth,
+        .h = spriteHeight
+    };
 }
 
 void SpriteSheet::PreviousSprite()
@@ -123,4 +142,3 @@ void SpriteSheet::NextSprite()
     ++m_Index;
     m_Index %= m_NrSprites;
 }
-

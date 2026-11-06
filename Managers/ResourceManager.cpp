@@ -1,11 +1,11 @@
 ﻿#include "ResourceManager.hpp"
 
-#include <iostream>
 #include <stdexcept>
 
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 #include "Core/Renderer.hpp"
 #include "Wrappers/Font.hpp"
 #include "Wrappers/Texture2D.hpp"
@@ -20,8 +20,9 @@ void bae::ResourceManager::Init(const std::filesystem::path& dataPath)
 
     if(!TTF_Init())
     {
-        throw std::runtime_error(FUNCTION_NAME +
-            std::string(" Failed to load support for fonts, Error: ") + SDL_GetError());
+        const std::string errorMessage = "Failed to load support for fonts, Error: " + std::string(SDL_GetError());
+        Logger::LogError(errorMessage);
+        throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
 }
 
@@ -40,7 +41,7 @@ std::shared_ptr<bae::Texture2D> bae::ResourceManager::LoadTexture(const std::str
 
     if(!exists(fullPath))
     {
-        std::cout << FUNCTION_NAME + std::string(" Failed to load textures");
+        Logger::LogWarning("Path is invalid: " + fullPath.string());
         return nullptr;
     }
 

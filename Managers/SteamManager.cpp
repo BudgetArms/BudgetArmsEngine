@@ -1,8 +1,6 @@
 ﻿#include "SteamManager.hpp"
 
-#include <iostream>
-
-#include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 
 
 using namespace bae;
@@ -18,19 +16,19 @@ bool SteamManager::Initialize(const uint32_t appId)
 
     if(!SteamAPI_IsSteamRunning())
     {
-        std::cout << FUNCTION_NAME << " Failed! Steam is not running" << '\n';
+        Logger::LogWarning("Steam is not running");
         return false;
     }
 
     if(SteamAPI_RestartAppIfNecessary(appId))
     {
-        std::cout << FUNCTION_NAME << " Failed! App needs to be restarted through Steam" << '\n';
+        Logger::LogWarning("App needs to be restarted through Steam");
         return false;
     }
 
     if(!SteamAPI_Init())
     {
-        std::cout << FUNCTION_NAME << " Failed to initialize Steam" << '\n';
+        Logger::LogWarning("Failed to initialize SteamAPI");
         return false;
     }
 
@@ -100,7 +98,7 @@ void SteamManager::ResetAllAchievements() const // Debug only
         return;
     }
 
-    std::cout << "Steam Achievements Reset" << '\n';
+    Logger::LogNormal("Steam Achievements Reset");
     SteamUserStats()->ResetAllStats(true);
     SteamUserStats()->StoreStats();
 }

@@ -1,12 +1,12 @@
 ﻿#include "GameObject.hpp"
 
 #include <cassert>
-#include <iostream>
 #include <string>
 
 #include "Components/Component.hpp"
 #include "Components/TransformComponent.hpp"
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 #include "Core/Renderer.hpp"
 
 
@@ -22,7 +22,7 @@ GameObject::GameObject(const std::string& name)
 
     if(m_bDebugDestruction)
     {
-        std::cout << FUNCTION_NAME << " Name: " << m_Name << '\n';
+        Logger::LogNormal("Name: " + m_Name);
     }
 
     AddComponent<TransformComponent>(*this);
@@ -39,7 +39,7 @@ GameObject::~GameObject()
 
     if(m_bDebugDestruction)
     {
-        std::cout << FUNCTION_NAME << " Name: " << m_Name << '\n';
+        Logger::LogNormal("Name: " + m_Name);
     }
 
     if(IsValid(m_Parent))
@@ -50,11 +50,9 @@ GameObject::~GameObject()
     // if it gets deleted with being marked for deletion && it's the project closing; assert
     if(!m_MarkedForDeletion)
     {
-        const std::string errorMessage = std::string(FUNCTION_NAME)
-                + " Failed! The GameObject \"" + m_Name + "\" was not marked for destruction";
-
-        std::cout << errorMessage << '\n';
-        assert(false && errorMessage.c_str());
+        const std::string errorMessage = "The GameObject \"" + m_Name + "\" was not marked for destruction";
+        Logger::LogWarning(errorMessage);
+        assert(false && (FUNCTION_NAME + errorMessage).c_str());
     }
 
     for(auto& component : m_Components)
@@ -161,14 +159,13 @@ void GameObject::AttachChild(GameObject& child, const bool bFreezeLocation, cons
     // if invalid
     if(this == &child || m_Parent == &child)
     {
-        std::cout << "GameObject: " << m_Name << ", AttachChild: newChild is invalid\n";
+        Logger::LogWarning("GameObject " + m_Name + ": newChild is invalid");
         return;
     }
 
     if(IsChild(&child))
     {
-        std::cout << "GameObject: " << m_Name << ", AttachChild: newChild (" << child.m_Name
-                << ") is Already a Child\n";
+        Logger::LogWarning("GameObject " + m_Name + ": newChild " + child.m_Name + " is already a child");
         return;
     }
 
@@ -209,15 +206,14 @@ void GameObject::DetachChild(GameObject& child, const bool bUpdateChildrenOfChil
     // if invalid
     if(this == &child || m_Parent == &child)
     {
-        std::cout << "GameObject: " << m_Name << ", DetachChild: child is invalid\n";
+        Logger::LogWarning("GameObject " + m_Name + ": child is invalid");
         return;
     }
 
     // if invalid
     if(!IsChild(&child))
     {
-        std::cout << "GameObject: " << m_Name << ", DetachChild: child ("
-                << child.m_Name << ") is Not a Child\n";
+        Logger::LogWarning("GameObject " + m_Name + ": DetachChild " + child.m_Name + " is not a child");
         return;
     }
 
@@ -278,7 +274,7 @@ void GameObject::ForceDestroy()
     {
         if(pChild)
         {
-            std::cout << "child should be dead?\n";
+            Logger::LogWarning("Child should be dead???");
         }
     }
 

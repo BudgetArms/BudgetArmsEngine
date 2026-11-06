@@ -1,8 +1,7 @@
 ﻿#include "GridGraph.hpp"
 
-#include <iostream>
-
 #include "Core/HelperFunctions.hpp"
+#include "Core/Logger.hpp"
 #include "Core/Utils.hpp"
 #include "Graphs/Connection.hpp"
 #include "Graphs/Enums.hpp"
@@ -332,7 +331,7 @@ std::unique_ptr<Node> GridGraph::CreateNode(const glm::vec2& position) const
         auto node = m_NodeFactory->CreateNode(position);
         if(!node)
         {
-            std::cout << FUNCTION_NAME << " Failed to create Node" << '\n';
+            Logger::LogWarning("Failed to create node from factory");
             return std::make_unique<Node>(position);
         }
 
