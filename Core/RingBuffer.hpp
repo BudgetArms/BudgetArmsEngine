@@ -92,5 +92,3 @@ size_t bae::RingBuffer<T>::Increment(const size_t idx) const
 {
     return (idx + 1) % m_Buffer.capacity();
 }
-
-

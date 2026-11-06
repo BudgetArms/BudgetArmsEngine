@@ -30,4 +30,3 @@ namespace bae
         const float m_NrUpdatesPerSecond{ 1.f };
     };
 }
-

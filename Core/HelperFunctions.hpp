@@ -33,7 +33,7 @@ namespace bae
             bSeeded = true;
         }
 
-        return min + (std::rand() % (max - min + 1));
+        return min + std::rand() % (max - min + 1);
     }
 
     inline float GetRandomFloat(const float min, const float max)
@@ -81,4 +81,3 @@ namespace bae
         }
     }
 }
-

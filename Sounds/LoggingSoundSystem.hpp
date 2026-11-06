@@ -48,7 +48,6 @@ namespace bae
         void SetVolume(ActiveSoundID activeSoundId, float volume) override;
 
     private:
-        std::unique_ptr<SoundSystem> m_RealSoundSystem;
+        std::unique_ptr<SoundSystem> m_RealSoundSystem{};
     };
 }
-

@@ -50,5 +50,3 @@ namespace bae::Graphs
         Heuristic m_HeuristicFunction;
     };
 }
-
-

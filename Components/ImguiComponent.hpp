@@ -25,4 +25,3 @@ namespace bae
         void RenderGUI() override = 0;
     };
 }
-

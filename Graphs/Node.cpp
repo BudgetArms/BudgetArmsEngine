@@ -11,7 +11,7 @@ Node::Node(const glm::vec2& position) :
 
 void Node::Render() const
 {
-    bae::Utils::FillCircle(m_Position, m_RenderRadius, m_RenderColor);
+    Utils::FillCircle(m_Position, m_RenderRadius, m_RenderColor);
 }
 
 bool Node::IsValid() const

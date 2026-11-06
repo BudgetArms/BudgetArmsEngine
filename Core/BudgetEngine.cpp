@@ -65,8 +65,8 @@ void LoopCallback(void* arg)
 #endif
 
 
-void LogSdlVersion(const std::string& message, int major, int minor, int patch);
-void PrintSdlVersion();
+static void LogSdlVersion(const std::string& message, int major, int minor, int patch);
+static void PrintSdlVersion();
 
 SDL_Window* g_Window{};
 
@@ -91,6 +91,7 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
         SDL_WINDOW_VULKAN
     );
 
+    // Trying to create a window again, but now with OpenGL
     if(!g_Window)
     {
         g_Window = SDL_CreateWindow(
@@ -107,7 +108,6 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
             throw std::runtime_error(FUNCTION_NAME + errorMessage);
         }
     }
-
 
     Renderer::GetInstance().Init(g_Window);
     ResourceManager::GetInstance().Init(window.ResourceFolder);
@@ -218,4 +218,3 @@ void PrintSdlVersion()
                   SDL_VERSIONNUM_MICRO(mixerVersion));
     #endif
 }
-

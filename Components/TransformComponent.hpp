@@ -50,7 +50,7 @@ namespace bae
         void UpdateWorldLocation();
         void UpdateWorldRotation();
         void UpdateWorldScale();
-
+       
 
         glm::vec2 m_WorldLocation{};
         glm::vec2 m_WorldScale{ 1, 1 };
@@ -65,5 +65,3 @@ namespace bae
         bool m_bScaleDirty{ false };
     };
 }
-
-

@@ -19,11 +19,9 @@ namespace bae
         void SetTexture(const std::string& filename);
 
 
-        bool m_bIsCenteredAtPosition{ false };
+        bool m_bIsCenteredAtPosition{};
 
     protected:
         std::shared_ptr<Texture2D> m_Texture{};
     };
 }
-
-

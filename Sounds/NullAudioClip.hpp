@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Sounds/AudioClip.h"
+#include "Sounds/AudioClip.hpp"
 
 
 namespace bae
@@ -33,11 +33,6 @@ namespace bae
 
         SoundID GetSoundId() override { return SoundID(-1); }
         ActiveSoundID GetActiveSoundId() override { return ActiveSoundID(-1); }
-        AudioTrack& GetAudioTrack() override { return m_AudioTrack; }
-
-    private:
-        AudioTrack m_AudioTrack{};
+        AudioTrack& GetAudioTrack() override { return {}; }
     };
 }
-
-

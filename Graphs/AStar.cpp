@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <list>
 
-#include "Graphs/Graph.hpp"
 #include "Graphs/Connection.hpp"
+#include "Graphs/Graph.hpp"
 #include "Graphs/Node.hpp"
 
 
@@ -173,4 +173,3 @@ float AStar::GetHeuristicCost(const Node* const pStartNode, const Node* const pE
 
     return m_HeuristicFunction(abs(toDestination.x), abs(toDestination.y));
 }
-

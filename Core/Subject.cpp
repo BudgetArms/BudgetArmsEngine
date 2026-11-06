@@ -33,4 +33,3 @@ void Subject::NotifyObservers(const EventData& eventData)
         observer->Notify(eventData, this);
     }
 }
-

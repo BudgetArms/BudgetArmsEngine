@@ -1,13 +1,13 @@
 ﻿#include "Utils.hpp"
 
 #include <algorithm>
+#include <regex>
 
 #include <SDL3_gfxPrimitives.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 
-#include <regex>
-
+#include "Core/Logger.hpp"
 #include "Core/Renderer.hpp"
 
 

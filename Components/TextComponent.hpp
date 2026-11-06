@@ -42,13 +42,12 @@ namespace bae
         bool m_bIsCenteredAtPosition{ false };
 
     private:
-        bool m_NeedsUpdate;
+        bool m_NeedsUpdate{ true };
         std::string m_Text;
         Color m_Color;
-        std::shared_ptr<Font> m_Font;
+        std::shared_ptr<Font> m_Font{};
 
     protected:
-        std::unique_ptr<Texture2D> m_TextTexture;
+        std::unique_ptr<Texture2D> m_TextTexture{};
     };
 }
-

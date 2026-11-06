@@ -16,7 +16,7 @@ namespace bae
         virtual ~EventListener()
         {
             EventQueue::GetInstance().RemoveListener(this);
-        };
+        }
 
         EventListener(const EventListener&)            = delete;
         EventListener(EventListener&&)                 = delete;
@@ -26,5 +26,3 @@ namespace bae
         virtual void HandleEvent(const EventData& eventData) = 0;
     };
 }
-
-

@@ -192,7 +192,7 @@ void TransformComponent::UpdateWorldLocation()
 {
     if(m_bLocationDirty)
     {
-        if (!GameObject::IsValid(m_Owner->GetParent()))
+        if(!GameObject::IsValid(m_Owner->GetParent()))
         {
             m_WorldLocation = m_LocalLocation;
         }
@@ -238,4 +238,3 @@ void TransformComponent::UpdateWorldScale()
 
     m_bScaleDirty = false;
 }
-

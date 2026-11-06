@@ -46,6 +46,6 @@ namespace bae
 
         const int m_NrSprites;
         const int m_NrColumns;
-        const int m_NrRows;
+        int m_NrRows{};
     };
 }

@@ -19,13 +19,13 @@ Graph::Graph(const Graph& other) :
     m_Nodes.reserve(other.m_Nodes.size());
     for(const std::unique_ptr<Node>& node : other.m_Nodes)
     {
-        m_Nodes.push_back(std::make_unique<Node>(*node.get()));
+        m_Nodes.push_back(std::make_unique<Node>(*node));
     }
 
     m_Connections.reserve(other.m_Connections.size());
     for(const std::unique_ptr<Connection>& connection : other.m_Connections)
     {
-        m_Connections.push_back(std::make_unique<Connection>(*connection.get()));
+        m_Connections.push_back(std::make_unique<Connection>(*connection));
     }
 }
 

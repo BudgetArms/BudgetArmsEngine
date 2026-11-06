@@ -10,40 +10,47 @@
 #include <algorithm>
 #include <cmath>
 
+// to undefine windows macro's
+#ifdef max
+#undef max
+#endif
+
 
 namespace bae::Graphs::HeuristicFunctions
 {
     // Manhattan distance
-    [[maybe_unused]] static float Manhattan(float x, float y)
+    [[maybe_unused]] static float Manhattan(const float x, const float y)
     {
-        return static_cast<float>(x + y);
+        return x + y;
     }
 
     // Euclidean distance
-    [[maybe_unused]] static float Euclidean(float x, float y)
+    [[maybe_unused]] static float Euclidean(const float x, const float y)
     {
         return std::sqrtf(x * x + y * y);
     }
 
     // Sqrt Euclidean distance
-    [[maybe_unused]] static float SqEuclidean(float x, float y)
+    [[maybe_unused]] static float SqEuclidean(const float x, const float y)
     {
         return x * x + y * y;
     }
 
     // Octile distance
-    [[maybe_unused]] static float Octile(float x, float y)
+    [[maybe_unused]] static float Octile(const float x, const float y)
     {
-        //const float f = 0.414213562373095048801f; // == sqrt(2) - 1;
         const float f = std::sqrtf(2) - 1; // std::sqrt is constexpr in C++26
-        return (x < y) ? f * x + y : f * y + x;
+        if(x < y)
+        {
+            return f * x + y;
+        }
+
+        return f * y + x;
     }
 
     //Chebyshev distance
-    [[maybe_unused]] static float Chebyshev(float x, float y)
+    [[maybe_unused]] static float Chebyshev(const float x, const float y)
     {
-        return (std::max)(x, y);
+        return std::max(x, y);
     }
 }
-
-

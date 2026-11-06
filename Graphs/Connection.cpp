@@ -1,5 +1,7 @@
 #include "Connection.hpp"
 
+#include "Graphs/Enums.hpp"
+
 
 using namespace bae::Graphs;
 

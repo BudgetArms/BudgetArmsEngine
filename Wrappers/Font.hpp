@@ -24,8 +24,6 @@ namespace bae
         [[nodiscard]] TTF_Font* GetFont() const;
 
     private:
-        TTF_Font* m_Font;
+        TTF_Font* m_Font{};
     };
 }
-
-

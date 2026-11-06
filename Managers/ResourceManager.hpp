@@ -37,5 +37,3 @@ namespace bae
         std::map<std::pair<unsigned int, uint8_t>, std::shared_ptr<Font>> m_LoadedFonts;
     };
 }
-
-

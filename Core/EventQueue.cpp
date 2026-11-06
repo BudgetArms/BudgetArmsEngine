@@ -88,4 +88,3 @@ void EventQueue::ProcessEvent(const EventData& eventData) const
         }
     }
 }
-

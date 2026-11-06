@@ -109,5 +109,3 @@ namespace bae::Graphs
         std::unique_ptr<NodeFactory> m_NodeFactory;
     };
 }
-
-

@@ -24,5 +24,3 @@ namespace bae
         Singleton() = default;
     };
 }
-
-

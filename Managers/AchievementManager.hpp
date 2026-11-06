@@ -33,8 +33,6 @@ namespace bae
         AchievementManager()           = default;
         ~AchievementManager() override = default;
 
-        std::vector<std::unique_ptr<Achievement>> m_Achievements;
+        std::vector<std::unique_ptr<Achievement>> m_Achievements{};
     };
 }
-
-

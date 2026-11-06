@@ -29,5 +29,3 @@ namespace bae
         static std::unique_ptr<SoundSystem> m_sSoundSystemInstance;
     };
 }
-
-

@@ -11,8 +11,7 @@ using namespace bae;
 Achievement::Achievement(const std::string& id, const unsigned int eventHash, std::function<bool(Subject*)> condition) :
     m_Id{ id },
     m_EventHash{ eventHash },
-    m_Condition{ std::move(condition) },
-    m_bUnlocked{ false }
+    m_Condition{ std::move(condition) }
 {
 }
 

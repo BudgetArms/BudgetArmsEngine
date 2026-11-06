@@ -1,7 +1,8 @@
 ﻿#include "Scene.hpp"
-#include "GameObject.hpp"
 
 #include <algorithm>
+
+#include "Core/GameObject.hpp"
 
 
 using namespace bae;
@@ -141,7 +142,7 @@ bool Scene::IsMarkedForDeletion() const
 }
 
 Scene::Scene(const std::string& name) :
-    m_Name(name)
+    m_Name{ name }
 {
 }
 

@@ -3,8 +3,6 @@
 #include <memory>
 #include <string>
 
-#include <SDL3/SDL.h>
-
 #include "Core/Utils.hpp"
 #include "Wrappers/Font.hpp"
 #include "Wrappers/Texture2D.hpp"
@@ -52,5 +50,3 @@ namespace bae
         Color m_Color;
     };
 }
-
-

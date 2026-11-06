@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <any>
 #include <vector>
 
 #include "Core/GameObject.hpp"
@@ -25,11 +24,9 @@ namespace bae
 
     private:
         GameObject* m_GameObject{};
-        std::vector<Observer*> m_Observers;
+        std::vector<Observer*> m_Observers{};
 
     protected:
         void NotifyObservers(const EventData& eventData);
     };
 }
-
-

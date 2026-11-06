@@ -24,8 +24,8 @@ namespace bae::Graphs
         [[nodiscard]] std::vector<Node*> GetActiveNodes();
         [[nodiscard]] int GetNodeCount() const;
 
-        const std::unique_ptr<Node>& GetNode(int nodeId) const;
-        std::unique_ptr<Node>& GetNode(int nodeId);
+        [[nodiscard]] const std::unique_ptr<Node>& GetNode(int nodeId) const;
+        [[nodiscard]] std::unique_ptr<Node>& GetNode(int nodeId);
 
 
         template<typename T>
@@ -47,8 +47,8 @@ namespace bae::Graphs
 
 
         // Connections
-        const std::vector<std::unique_ptr<Connection>>& GetConnections() const;
-        std::vector<std::unique_ptr<Connection>>& GetConnections();
+        [[nodiscard]] const std::vector<std::unique_ptr<Connection>>& GetConnections() const;
+        [[nodiscard]] std::vector<std::unique_ptr<Connection>>& GetConnections();
 
         [[nodiscard]] Connection* FindConnection(int fromNodeId, int toNodeId);
         [[nodiscard]] std::vector<Connection*> FindConnectionsFrom(int nodeId) const;
@@ -70,7 +70,7 @@ namespace bae::Graphs
         [[nodiscard]] Graph Clone() const;
 
     protected:
-        std::optional<int> GetFirstInvalidNodeId() const;
+        [[nodiscard]] std::optional<int> GetFirstInvalidNodeId() const;
 
 
         bool m_bIsDirectional;
@@ -79,5 +79,3 @@ namespace bae::Graphs
         std::vector<std::unique_ptr<Connection>> m_Connections{};
     };
 }
-
-

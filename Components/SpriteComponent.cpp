@@ -60,7 +60,14 @@ void SpriteComponent::Render() const
     const glm::vec2& position = m_Owner->GetWorldLocation();
 
 
-    SDL_FRect dstRect{};
+    SDL_FRect dstRect
+    {
+        .x = -1,
+        .y = -1,
+        .w = m_DstRect.w,
+        .h = m_DstRect.h,
+    };
+
     if(m_bUseParentLocation)
     {
         dstRect.x = position.x;
@@ -72,9 +79,6 @@ void SpriteComponent::Render() const
         dstRect.y = m_DstRect.h;
     }
 
-    dstRect.w = m_DstRect.w;
-    dstRect.h = m_DstRect.h;
-
     const float rotation   = m_Owner->GetWorldRotation();
     const glm::vec2& scale = m_Owner->GetWorldScale();
     Renderer::GetInstance().RenderTexture(*m_Texture, m_bIsCenteredAtPosition, GetCurrentSpriteRect(), dstRect,
@@ -83,8 +87,6 @@ void SpriteComponent::Render() const
 
 SDL_FRect SpriteComponent::GetCurrentSpriteRect() const
 {
-    SDL_FRect srcRect{};
-
     const int currentColumn = m_Index % m_NrColumns;
     const int currentRow    = static_cast<int>(static_cast<float>(m_Index) / static_cast<float>(m_NrColumns));
 
@@ -93,16 +95,14 @@ SDL_FRect SpriteComponent::GetCurrentSpriteRect() const
     const float spriteHeight = (m_SrcRect.h - static_cast<float>(m_NrRows) * m_SrcOffset.y) / static_cast<float>(
         m_NrRows);
 
-    srcRect.x = m_SrcRect.x + static_cast<float>(currentColumn) * (spriteWidth + m_SrcOffset.x);
-    srcRect.y = m_SrcRect.y + static_cast<float>(currentRow) * (spriteHeight + m_SrcOffset.y);
+    return SDL_FRect
+    {
+        .x = m_SrcRect.x + static_cast<float>(currentColumn) * (spriteWidth + m_SrcOffset.x) + m_SrcOffset.x,
+        .y = m_SrcRect.y + static_cast<float>(currentRow) * (spriteHeight + m_SrcOffset.y) + m_SrcOffset.y,
 
-    srcRect.x = m_SrcRect.x + static_cast<float>(currentColumn) * (spriteWidth + m_SrcOffset.x) + m_SrcOffset.x;
-    srcRect.y = m_SrcRect.y + static_cast<float>(currentRow) * (spriteHeight + m_SrcOffset.y) + m_SrcOffset.y;
-
-    srcRect.w = spriteWidth;
-    srcRect.h = spriteHeight;
-
-    return srcRect;
+        .w = spriteWidth,
+        .h = spriteHeight
+    };
 }
 
 
@@ -142,7 +142,7 @@ void SpriteComponent::SetColumns(const int nrColumns)
     m_NrRows    = static_cast<int>(std::ceil(static_cast<float>(m_NrSprites) / static_cast<float>(m_NrColumns)));
 }
 
-void SpriteComponent::SetSprites(int nrSprites)
+void SpriteComponent::SetSprites(const int nrSprites)
 {
     if(nrSprites <= 0 || nrSprites == m_NrSprites)
     {
@@ -152,5 +152,3 @@ void SpriteComponent::SetSprites(int nrSprites)
     m_NrSprites = nrSprites;
     m_NrRows    = static_cast<int>(std::ceil(static_cast<float>(m_NrSprites) / static_cast<float>(m_NrColumns)));
 }
-
-

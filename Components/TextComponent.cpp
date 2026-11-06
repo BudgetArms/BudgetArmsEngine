@@ -18,10 +18,8 @@ using namespace bae;
 TextComponent::TextComponent(GameObject& owner, const std::string& text, std::shared_ptr<Font> font,
                              const Color& color) :
     Component{ owner },
-    m_NeedsUpdate{ true },
     m_Text{ text },
-    m_Color{ color },
-    m_TextTexture{ nullptr }
+    m_Color{ color }
 {
     if(!font)
     {
@@ -38,8 +36,8 @@ void TextComponent::Update()
 {
     if(m_NeedsUpdate)
     {
-        const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Text.length(),
-                                                 m_Color.GetSDLColor());
+        SDL_Surface* const surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Text.length(),
+                                                         m_Color.GetSDLColor());
         if(!surf)
         {
             const std::string errorMessage = "Failed to create surface, Error: " + std::string(SDL_GetError());
@@ -114,5 +112,3 @@ void TextComponent::SetFont(std::shared_ptr<Font> font)
     m_Font        = std::move(font);
     m_NeedsUpdate = true;
 }
-
-

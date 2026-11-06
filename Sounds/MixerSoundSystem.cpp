@@ -28,7 +28,14 @@
 #include "Wrappers/Audio.hpp"
 
 
+// Remove Window's macro
+#ifdef PlaySound
+#undef PlaySound
+#endif
+
+
 using namespace bae;
+
 
 namespace bae
 {

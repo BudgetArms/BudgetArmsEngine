@@ -15,8 +15,7 @@ namespace bae
     {
     public:
         LoggingAudioClip(ActiveSoundID activeSoundId, SoundID soundId) :
-            AudioClip(activeSoundId, soundId),
-            m_RealAudioClip{}
+            AudioClip(activeSoundId, soundId)
         {
             Logger::LogNormal("");
             m_RealAudioClip = std::make_unique<RealAudioClipType>(activeSoundId, soundId);
@@ -116,7 +115,6 @@ namespace bae
         };
 
     private:
-        std::unique_ptr<RealAudioClipType> m_RealAudioClip;
+        std::unique_ptr<RealAudioClipType> m_RealAudioClip{};
     };
 }
-

@@ -30,8 +30,8 @@ public:
 private:
     std::vector<std::tuple<std::unique_ptr<Command>, unsigned int, InputManager::ButtonState>> m_MouseCommands{};
 
-    std::unordered_map<unsigned int, bool> m_CurrentButtonsDown;
-    std::unordered_map<unsigned int, bool> m_PreviousButtonsDown;
+    std::unordered_map<unsigned int, bool> m_CurrentButtonsDown{};
+    std::unordered_map<unsigned int, bool> m_PreviousButtonsDown{};
 };
 
 

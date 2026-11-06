@@ -21,7 +21,7 @@ namespace bae
         virtual void UnMute() = 0;
         virtual void Loop() = 0;
         virtual void UnLoop() = 0;
-
+       
 
         [[nodiscard]] virtual bool IsPlaying() const = 0;
         [[nodiscard]] virtual bool IsPaused() const = 0;
@@ -36,5 +36,3 @@ namespace bae
         [[nodiscard]] virtual AudioTrack& GetAudioTrack() = 0;
     };
 }
-
-

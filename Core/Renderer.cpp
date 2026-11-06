@@ -141,11 +141,13 @@ void bae::Renderer::RenderTexture(const Texture2D& texture, const bool bIsCenter
 void bae::Renderer::RenderTexture(const Texture2D& texture, const bool bIsCenteredAtPosition, const glm::vec2& position,
                                   const float width, const float height) const
 {
-    SDL_FRect dst{};
-    dst.x = position.x;
-    dst.y = position.y;
-    dst.w = width;
-    dst.h = height;
+    SDL_FRect dst
+    {
+        .x = position.x,
+        .y = position.y,
+        .w = width,
+        .h = height
+    };
 
     if(bIsCenteredAtPosition)
     {
@@ -217,5 +219,9 @@ bae::WindowSize bae::Renderer::GetSDLWindowSize() const
     int height{};
     SDL_GetWindowSize(m_Window, &width, &height);
 
-    return { width, height };
+    return WindowSize
+    {
+        .Width  = width,
+        .Height = height
+    };
 }

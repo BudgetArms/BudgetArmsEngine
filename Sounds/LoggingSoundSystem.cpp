@@ -207,4 +207,3 @@ void LoggingSoundSystem::SetVolume(const ActiveSoundID activeSoundId, const floa
     Logger::LogNormal("ActiveSoundId: " + std::to_string(activeSoundId.ID));
     m_RealSoundSystem->SetVolume(activeSoundId, volume);
 }
-

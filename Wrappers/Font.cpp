@@ -8,7 +8,7 @@
 #include "Core/Logger.hpp"
 
 
-bae::Font::Font(const std::string& fullPath, const float size) : m_Font(nullptr)
+bae::Font::Font(const std::string& fullPath, const float size)
 {
     m_Font = TTF_OpenFont(fullPath.c_str(), size);
     if(m_Font == nullptr)
@@ -29,5 +29,3 @@ TTF_Font* bae::Font::GetFont() const
 {
     return m_Font;
 }
-
-

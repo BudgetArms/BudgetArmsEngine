@@ -13,6 +13,7 @@ class Controller::Impl
 {
 public:
     #ifndef __EMSCRIPTEN__
+
     void ProcessInput(int controllerIndex);
     void ClearCommands();
 
@@ -33,6 +34,7 @@ public:
     [[nodiscard]] bool IsButtonUp(unsigned int) const { return false; };
     [[nodiscard]] bool IsButtonDown(unsigned int) const { return false; };
     [[nodiscard]] bool IsButtonPressed(unsigned int) const { return false; };
+
     #endif
 
 private:
@@ -95,6 +97,7 @@ bool Controller::IsButtonPressed(const unsigned int button) const
 
 
 #ifndef __EMSCRIPTEN__
+
 
 void Controller::Impl::ProcessInput(const int controllerIndex)
 {
@@ -184,4 +187,4 @@ bool Controller::Impl::IsButtonPressed(const unsigned int button) const
 #pragma endregion
 
 
-#endif // undef __EMSCRIPTEN__
+#endif

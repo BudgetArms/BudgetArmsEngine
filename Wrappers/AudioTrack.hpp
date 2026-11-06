@@ -26,4 +26,3 @@ namespace bae
         MIX_Track* m_Track{};
     };
 }
-

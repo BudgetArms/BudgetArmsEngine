@@ -38,4 +38,3 @@ MIX_Audio* bae::Audio::GetAudio() const
 {
     return m_Audio;
 }
-

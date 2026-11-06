@@ -58,4 +58,3 @@ namespace bae
         bool m_bIsMarkedForDeletion{};
     };
 }
-

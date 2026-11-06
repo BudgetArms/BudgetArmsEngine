@@ -37,7 +37,7 @@ namespace bae
         [[nodiscard]] SDL_Window* GetSDLWindow() const { return m_Window; }
         [[nodiscard]] WindowSize GetSDLWindowSize() const;
 
-        [[nodiscard]] const Color& GetBackgroundColor() const { return m_ClearColor; }
+        [[nodiscard]] Color GetBackgroundColor() const { return m_ClearColor; }
         void SetBackgroundColor(const Color& color) { m_ClearColor = color; }
 
 
@@ -54,5 +54,3 @@ namespace bae
         Color m_ClearColor{ Color::Transparent };
     };
 }
-
-

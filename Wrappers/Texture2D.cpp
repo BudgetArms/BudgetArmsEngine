@@ -57,6 +57,7 @@ glm::vec2 bae::Texture2D::GetSize() const
     float width{};
     float height{};
     SDL_GetTextureSize(m_Texture, &width, &height);
+
     return { width, height };
 }
 
@@ -64,5 +65,3 @@ SDL_Texture* bae::Texture2D::GetSDLTexture() const
 {
     return m_Texture;
 }
-
-

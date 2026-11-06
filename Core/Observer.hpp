@@ -1,8 +1,6 @@
 ﻿#pragma once
 
-#include <any>
-
-#include "EventQueue.hpp"
+#include "Core/EventQueue.hpp"
 
 
 namespace bae
@@ -16,4 +14,3 @@ namespace bae
         virtual void Notify(const EventData& eventData, Subject* subject) = 0;
     };
 }
-

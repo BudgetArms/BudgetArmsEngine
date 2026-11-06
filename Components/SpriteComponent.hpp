@@ -53,5 +53,3 @@ namespace bae
         int m_NrRows;
     };
 }
-
-

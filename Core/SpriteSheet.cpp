@@ -14,8 +14,7 @@ SpriteSheet::SpriteSheet(const std::filesystem::path& file, const SDL_FRect& src
     m_SrcRect{ srcRect },
     m_SrcOffset{ srcOffset },
     m_NrSprites{ nrSprites },
-    m_NrColumns{ nrColumns },
-    m_NrRows{ static_cast<int>(std::ceil(static_cast<float>(m_NrSprites) / static_cast<float>(m_NrColumns))) }
+    m_NrColumns{ nrColumns }
 {
     const auto resourceFolder = ResourceManager::GetInstance().GetResourcesPath();
     if(!std::filesystem::exists(resourceFolder / file))
@@ -40,6 +39,7 @@ SpriteSheet::SpriteSheet(const std::filesystem::path& file, const SDL_FRect& src
         throw std::runtime_error(FUNCTION_NAME + errorMessage);
     }
 
+    m_NrRows = static_cast<int>(std::ceil(static_cast<float>(m_NrSprites) / static_cast<float>(m_NrColumns)));
     if(m_NrRows == 0)
     {
         const std::string errorMessage = "NrRows cannot be 0";

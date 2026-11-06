@@ -31,4 +31,3 @@ MIX_Mixer* bae::AudioMixer::GetMixer() const
 {
     return m_Mixer;
 }
-

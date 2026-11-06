@@ -1,9 +1,9 @@
 ﻿#pragma once
 
-#include "Singletons/Singleton.hpp"
-
 #include <memory>
 #include <vector>
+
+#include "Singletons/Singleton.hpp"
 
 
 namespace bae
@@ -41,5 +41,3 @@ namespace bae
         std::unique_ptr<Mouse> m_Mouse;
     };
 }
-
-

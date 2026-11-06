@@ -25,8 +25,8 @@ namespace bae
 
 
         std::chrono::steady_clock::time_point m_LastTime;
-        const float m_FixedTimeStep{ 1.f / 60 };
-        const float m_MaxFrames{ 2000.f };
+        static constexpr float m_FixedTimeStep{ 1.f / 60 };
+        static constexpr float m_MaxFrames{ 2000.f };
         float m_AccumulatedTime{};
 
         bool m_bDebugDestruction{ false };
@@ -35,5 +35,3 @@ namespace bae
         bool m_Quit{};
     };
 }
-
-

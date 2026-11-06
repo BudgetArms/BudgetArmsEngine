@@ -3,7 +3,7 @@
 #include <any>
 #include <set>
 
-#include "RingBuffer.hpp"
+#include "Core/RingBuffer.hpp"
 #include "Singletons/Singleton.hpp"
 
 
@@ -43,5 +43,3 @@ namespace bae
         std::set<EventListener*> m_ListenersToRemove{};
     };
 }
-
-

@@ -83,7 +83,7 @@ void GridGraph::Render() const
             {
                 if(!connection)
                 {
-                    continue;;
+                    continue;
                 }
 
                 glm::vec2 startPos = GetNodePos(connection->GetToNodeId());
@@ -243,7 +243,7 @@ GridPosition GridGraph::GetClosestValidNodePosition(const GridPosition position)
 
 GridPosition GridGraph::GetClosestValidNodePositionAtPosition(const glm::vec2& position) const
 {
-    GridPosition closestGridPosition{ -1, -1 };
+    GridPosition closestGridPosition{ .Column = -1, .Row = -1 };
     float closestDistanceSquared = std::numeric_limits<float>::max();
 
     for(int row{}; row < m_NrOfRows; ++row)
@@ -340,4 +340,3 @@ std::unique_ptr<Node> GridGraph::CreateNode(const glm::vec2& position) const
 
     return std::make_unique<Node>(position);
 }
-

@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include "Graphs/Enums.hpp"
-
 
 namespace bae::Graphs
 {
@@ -26,4 +24,3 @@ namespace bae::Graphs
         const int m_ToNodeId;
     };
 }
-

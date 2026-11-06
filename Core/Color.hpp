@@ -27,10 +27,10 @@ namespace bae
         {
             return SDL_Color
             {
-                static_cast<Uint8>(255.f * std::clamp(R, 0.f, 1.f)),
-                static_cast<Uint8>(255.f * std::clamp(G, 0.f, 1.f)),
-                static_cast<Uint8>(255.f * std::clamp(B, 0.f, 1.f)),
-                static_cast<Uint8>(255.f * std::clamp(A, 0.f, 1.f))
+                .r = static_cast<Uint8>(255.f * std::clamp(R, 0.f, 1.f)),
+                .g = static_cast<Uint8>(255.f * std::clamp(G, 0.f, 1.f)),
+                .b = static_cast<Uint8>(255.f * std::clamp(B, 0.f, 1.f)),
+                .a = static_cast<Uint8>(255.f * std::clamp(A, 0.f, 1.f))
             };
         }
 
@@ -77,4 +77,4 @@ namespace bae
     inline constexpr Color Color::Gray        = Color(0.553f, 0.553f, 0.553f);
     inline constexpr Color Color::DarkGray    = Color(0.312f, 0.331f, 0.347f);
     inline constexpr Color Color::Transparent = Color(0.f, 0.f, 0.f, 0.f);
-};
+}

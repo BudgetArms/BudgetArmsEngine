@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-#include "Singleton.hpp"
+#include "Singletons/Singleton.hpp"
 
 
 namespace bae

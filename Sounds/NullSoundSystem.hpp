@@ -48,4 +48,3 @@ namespace bae
         void SetVolume(ActiveSoundID, float) override {}
     };
 }
-

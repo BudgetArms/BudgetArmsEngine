@@ -27,8 +27,7 @@ namespace bae
         std::string m_Id;
         unsigned int m_EventHash;
         std::function<bool(Subject*)> m_Condition;
-        bool m_bUnlocked;
+       
+        bool m_bUnlocked{};
     };
 }
-
-

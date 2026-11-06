@@ -42,5 +42,3 @@ namespace bae
         std::unique_ptr<Impl> m_Pimpl;
     };
 }
-
-

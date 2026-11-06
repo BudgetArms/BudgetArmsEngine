@@ -31,5 +31,3 @@ void TextureComponent::SetTexture(const std::string& filename)
 {
     m_Texture = ResourceManager::GetInstance().LoadTexture(filename);
 }
-
-

@@ -58,5 +58,3 @@ struct std::hash<bae::ActiveSoundID>
         return std::hash<int>{}(activeSoundId.ID);
     }
 };
-
-

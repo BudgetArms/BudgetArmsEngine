@@ -28,8 +28,6 @@ namespace bae
         [[nodiscard]] SDL_Texture* GetSDLTexture() const;
 
     private:
-        SDL_Texture* m_Texture;
+        SDL_Texture* m_Texture{};
     };
 }
-
-

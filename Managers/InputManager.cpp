@@ -1,7 +1,7 @@
 ﻿#include "InputManager.hpp"
-#include <SDL3/SDL.h>
 
 #include <imgui_impl_sdl3.h>
+#include <SDL3/SDL.h>
 
 #include "Wrappers/Controller.hpp"
 #include "Wrappers/Keyboard.hpp"
@@ -103,4 +103,3 @@ InputManager::InputManager() :
 
 // in source file bc forward declaration
 InputManager::~InputManager() = default;
-

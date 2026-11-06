@@ -183,5 +183,3 @@ bool SteamManager::IsSteamRunning() const
 
     return SteamAPI_IsSteamRunning();
 }
-
-

@@ -58,6 +58,13 @@ std::shared_ptr<bae::Texture2D> bae::ResourceManager::LoadTexture(const std::str
 std::shared_ptr<bae::Font> bae::ResourceManager::LoadFont(const std::string& file, uint8_t size)
 {
     const auto fullPath = m_ResourcesPath / file;
+
+    if(!exists(fullPath))
+    {
+        Logger::LogWarning("Path is invalid: " + fullPath.string());
+        return nullptr;
+    }
+
     const auto hashPath = HashSDBM(fullPath.string());
     const auto key      = std::pair(hashPath, size);
 
@@ -95,5 +102,3 @@ void bae::ResourceManager::UnloadUnusedResources()
         }
     }
 }
-
-

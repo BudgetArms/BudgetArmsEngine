@@ -29,4 +29,3 @@ MIX_Track* bae::AudioTrack::GetTrack() const
 {
     return m_Track;
 }
-

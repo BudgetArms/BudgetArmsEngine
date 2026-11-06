@@ -15,8 +15,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_rect.h>
 
-#include "Color.hpp"
-#include "Logger.hpp"
+#include "Core/Color.hpp"
 
 
 namespace bae::Utils
@@ -34,7 +33,7 @@ namespace bae::Utils
         bool bIsVSyncOn;
     };
 
-    
+
     void CreateConsole();
 
     // Remove Window's ReplaceText Macro

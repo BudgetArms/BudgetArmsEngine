@@ -13,8 +13,8 @@ namespace bae::Graphs
         NodeFactory()          = default;
         virtual ~NodeFactory() = default;
 
-        virtual std::unique_ptr<Node> CreateNode(const glm::vec2& Position) const = 0;
-        virtual std::unique_ptr<Node> CloneNode(const Node& Other) const = 0;
+        [[nodiscard]] virtual std::unique_ptr<Node> CreateNode(const glm::vec2& Position) const = 0;
+        [[nodiscard]] virtual std::unique_ptr<Node> CloneNode(const Node& Other) const = 0;
     };
 
 
@@ -38,5 +38,3 @@ namespace bae::Graphs
         }
     };
 }
-
-
