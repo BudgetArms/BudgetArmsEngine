@@ -3,7 +3,10 @@
 #include "Core/Logger.hpp"
 #include "Core/Subject.hpp"
 
+#ifdef STEAMWORKS_ENABLED
 #include "Managers/SteamManager.hpp"
+#endif
+
 
 using namespace bae;
 
@@ -29,9 +32,11 @@ void Achievement::TryUnlock(const unsigned int eventHash, Subject* subject)
     }
 
 
+    #ifdef STEAMWORKS_ENABLED
     if(SteamManager::GetInstance().UnlockAchievement(m_Id))
     {
         Logger::LogNormal("Unlocked Achievement: " + m_Id);
         m_bUnlocked = true;
     }
+    #endif
 }
