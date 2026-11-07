@@ -1,6 +1,5 @@
 #pragma once
 
-#include <expected>
 #include <source_location>
 #include <string>
 
@@ -40,8 +39,8 @@ namespace bae
         static void SetConsoleColor(const Color& color);
 
 
-        static void LogCustom(const std::string& message, const Color& color, bool bPrintToFile,
-                              const std::source_location& location = std::source_location::current());
+        static void LogCustom(const std::string& message, const std::string& prefix, const Color& color,
+                              bool bPrintToFile, const std::source_location& location = std::source_location::current());
 
         static void LogFatal(const std::string& message,
                              const std::source_location& location = std::source_location::current());
@@ -88,8 +87,7 @@ namespace bae
         static bool m_bIsInitialized;
 
         static constexpr Color m_LoggerErrorColor{ Color::Magenta };
-        static constexpr std::string_view m_LoggerErrorPrefix{ "UNDEFINED_ERROR" };
-        static constexpr std::string_view m_UndefinedErrorPrefix{ "UNDEFINED_ERROR" };
+        static constexpr std::string_view m_LoggerErrorPrefix{ "LOGGER_ERROR" };
 
         static inline const std::unordered_map<LogVerbosity, std::tuple<Color, std::string_view>> m_VerbosityData
         {
