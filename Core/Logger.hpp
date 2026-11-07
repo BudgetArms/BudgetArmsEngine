@@ -21,9 +21,6 @@ namespace bae
     };
 
 
-    [[maybe_unused]] void DebugPrintAllColors();
-    [[maybe_unused]] void DebugPrintAllVerbosity();
-
     class Logger
     {
     public:
@@ -36,11 +33,10 @@ namespace bae
 
 
         static void Initialize(LogVerbosity verbosity);
-        static void SetConsoleColor(const Color& color);
-
 
         static void LogCustom(const std::string& message, const std::string& prefix, const Color& color,
-                              bool bPrintToFile, const std::source_location& location = std::source_location::current());
+                              bool bPrintToFile,
+                              const std::source_location& location = std::source_location::current());
 
         static void LogFatal(const std::string& message,
                              const std::source_location& location = std::source_location::current());
@@ -61,9 +57,16 @@ namespace bae
         [[nodiscard]] static Color GetVerbosityColor(LogVerbosity verbosity);
         [[nodiscard]] static std::string_view GetVerbosityPrefix(LogVerbosity verbosity);
 
-        static LogVerbosity GetVerbosity();
+        static void SetConsoleColor(const Color& color);
 
-        static Color m_LogColor;
+        [[nodiscard]] static Color GetLogColor();
+        static void SetLogColor(const Color& color);
+
+        static LogVerbosity GetLogVerbosity();
+
+
+        static void DebugPrintAllColors();
+        static void DebugPrintAllVerbosity();
 
     protected:
         Logger() = default;
@@ -78,19 +81,21 @@ namespace bae
         static void PrintLog(const std::string& message, const std::string_view& prefix, const Color& color,
                              const std::source_location& location);
 
-        static void ForcePrintLoggerError(const std::string& message,
-                                          const std::source_location& location = std::source_location::current());
+        static void PrintLoggerError(const std::string& message,
+                                     const std::source_location& location = std::source_location::current());
 
 
-        std::filesystem::path m_LogFilePath{ "/" };
-        static LogVerbosity m_Verbosity;
-        static bool m_bIsInitialized;
+        inline static bool m_bIsInitialized{};
+        inline static LogVerbosity m_LogVerbosity{ LogVerbosity::Normal };
+        inline static Color m_LogColor{ Color::White };
+        inline static std::filesystem::path m_LogFilePath{ "/" };
 
         static constexpr Color m_LoggerErrorColor{ Color::Magenta };
         static constexpr std::string_view m_LoggerErrorPrefix{ "LOGGER_ERROR" };
 
-        static inline const std::unordered_map<LogVerbosity, std::tuple<Color, std::string_view>> m_VerbosityData
+        inline static std::unordered_map<LogVerbosity, std::tuple<Color, std::string_view>> m_VerbosityData
         {
+            { LogVerbosity::Fatal, { Color::DarkRed, "FATAL" } },
             { LogVerbosity::Error, { Color::Red, "ERROR" } },
             { LogVerbosity::Warning, { Color::Orange, "WARNING" } },
             { LogVerbosity::Success, { Color::LightGreen, "SUCCESS" } },

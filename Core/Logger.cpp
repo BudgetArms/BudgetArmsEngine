@@ -10,14 +10,16 @@
 using namespace bae;
 
 
-Color Logger::m_LogColor         = Color::White;
-LogVerbosity Logger::m_Verbosity = LogVerbosity::Normal;
-bool Logger::m_bIsInitialized    = false;
-
-
-LogVerbosity Logger::GetVerbosity()
+void Logger::Initialize(const LogVerbosity verbosity)
 {
-    return m_Verbosity;
+    if(m_bIsInitialized)
+    {
+        LogWarning("Logger is already initialized");
+        return;
+    }
+
+    m_bIsInitialized = true;
+    m_LogVerbosity   = verbosity;
 }
 
 void Logger::LogCustom(const std::string& message, const std::string& prefix, const Color& color,
@@ -29,15 +31,7 @@ void Logger::LogCustom(const std::string& message, const std::string& prefix, co
         return;
     }
 
-    SetConsoleColor(color);
-
-    std::println("{:<20}{:<50} {:<10} {}",
-                 std::format("[{}]", prefix),
-                 SanitizeFunctionNameSignature(location.function_name()),
-                 std::format("Line {}:", location.line()),
-                 message);
-
-    SetConsoleColor(m_LogColor);
+    PrintLog(message, prefix, color, location);
 
     // TODO: Add logic
     if(bPrintToFile)
@@ -122,6 +116,116 @@ void Logger::LogVeryVerbose(const std::string& message, const std::source_locati
     // TODO: Add log file logic
 }
 
+Color Logger::GetVerbosityColor(const LogVerbosity verbosity)
+{
+    if(!m_bIsInitialized)
+    {
+        return m_LoggerErrorColor;
+    }
+
+    if(!m_VerbosityData.contains(verbosity))
+    {
+        PrintLoggerError("VerbosityData doesn't contain the specified verbosity");
+        return m_LoggerErrorColor;
+    }
+
+    const auto verbosityDataIt = m_VerbosityData.find(verbosity);
+    if(verbosityDataIt == m_VerbosityData.end())
+    {
+        PrintLoggerError("Failed to find verbosity color in verbosityData Element");
+        return m_LoggerErrorColor;
+    }
+
+    auto& [color, _] = verbosityDataIt->second;
+    return color;
+}
+
+std::string_view Logger::GetVerbosityPrefix(const LogVerbosity verbosity)
+{
+    if(!m_bIsInitialized)
+    {
+        return "LOGGER_NOT_INITIALIZED";
+    }
+
+    if(!m_VerbosityData.contains(verbosity))
+    {
+        PrintLoggerError("VerbosityData doesn't contain the specified verbosity");
+        return m_LoggerErrorPrefix;
+    }
+
+    const auto verbosityDataIt = m_VerbosityData.find(verbosity);
+    if(verbosityDataIt == m_VerbosityData.end())
+    {
+        PrintLoggerError("Failed to find verbosity color in verbosityData Element");
+        return m_LoggerErrorPrefix;
+    }
+
+    auto& [_, prefix] = verbosityDataIt->second;
+    return prefix;
+}
+
+void Logger::SetConsoleColor(const Color& color)
+{
+    if(!m_bIsInitialized)
+    {
+        return;
+    }
+
+    ForceSetConsoleColor(color);
+}
+
+Color Logger::GetLogColor()
+{
+    return m_LogColor;
+}
+
+void Logger::SetLogColor(const Color& color)
+{
+    m_LogColor = color;
+}
+
+LogVerbosity Logger::GetLogVerbosity()
+{
+    return m_LogVerbosity;
+}
+
+void Logger::DebugPrintAllColors()
+{
+    std::println();
+    LogCustom("Testing Colors", "CUSTOM", Color::White, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Black, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::DarkRed, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Red, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Green, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Lime, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::LightGreen, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::DarkGreen, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Blue, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Yellow, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Orange, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Magenta, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Cyan, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Purple, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Gray, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::DarkGray, false);
+    LogCustom("Testing Colors", "CUSTOM", Color::Transparent, false);
+    std::println();
+}
+
+
+void Logger::DebugPrintAllVerbosity()
+{
+    std::println();
+    LogFatal("Testing Fatal");
+    LogError("Testing Error");
+    LogWarning("Testing Warning");
+    LogSuccess("Testing Success");
+    LogNormal("Testing Normal");
+    LogVerbose("Testing Verbose");
+    LogVeryVerbose("Testing VeryVerbose");
+    std::println();
+}
+
 std::string Logger::SanitizeFunctionNameSignature(const std::string& functionName)
 {
     #ifdef _MSC_VER
@@ -165,11 +269,6 @@ void Logger::ForceSetConsoleColor([[maybe_unused]] const Color& color)
 
 void Logger::PrintLog(const std::string& message, const LogVerbosity verbosity, const std::source_location& location)
 {
-    if(!m_bIsInitialized)
-    {
-        return;
-    }
-
     const std::string_view prefix = GetVerbosityPrefix(verbosity);
     const Color color             = GetVerbosityColor(verbosity);
 
@@ -179,136 +278,16 @@ void Logger::PrintLog(const std::string& message, const LogVerbosity verbosity, 
 void Logger::PrintLog(const std::string& message, const std::string_view& prefix, const Color& color,
                       const std::source_location& location)
 {
-    if(!m_bIsInitialized)
-    {
-        return;
-    }
-
-    SetConsoleColor(color);
+    ForceSetConsoleColor(color);
     std::println("{:<20}{:<50} {:<10} {}",
                  std::format("[{}]", prefix),
                  SanitizeFunctionNameSignature(location.function_name()),
                  std::format("Line {}:", location.line()),
                  message);
-
-    SetConsoleColor(m_LogColor);
-}
-
-void Logger::ForcePrintLoggerError(const std::string& message, const std::source_location& location)
-{
-    ForceSetConsoleColor(m_LoggerErrorColor);
-
-    std::println("{:<20}{:<50} {:<10} {}",
-                 std::format("[{}]", m_LoggerErrorPrefix),
-                 SanitizeFunctionNameSignature(location.function_name()),
-                 std::format("Line {}:", location.line()),
-                 message);
-
     ForceSetConsoleColor(m_LogColor);
 }
 
-
-void bae::DebugPrintAllColors()
+void Logger::PrintLoggerError(const std::string& message, const std::source_location& location)
 {
-    std::println();
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::White, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Black, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::DarkRed, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Red, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Green, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Lime, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::LightGreen, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::DarkGreen, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Blue, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Yellow, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Orange, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Magenta, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Cyan, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Purple, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Gray, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::DarkGray, false);
-    Logger::LogCustom("Testing Colors", "CUSTOM", Color::Transparent, false);
-    std::println();
-}
-
-void bae::DebugPrintAllVerbosity()
-{
-    std::println();
-    Logger::LogSuccess("Testing Success");
-    Logger::LogWarning("Testing Warning");
-    Logger::LogError("Testing Error");
-    Logger::LogNormal("Testing Normal");
-    Logger::LogVerbose("Testing Verbose");
-    Logger::LogVeryVerbose("Testing VeryVerbose");
-    std::println();
-}
-
-void Logger::Initialize(const LogVerbosity verbosity)
-{
-    if(m_bIsInitialized)
-    {
-        LogError("Logger is already initialized");
-        std::abort();
-    }
-
-    m_bIsInitialized = true;
-    m_Verbosity      = verbosity;
-}
-
-void Logger::SetConsoleColor(const Color& color)
-{
-    if(!m_bIsInitialized)
-    {
-        return;
-    }
-
-    ForceSetConsoleColor(color);
-}
-
-Color Logger::GetVerbosityColor(const LogVerbosity verbosity)
-{
-    if(!m_bIsInitialized)
-    {
-        return m_LoggerErrorColor;
-    }
-
-    if(!m_VerbosityData.contains(verbosity))
-    {
-        ForcePrintLoggerError("VerbosityData doesn't contain the specified verbosity");
-        return m_LoggerErrorColor;
-    }
-
-    const auto verbosityDataIt = m_VerbosityData.find(verbosity);
-    if(verbosityDataIt == m_VerbosityData.end())
-    {
-        ForcePrintLoggerError("Failed to find verbosity color in verbosityData Element");
-        return m_LoggerErrorColor;
-    }
-
-    auto& [color, _] = verbosityDataIt->second;
-    return color;
-}
-
-std::string_view Logger::GetVerbosityPrefix(const LogVerbosity verbosity)
-{
-    if(!m_bIsInitialized)
-    {
-        return "LOGGER_NOT_INITIALIZED";
-    }
-
-    if(!m_VerbosityData.contains(verbosity))
-    {
-        ForcePrintLoggerError("VerbosityData doesn't contain the specified verbosity");
-        return m_LoggerErrorPrefix;
-    }
-
-    const auto verbosityDataIt = m_VerbosityData.find(verbosity);
-    if(verbosityDataIt == m_VerbosityData.end())
-    {
-        ForcePrintLoggerError("Failed to find verbosity color in verbosityData Element");
-        return m_LoggerErrorPrefix;
-    }
-
-    auto& [_, prefix] = verbosityDataIt->second;
-    return prefix;
+    PrintLog(message, m_LoggerErrorPrefix, m_LoggerErrorColor, location);
 }
