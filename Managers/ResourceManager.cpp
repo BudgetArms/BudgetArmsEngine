@@ -1,6 +1,7 @@
 ﻿#include "ResourceManager.hpp"
 
-#include <stdexcept>
+// used for std::terminate
+#include <exception>
 
 #include <SDL3_ttf/SDL_ttf.h>
 
@@ -20,9 +21,8 @@ void bae::ResourceManager::Init(const std::filesystem::path& dataPath)
 
     if(!TTF_Init())
     {
-        const std::string errorMessage = "Failed to load support for fonts, Error: " + std::string(SDL_GetError());
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("Failed to load support for fonts, Error: " + std::string(SDL_GetError()));
+        std::terminate();
     }
 }
 

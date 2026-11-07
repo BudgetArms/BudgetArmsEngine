@@ -1,8 +1,9 @@
-﻿#include <stdexcept>
+﻿#include "Font.hpp"
+
+// used for std::terminate
+#include <exception>
 
 #include <SDL3_ttf/SDL_ttf.h>
-
-#include "Font.hpp"
 
 #include "Core/HelperFunctions.hpp"
 #include "Core/Logger.hpp"
@@ -13,9 +14,8 @@ bae::Font::Font(const std::string& fullPath, const float size)
     m_Font = TTF_OpenFont(fullPath.c_str(), size);
     if(m_Font == nullptr)
     {
-        const std::string errorMessage = "Failed to load font, Error: " + std::string(SDL_GetError());
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("Failed to load font, Error: " + std::string(SDL_GetError()));
+        std::terminate();
     }
 }
 

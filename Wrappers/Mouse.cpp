@@ -1,13 +1,13 @@
 ﻿#include "Mouse.hpp"
 
+// used for std::terminate
+#include <exception>
 #include <ranges>
-#include <stdexcept>
 #include <unordered_map>
 #include <vector>
 
 #include <SDL3/SDL.h>
 
-#include "Core/HelperFunctions.hpp"
 #include "Core/Logger.hpp"
 
 
@@ -108,9 +108,8 @@ void Mouse::Impl::ProcessInput()
     {
         if(!command)
         {
-            const std::string errorMessage = "Command is invalid";
-            Logger::LogError(errorMessage);
-            throw std::runtime_error(FUNCTION_NAME + errorMessage);
+            Logger::LogFatal("Command is invalid");
+            std::terminate();
         }
 
         bool keyPreviouslyPressed = false;

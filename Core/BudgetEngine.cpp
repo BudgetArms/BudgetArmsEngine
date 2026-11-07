@@ -77,10 +77,8 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
 
     if(!SDL_InitSubSystem(SDL_INIT_VIDEO))
     {
-        const std::string errorMessage = "Failed to Initialize SDL Video SubSystem, Error" +
-                std::string(SDL_GetError());
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("Failed to Initialize SDL Video SubSystem, Error: " + std::string(SDL_GetError()));
+        std::terminate();
     }
 
 
@@ -103,9 +101,8 @@ bae::BudgetEngine::BudgetEngine(const Utils::Window& window)
 
         if(!g_Window)
         {
-            const std::string errorMessage = "Failed to create SDL Window, Error" + std::string(SDL_GetError());
-            Logger::LogError(errorMessage);
-            throw std::runtime_error(FUNCTION_NAME + errorMessage);
+            Logger::LogFatal("Failed to create SDL Window, Error: " + std::string(SDL_GetError()));
+            std::terminate();
         }
     }
 

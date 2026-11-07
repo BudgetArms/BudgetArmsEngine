@@ -1,6 +1,7 @@
 ﻿#include "TextComponent.hpp"
 
-#include <stdexcept>
+// used for std::terminate
+#include <exception>
 
 #include <SDL3_ttf/SDL_ttf.h>
 
@@ -40,18 +41,15 @@ void TextComponent::Update()
                                                          m_Color.GetSDLColor());
         if(!surf)
         {
-            const std::string errorMessage = "Failed to create surface, Error: " + std::string(SDL_GetError());
-            Logger::LogError(errorMessage);
-            throw std::runtime_error(FUNCTION_NAME + errorMessage);
+            Logger::LogFatal("Failed to create surface, Error: " + std::string(SDL_GetError()));
+            std::terminate();
         }
 
         auto texture = SDL_CreateTextureFromSurface(Renderer::GetInstance().GetSDLRenderer(), surf);
         if(!texture)
         {
-            const std::string errorMessage = " Failed to create texture from surface, Error: "
-                    + std::string(SDL_GetError());
-            Logger::LogError(errorMessage);
-            throw std::runtime_error(FUNCTION_NAME + errorMessage);
+            Logger::LogFatal("Failed to create texture from surface, Error: " + std::string(SDL_GetError()));
+            std::terminate();
         }
 
         SDL_DestroySurface(surf);

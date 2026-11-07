@@ -14,9 +14,8 @@ bae::AudioTrack::AudioTrack(MIX_Mixer* mixer)
     m_Track = MIX_CreateTrack(mixer);
     if(!m_Track)
     {
-        const std::string errorMessage = "Failed to create track, Error: " + std::string(SDL_GetError());
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("Failed to create track, Error: " + std::string(SDL_GetError()));
+        std::terminate();
     }
 }
 

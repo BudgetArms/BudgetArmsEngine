@@ -1,5 +1,8 @@
 #include "SpriteSheet.hpp"
 
+// used for std::terminate
+#include <exception>
+
 #include "Core/HelperFunctions.hpp"
 #include "Core/Logger.hpp"
 #include "Core/Renderer.hpp"
@@ -19,40 +22,34 @@ SpriteSheet::SpriteSheet(const std::filesystem::path& file, const SDL_FRect& src
     const auto resourceFolder = ResourceManager::GetInstance().GetResourcesPath();
     if(!std::filesystem::exists(resourceFolder / file))
     {
-        const std::string errorMessage = "File Not Found, Path: " + std::filesystem::path(resourceFolder / file).
-                string();
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("File Not Found, Path: " + std::filesystem::path(resourceFolder / file).string());
+        std::terminate();
     }
 
     if(m_NrSprites == 0)
     {
-        const std::string errorMessage = "NrSprites cannot be 0";
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("NrSprites cannot be 0");
+        std::terminate();
     }
 
     if(m_NrColumns == 0)
     {
-        const std::string errorMessage = "NrColumns cannot be 0";
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("NrColumns cannot be 0");
+        std::terminate();
     }
 
     m_NrRows = static_cast<int>(std::ceil(static_cast<float>(m_NrSprites) / static_cast<float>(m_NrColumns)));
     if(m_NrRows == 0)
     {
-        const std::string errorMessage = "NrRows cannot be 0";
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("NrRows cannot be 0");
+        std::terminate();
     }
 
     m_Texture = ResourceManager::GetInstance().LoadTexture(file.string());
     if(!m_Texture)
     {
-        const std::string errorMessage = "Failed to load texture";
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("Failed to load texture");
+        std::terminate();
     }
 
     m_DstRect.w = m_SrcRect.w / static_cast<float>(m_NrColumns) - static_cast<float>(srcOffset.x);

@@ -1,5 +1,7 @@
 ﻿#include "Texture2D.hpp"
 
+// used for std::terminate
+#include <exception>
 #include <stdexcept>
 
 #include <SDL3/SDL.h>
@@ -14,9 +16,8 @@ bae::Texture2D::Texture2D(SDL_Texture* texture) :
 {
     if(!m_Texture)
     {
-        const std::string errorMessage = "Invalid texture";
-        Logger::LogError(errorMessage);
-        assert(false && (FUNCTION_NAME + errorMessage).c_str());
+        Logger::LogFatal("Invalid texture");
+        std::terminate();
     }
 }
 
@@ -26,9 +27,8 @@ bae::Texture2D::Texture2D(const std::string& fullPath)
     SDL_Surface* surface = SDL_LoadPNG(fullPath.c_str());
     if(!surface)
     {
-        const std::string errorMessage = "Failed to load PNG, Error" + std::string(SDL_GetError());
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("Failed to load PNG, Error" + std::string(SDL_GetError()));
+        std::terminate();
     }
 
     m_Texture = SDL_CreateTextureFromSurface(
@@ -40,9 +40,8 @@ bae::Texture2D::Texture2D(const std::string& fullPath)
 
     if(!m_Texture)
     {
-        const std::string errorMessage = "Failed to create texture from surface, Error: " + std::string(SDL_GetError());
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("Failed to create texture from surface, Error: " + std::string(SDL_GetError()));
+        std::terminate();
     }
 }
 

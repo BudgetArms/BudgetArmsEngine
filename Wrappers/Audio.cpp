@@ -13,19 +13,16 @@ bae::Audio::Audio(const std::string& fullPath, MIX_Mixer* mixer)
 {
     if(!std::filesystem::exists(fullPath))
     {
-        const std::string errorMessage = "File Not Found, Path: " + std::filesystem::path(fullPath).
-                string();
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("File Not Found, Path: " + std::filesystem::path(fullPath).string());
+        std::terminate();
     }
 
 
     m_Audio = MIX_LoadAudio(mixer, fullPath.c_str(), false);
     if(!m_Audio)
     {
-        const std::string errorMessage = "Failed to load audio, Error: " + std::string(SDL_GetError());
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("Failed to load audio, Error: " + std::string(SDL_GetError()));
+        std::terminate();
     }
 }
 

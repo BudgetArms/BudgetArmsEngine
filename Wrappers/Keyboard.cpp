@@ -1,12 +1,13 @@
 ﻿#include "Keyboard.hpp"
 
+// used for std::terminate
+#include <exception>
 #include <ranges>
 #include <unordered_map>
 #include <unordered_set>
 
 #include <SDL3/SDL.h>
 
-#include "Core/HelperFunctions.hpp"
 #include "Core/Logger.hpp"
 
 
@@ -149,9 +150,8 @@ void Keyboard::Impl::ExecuteCommands()
     {
         if(!command)
         {
-            const std::string errorMessage = "Command is invalid";
-            Logger::LogError(errorMessage);
-            throw std::runtime_error(FUNCTION_NAME + errorMessage);
+            Logger::LogFatal("Command is invalid");
+            std::terminate();
         }
 
         switch(state)

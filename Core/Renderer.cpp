@@ -1,13 +1,14 @@
-﻿#include <stdexcept>
-#include <string>
+﻿#include "Renderer.hpp"
 
+// used for std::terminate
+#include <exception>
+#include <string>
 
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
 #include <glm/glm.hpp>
 
-#include "Core/Renderer.hpp"
 #include "Core/HelperFunctions.hpp"
 #include "Core/Logger.hpp"
 #include "Core/Utils.hpp"
@@ -32,9 +33,8 @@ void bae::Renderer::Init(SDL_Window* window)
 
     if(!m_Renderer)
     {
-        const std::string errorMessage = "Failed to create SDL Renderer, Error: " + std::string(SDL_GetError());
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("Failed to create SDL Renderer, Error: " + std::string(SDL_GetError()));
+        std::terminate();
     }
 
     // TODO: Remove ImGui related code
@@ -45,9 +45,8 @@ void bae::Renderer::Init(SDL_Window* window)
     ImGui_ImplSDLRenderer3_Init(m_Renderer);
     if(!success)
     {
-        const std::string errorMessage = "Failed to create ImGui";
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("Failed to create ImGui");
+        std::terminate();
     }
 }
 

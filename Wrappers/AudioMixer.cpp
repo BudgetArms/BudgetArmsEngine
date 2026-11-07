@@ -15,10 +15,8 @@ bae::AudioMixer::AudioMixer(const SDL_AudioDeviceID deviceId, const SDL_AudioSpe
 
     if(!m_Mixer)
     {
-        const std::string errorMessage = "Failed to create Mixer, Error: "
-                + std::string(SDL_GetError());
-        Logger::LogError(errorMessage);
-        throw std::runtime_error(FUNCTION_NAME + errorMessage);
+        Logger::LogFatal("Failed to create Mixer, Error: " + std::string(SDL_GetError()));
+        std::terminate();
     }
 }
 
