@@ -14,8 +14,7 @@ namespace bae
     {
     public:
         explicit Subject(GameObject& subjectGameObject);
-
-        ~Subject() = default;
+        virtual ~Subject() = default;
 
         void AddObserver(Observer* observer);
         void RemoveObserver(Observer* observer);
